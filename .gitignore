@@ -1,0 +1,48 @@
+# ── Vivado generated output ──────────────────────────────────────────────────
+*.jou
+*.log
+*.str
+*.pb
+*.dcp           # design checkpoint (large, reproducible from sources)
+*.bit           # bitstream - track separately if desired
+*.ltx           # debug probes file
+*.mmi
+
+# Vivado project working directories
+**/*.cache/
+**/*.hw/
+**/*.ip_user_files/
+**/*.runs/
+**/*.sim/
+**/*.gen/
+**/*.hbs/
+**/*.xpr        # Vivado project file (machine-generated, not source of truth)
+**/.Xil/
+
+# Vivado backup files
+*.bak
+*.backup.jou
+*.backup.log
+
+# IP output products (regenerate from .xci)
+**/ip/*/
+!**/*.xci       # keep IP definition files
+
+# Synthesis / implementation reports (large, reproducible)
+**/reports/
+
+# Simulation intermediate files
+**/*.vcd
+**/*.fst
+**/*.ghw
+**/*.wdb
+**/*.wcfg        # waveform config - optional, can be tracked if curated
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
