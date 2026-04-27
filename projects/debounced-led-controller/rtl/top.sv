@@ -23,7 +23,7 @@ module top (
     input  logic       clk,           // 100 MHz PL clock from KR260
     input  logic       rst_n,         // reset button (active-low)
     input  logic       btn_raw,       // raw bouncy advance button
-    output logic [3:0] leds           // 4 LEDs showing counter state
+    output logic [2:0] leds           // 3 LEDs showing counter state
 );
 
     // ── Internal signals ─────────────────────────────────────────
@@ -52,7 +52,7 @@ module top (
 
     // ── Johnson counter instance ─────────────────────────────────
     johnson_counter #(
-        .WIDTH (4)
+        .WIDTH (3)
     ) u_johnson (
         .clk     (clk),
         .rst_n   (rst_n),
