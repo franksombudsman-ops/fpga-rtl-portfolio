@@ -8,7 +8,7 @@ Each project lives in `projects/` with its own README, constraints, and simulati
 | Project | Status | Key Techniques |
 |---|---|---|
 | [debounced-led-controller](projects/debounced-led-controller/) | RTL complete · sim verified · constraints complete | CDC synchronizer, FSM-less debounce, Johnson counter, edge detect |
-| [spi-master-pmod-ad1](projects/spi-master-pmod-ad1/) | RTL complete · sim in progress | SPI Mode 0, parameterised clock divider, AD7476A frame decode |
+| [spi-master-controller](spi-master-controller/) | RTL complete · sim verified | SPI Mode 0, parameterised clock divider, AD7476A frame decode, FSM, shift registers |
 
 ## Toolchain
 
