@@ -1,48 +1,76 @@
-# ── Vivado generated output ──────────────────────────────────────────────────
+# ============================================================================
+# FPGA / SoC Engineering Repository
+# Author: Frank Ouma
+# Contact: frankotieno254@gmail.com | +254725582132
+# Copyright (c) 2026 Frank Ouma. All rights reserved.
+# ============================================================================
+
+# ----------------------------------------------------------------------------
+# Vivado generated state
+# ----------------------------------------------------------------------------
+.Xil/
+**/.Xil/
 *.jou
 *.log
 *.str
 *.pb
-*.dcp           # design checkpoint (large, reproducible from sources)
-*.bit           # bitstream - track separately if desired
-*.ltx           # debug probes file
-*.mmi
+*.wdb
+*.dcp
 
-# Vivado project working directories
+# Vivado project/generated working directories
 **/*.cache/
+**/*.gen/
 **/*.hw/
 **/*.ip_user_files/
 **/*.runs/
 **/*.sim/
-**/*.gen/
 **/*.hbs/
-**/*.xpr        # Vivado project file (machine-generated, not source of truth)
-**/.Xil/
 
-# Vivado backup files
+# Vivado machine-generated project files
+**/*.xpr
+
+# Vivado backups
 *.bak
 *.backup.jou
 *.backup.log
 
-# IP output products (regenerate from .xci)
-**/ip/*/
-!**/*.xci       # keep IP definition files
+# Generated programming/debug artifacts
+*.bit
+*.bin
+*.ltx
+*.mmi
 
-# Synthesis / implementation reports (large, reproducible)
-**/reports/
+# ----------------------------------------------------------------------------
+# Simulation generated state
+# ----------------------------------------------------------------------------
+xsim.dir/
+work/
+transcript
+vsim.wlf
+*.vcd
+*.fst
+*.ghw
+*.wdb
 
-# Simulation intermediate files
-**/*.vcd
-**/*.fst
-**/*.ghw
-**/*.wdb
-**/*.wcfg        # waveform config - optional, can be tracked if curated
-
-# OS / editor noise
-.DS_Store
-Thumbs.db
+# ----------------------------------------------------------------------------
+# Temporary/editor files
+# ----------------------------------------------------------------------------
+*~
 *.swp
 *.swo
-*~
 .vscode/
 .idea/
+
+# ----------------------------------------------------------------------------
+# Operating-system noise
+# ----------------------------------------------------------------------------
+.DS_Store
+Thumbs.db
+
+# ----------------------------------------------------------------------------
+# Private engineering workspace
+# ----------------------------------------------------------------------------
+scratch/
+learning-notes/
+private-notes/
+experiments/
