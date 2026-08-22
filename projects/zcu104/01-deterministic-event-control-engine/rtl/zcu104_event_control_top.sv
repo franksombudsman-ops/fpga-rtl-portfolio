@@ -22,7 +22,8 @@ module zcu104_event_control_top (
     output logic led_active,
     output logic led_count_lsb,
     output logic led_event_qualified,
-    output logic led_clock_locked
+    output logic led_clock_locked,
+    output logic pmod_led
 );
 
     // ------------------------------------------------------------------------
@@ -128,5 +129,6 @@ module zcu104_event_control_top (
     assign led_count_lsb       = event_count[0];
     assign led_event_qualified = event_debounced;
     assign led_clock_locked    = clock_locked;
+    assign pmod_led = output_active;
 
 endmodule

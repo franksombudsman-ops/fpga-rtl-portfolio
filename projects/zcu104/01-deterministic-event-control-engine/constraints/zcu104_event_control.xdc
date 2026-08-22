@@ -19,6 +19,12 @@ set_property PACKAGE_PIN AH17 [get_ports clk_300_n]
 set_property IOSTANDARD DIFF_SSTL12 [get_ports clk_300_p]
 set_property IOSTANDARD DIFF_SSTL12 [get_ports clk_300_n]
 
+# J55 pin 1 / PMOD0_0
+set_property PACKAGE_PIN G8 [get_ports pmod_led]
+set_property IOSTANDARD LVCMOS33 [get_ports pmod_led]
+
+
+
 # 300 MHz = 3.333333 ns period
 #create_clock #   -name clk_300mhz #  -period 3.333333 # -waveform {0.000 1.666667} #[get_ports clk_300_p]
 
@@ -75,7 +81,7 @@ set_false_path -from [get_ports {pb_event pb_reset}]
 # LEDs are not sampled by an external synchronous device and therefore
 # require no board-level output timing relationship.
 
-set_false_path -to [get_ports {led_active led_count_lsb led_event_qualified led_clock_locked}]
+set_false_path -to [get_ports {led_active led_count_lsb led_event_qualified led_clock_locked pmod_led}]
 
 create_debug_core u_ila_0 ila
 set_property ALL_PROBE_SAME_MU true [get_debug_cores u_ila_0]
