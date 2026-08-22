@@ -184,41 +184,90 @@ if not source.exists():
 if not source.exists():
     sys.exit("ERROR: Screencast file was not created.")
 
-print("\nConverting to MP4...")
+print("\nCompressing recording for GitHub portfolio...")
 
+# Standard portfolio compression:
+# - maximum 1280 px width
+# - 15 fps
+# - H.264
+# - CRF 28
+# - even dimensions for yuv420p compatibility
 run([
     "ffmpeg", "-y",
     "-i", str(source),
     "-an",
+    "-vf",
+    "scale='min(1280,iw)':-2,fps=15,"
+    "pad=ceil(iw/2)*2:ceil(ih/2)*2",
     "-c:v", "libx264",
-    "-preset", "fast",
-    "-crf", "24",
+    "-preset", "medium",
+    "-crf", "28",
     "-pix_fmt", "yuv420p",
     "-movflags", "+faststart",
     str(mp4)
 ])
 
 if not mp4.exists() or mp4.stat().st_size == 0:
-    sys.exit("ERROR: MP4 conversion failed.")
+    sys.exit("ERROR: MP4 compression failed.")
 
 probe = run([
     "ffprobe",
     "-v", "error",
     "-show_entries",
-    "format=duration,size:stream=codec_name,width,height",
+    "format=duration,size:stream=codec_name,width,height,r_frame_rate",
     "-of", "default=noprint_wrappers=1",
     str(mp4)
 ], True)
 
-print("\n===== VIDEO VALIDATION =====")
+print("\n===== COMPRESSED VIDEO VALIDATION =====")
 print(probe.stdout)
 
 size_mb = mp4.stat().st_size / (1024 * 1024)
-print(f"Video size: {size_mb:.2f} MB")
+print(f"Compressed size: {size_mb:.2f} MB")
 
-if size_mb >= 95:
-    sys.exit("ERROR: Recording is too large for normal GitHub storage.")
+# Portfolio policy: never automatically push oversized evidence.
+MAX_UPLOAD_MB = 20
 
+if size_mb > MAX_UPLOAD_MB:
+    print(
+        f"\nVideo is still {size_mb:.2f} MB. "
+        "Applying stronger compression..."
+    )
+
+    smaller = mp4.with_name(mp4.stem + "_compressed.mp4")
+
+    run([
+        "ffmpeg", "-y",
+        "-i", str(mp4),
+        "-an",
+        "-vf",
+        "scale='min(960,iw)':-2,fps=12,"
+        "pad=ceil(iw/2)*2:ceil(ih/2)*2",
+        "-c:v", "libx264",
+        "-preset", "medium",
+        "-crf", "31",
+        "-pix_fmt", "yuv420p",
+        "-movflags", "+faststart",
+        str(smaller)
+    ])
+
+    if not smaller.exists() or smaller.stat().st_size == 0:
+        sys.exit("ERROR: Secondary compression failed.")
+
+    smaller.replace(mp4)
+    size_mb = mp4.stat().st_size / (1024 * 1024)
+
+    print(f"Recompressed size: {size_mb:.2f} MB")
+
+if size_mb > MAX_UPLOAD_MB:
+    sys.exit(
+        f"ERROR: Final video is {size_mb:.2f} MB. "
+        "GitHub upload blocked by portfolio size policy."
+    )
+
+print(f"Compression gate: PASS ({size_mb:.2f} MB <= {MAX_UPLOAD_MB} MB)")
+
+# Remove raw recording only after successful compression.
 if source.exists() and source != mp4:
     source.unlink()
 
