@@ -42,6 +42,12 @@ module zcu104_pmod_ad1_top (
     (* MARK_DEBUG = "TRUE" *) logic        filtered_valid;
 
     // ---------------------------------------------------------
+    // Control decision signal
+    // ---------------------------------------------------------
+
+    (* MARK_DEBUG = "TRUE" *) logic        control_request;
+
+    // ---------------------------------------------------------
     // ZCU104 300 MHz differential clock -> 125 MHz
     // ---------------------------------------------------------
 
@@ -108,6 +114,22 @@ module zcu104_pmod_ad1_top (
 
         .filtered_sample (filtered_sample),
         .filtered_valid  (filtered_valid)
+    );
+
+    // ---------------------------------------------------------
+    // Channel A threshold + hysteresis decision logic
+    // ---------------------------------------------------------
+
+    threshold_hysteresis #(
+        .DATA_WIDTH     (12),
+        .HIGH_THRESHOLD (12'hC00),
+        .LOW_THRESHOLD  (12'hB80)
+    ) channel_a_decision (
+        .clk             (clk_125),
+        .rst             (rst),
+        .sample_in       (filtered_sample),
+        .sample_valid    (filtered_valid),
+        .control_request (control_request)
     );
 
     // ---------------------------------------------------------
