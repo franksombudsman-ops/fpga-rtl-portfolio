@@ -16,9 +16,6 @@ module adc_moving_average #(
     logic [DATA_WIDTH-1:0] sample_0;
     logic [DATA_WIDTH-1:0] sample_1;
     logic [DATA_WIDTH-1:0] sample_2;
-    logic [DATA_WIDTH-1:0] sample_3;
-
-    logic [DATA_WIDTH+1:0] sum;
 
     logic [2:0] sample_count;
 
@@ -27,8 +24,6 @@ module adc_moving_average #(
             sample_0        <= '0;
             sample_1        <= '0;
             sample_2        <= '0;
-            sample_3        <= '0;
-            sum             <= '0;
             sample_count    <= '0;
             filtered_sample <= '0;
             filtered_valid  <= 1'b0;
@@ -38,25 +33,32 @@ module adc_moving_average #(
 
             if (sample_valid) begin
 
-                sample_3 <= sample_2;
+                // Shift sample history
                 sample_2 <= sample_1;
                 sample_1 <= sample_0;
                 sample_0 <= sample_in;
 
+                // Count received samples until first complete window
                 if (sample_count < 4)
                     sample_count <= sample_count + 1'b1;
 
+                // Four-sample moving average:
+                //
+                // sample_in = newest sample
+                // sample_0  = previous sample
+                // sample_1  = previous-1
+                // sample_2  = previous-2
+                //
+                // Extend each 12-bit sample to 14 bits before addition
+                // to prevent overflow when summing four full-scale values.
                 if (sample_count >= 3) begin
-                    sum <= sample_in
-                         + sample_0
-                         + sample_1
-                         + sample_2;
 
-                    filtered_sample <=
-                        (sample_in
-                         + sample_0
-                         + sample_1
-                         + sample_2) >> 2;
+                    filtered_sample <= (
+                          {2'b00, sample_in}
+                        + {2'b00, sample_0}
+                        + {2'b00, sample_1}
+                        + {2'b00, sample_2}
+                    ) >> 2;
 
                     filtered_valid <= 1'b1;
                 end

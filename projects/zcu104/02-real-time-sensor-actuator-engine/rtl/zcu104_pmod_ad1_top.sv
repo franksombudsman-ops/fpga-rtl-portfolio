@@ -22,12 +22,24 @@ module zcu104_pmod_ad1_top (
     logic clock_locked;
     logic rst;
 
+    // ---------------------------------------------------------
+    // Raw ADC acquisition signals
+    // ---------------------------------------------------------
+
     (* MARK_DEBUG = "TRUE" *) logic [11:0] sample_a;
     (* MARK_DEBUG = "TRUE" *) logic [11:0] sample_b;
     (* MARK_DEBUG = "TRUE" *) logic        sample_valid;
+
     (* MARK_DEBUG = "TRUE" *) logic        busy;
     (* MARK_DEBUG = "TRUE" *) logic        sample_tick;
     (* MARK_DEBUG = "TRUE" *) logic        overrun;
+
+    // ---------------------------------------------------------
+    // Filtered ADC signals
+    // ---------------------------------------------------------
+
+    (* MARK_DEBUG = "TRUE" *) logic [11:0] filtered_sample;
+    (* MARK_DEBUG = "TRUE" *) logic        filtered_valid;
 
     // ---------------------------------------------------------
     // ZCU104 300 MHz differential clock -> 125 MHz
@@ -79,6 +91,23 @@ module zcu104_pmod_ad1_top (
         .busy         (busy),
         .sample_tick  (sample_tick),
         .overrun      (overrun)
+    );
+
+    // ---------------------------------------------------------
+    // Channel A four-sample moving-average filter
+    // ---------------------------------------------------------
+
+    adc_moving_average #(
+        .DATA_WIDTH (12)
+    ) channel_a_filter (
+        .clk             (clk_125),
+        .rst             (rst),
+
+        .sample_in       (sample_a),
+        .sample_valid    (sample_valid),
+
+        .filtered_sample (filtered_sample),
+        .filtered_valid  (filtered_valid)
     );
 
     // ---------------------------------------------------------

@@ -40,6 +40,18 @@ module tb_adc_moving_average;
         end
     endtask
 
+    task automatic reset_dut;
+        begin
+            @(negedge clk);
+            rst = 1'b1;
+
+            repeat (2) @(posedge clk);
+
+            @(negedge clk);
+            rst = 1'b0;
+        end
+    endtask
+
     initial begin
 
         rst          = 1'b1;
@@ -49,15 +61,17 @@ module tb_adc_moving_average;
         repeat (4) @(posedge clk);
         rst = 1'b0;
 
-        // First four samples:
+        // --------------------------------------------------
+        // NORMAL-RANGE TEST
+        //
         // (1000 + 1010 + 990 + 1008) / 4 = 1002
+        // --------------------------------------------------
 
         send_sample(12'd1000);
         send_sample(12'd1010);
         send_sample(12'd990);
         send_sample(12'd1008);
 
-        // Check IMMEDIATELY after fourth sample.
         if (filtered_valid !== 1'b1)
             $error("FAIL: filtered_valid did not assert");
         else
@@ -74,13 +88,16 @@ module tb_adc_moving_average;
                 filtered_sample
             );
 
-        // Fifth sample creates rolling window:
+        // --------------------------------------------------
+        // ROLLING WINDOW TEST
+        //
         // (1010 + 990 + 1008 + 1020) / 4 = 1007
+        // --------------------------------------------------
 
         send_sample(12'd1020);
 
         if (filtered_valid !== 1'b1)
-            $error("FAIL: filtered_valid missing on fifth sample");
+            $error("FAIL: filtered_valid missing on rolling window");
         else
             $display("PASS filtered_valid asserted on rolling window");
 
@@ -95,7 +112,6 @@ module tb_adc_moving_average;
                 filtered_sample
             );
 
-        // One clock later filtered_valid must return LOW.
         @(posedge clk);
         #1;
 
@@ -103,6 +119,42 @@ module tb_adc_moving_average;
             $error("FAIL: filtered_valid should be one clock wide");
         else
             $display("PASS filtered_valid is one clock wide");
+
+        // --------------------------------------------------
+        // FULL-SCALE OVERFLOW TEST
+        //
+        // Four maximum 12-bit samples:
+        //
+        // 4095 + 4095 + 4095 + 4095
+        // = 16380
+        //
+        // 16380 / 4 = 4095
+        //
+        // This requires a 14-bit intermediate sum.
+        // --------------------------------------------------
+
+        reset_dut();
+
+        send_sample(12'hFFF);
+        send_sample(12'hFFF);
+        send_sample(12'hFFF);
+        send_sample(12'hFFF);
+
+        if (filtered_valid !== 1'b1)
+            $error("FAIL: filtered_valid missing at full scale");
+        else
+            $display("PASS filtered_valid asserted at full scale");
+
+        if (filtered_sample !== 12'hFFF)
+            $error(
+                "FAIL overflow test: expected 0xFFF, received=0x%03h",
+                filtered_sample
+            );
+        else
+            $display(
+                "PASS full-scale arithmetic: filtered_sample=0x%03h",
+                filtered_sample
+            );
 
         $display("PASS adc_moving_average verification complete");
 
