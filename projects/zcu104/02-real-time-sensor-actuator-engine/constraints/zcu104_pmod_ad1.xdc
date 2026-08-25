@@ -210,7 +210,7 @@ connect_debug_port u_ila_0/probe6 [get_nets [list sample_valid]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe7]
 set_property port_width 1 [get_debug_ports u_ila_0/probe7]
-connect_debug_port u_ila_0/probe7 [get_nets [list acquisition_engine/spi_master/sclk_reg_0]]
+connect_debug_port u_ila_0/probe7 [get_nets [list acquisition_engine/spi_master/sclk]]
 create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe8]
 set_property port_width 1 [get_debug_ports u_ila_0/probe8]
@@ -219,7 +219,26 @@ create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe9]
 set_property port_width 1 [get_debug_ports u_ila_0/probe9]
 connect_debug_port u_ila_0/probe9 [get_nets [list acquisition_engine/spi_master/sdata_b]]
-set_property C_CLK_INPUT_FREQ_HZ 300000000 [get_debug_cores dbg_hub]
+
+# ------------------------------------------------------------
+# Filtered Channel A ILA probes
+# ------------------------------------------------------------
+
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe10]
+set_property port_width 12 [get_debug_ports u_ila_0/probe10]
+connect_debug_port u_ila_0/probe10 [get_nets [list \
+    {filtered_sample[0]} {filtered_sample[1]} {filtered_sample[2]} \
+    {filtered_sample[3]} {filtered_sample[4]} {filtered_sample[5]} \
+    {filtered_sample[6]} {filtered_sample[7]} {filtered_sample[8]} \
+    {filtered_sample[9]} {filtered_sample[10]} {filtered_sample[11]}]]
+
+create_debug_port u_ila_0 probe
+set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe11]
+set_property port_width 1 [get_debug_ports u_ila_0/probe11]
+connect_debug_port u_ila_0/probe11 [get_nets [list filtered_valid]]
+
+set_property C_CLK_INPUT_FREQ_HZ 125000000 [get_debug_cores dbg_hub]
 set_property C_ENABLE_CLK_DIVIDER false [get_debug_cores dbg_hub]
 set_property C_USER_SCAN_CHAIN 1 [get_debug_cores dbg_hub]
 connect_debug_port dbg_hub/clk [get_nets clk_125]
