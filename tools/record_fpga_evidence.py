@@ -10,7 +10,7 @@ import datetime
 from pathlib import Path
 
 REPO = Path.home() / "fpga-rtl-portfolio"
-VIDEO_DIR = REPO / "projects/zcu104/01-deterministic-event-control-engine/evidence/videos"
+VIDEO_DIR = REPO / "projects/zcu104/02-real-time-sensor-actuator-engine/evidence/videos"
 VIDEO_DIR.mkdir(parents=True, exist_ok=True)
 
 stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
