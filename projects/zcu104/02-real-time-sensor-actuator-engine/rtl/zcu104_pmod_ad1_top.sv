@@ -48,6 +48,14 @@ module zcu104_pmod_ad1_top (
     (* MARK_DEBUG = "TRUE" *) logic        control_request;
 
     // ---------------------------------------------------------
+    // Actuator controller signals
+    // ---------------------------------------------------------
+
+    (* MARK_DEBUG = "TRUE" *) logic        actuator_enable;
+    (* MARK_DEBUG = "TRUE" *) logic [7:0]  pwm_duty;
+    (* MARK_DEBUG = "TRUE" *) logic [1:0]  state_code;
+
+    // ---------------------------------------------------------
     // ZCU104 300 MHz differential clock -> 125 MHz
     // ---------------------------------------------------------
 
@@ -130,6 +138,23 @@ module zcu104_pmod_ad1_top (
         .sample_in       (filtered_sample),
         .sample_valid    (filtered_valid),
         .control_request (control_request)
+    );
+
+    // ---------------------------------------------------------
+    // Actuator control FSM
+    // ---------------------------------------------------------
+
+    actuator_control_fsm #(
+        .STARTUP_CYCLES (62_500_000), // 500 ms @ 125 MHz
+        .RUN_DUTY       (8'd153)       // ~60%
+    ) actuator_controller (
+        .clk             (clk_125),
+        .rst             (rst),
+        .control_request (control_request),
+
+        .actuator_enable (actuator_enable),
+        .pwm_duty        (pwm_duty),
+        .state_code      (state_code)
     );
 
     // ---------------------------------------------------------
