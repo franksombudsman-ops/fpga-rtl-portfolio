@@ -54,6 +54,7 @@ module zcu104_pmod_ad1_top (
     (* MARK_DEBUG = "TRUE" *) logic        actuator_enable;
     (* MARK_DEBUG = "TRUE" *) logic [7:0]  pwm_duty;
     (* MARK_DEBUG = "TRUE" *) logic [1:0]  state_code;
+    (* MARK_DEBUG = "TRUE" *) logic        pwm_output;
 
     // ---------------------------------------------------------
     // ZCU104 300 MHz differential clock -> 125 MHz
@@ -155,6 +156,20 @@ module zcu104_pmod_ad1_top (
         .actuator_enable (actuator_enable),
         .pwm_duty        (pwm_duty),
         .state_code      (state_code)
+    );
+
+    // ---------------------------------------------------------
+    // PWM output generator
+    // ---------------------------------------------------------
+
+    pwm_generator #(
+        .PWM_DIVIDER (25)       // ~19.53 kHz @ 125 MHz
+    ) actuator_pwm (
+        .clk     (clk_125),
+        .rst     (rst),
+        .enable  (actuator_enable),
+        .duty    (pwm_duty),
+        .pwm_out (pwm_output)
     );
 
     // ---------------------------------------------------------
