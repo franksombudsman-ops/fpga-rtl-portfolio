@@ -271,3 +271,11 @@ create_debug_port u_ila_0 probe
 set_property PROBE_TYPE DATA_AND_TRIGGER [get_debug_ports u_ila_0/probe16]
 set_property port_width 1 [get_debug_ports u_ila_0/probe16]
 connect_debug_port u_ila_0/probe16 [get_nets [list pwm_output]]
+
+# ------------------------------------------------------------
+# Physical actuator PWM output
+# J87.1 / PMOD1_0 / XCZU7EV J9
+# ------------------------------------------------------------
+set_property PACKAGE_PIN J9 [get_ports actuator_pwm_out]
+set_property IOSTANDARD LVCMOS33 [get_ports actuator_pwm_out]
+set_false_path -to [get_ports actuator_pwm_out]

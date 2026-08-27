@@ -15,7 +15,8 @@ module zcu104_pmod_ad1_top (
     output logic led_clock_locked,
     output logic led_overrun,
     output logic led_sample_a_msb,
-    output logic led_sample_b_msb
+    output logic led_sample_b_msb,
+    output logic actuator_pwm_out
 );
 
     logic clk_125;
@@ -181,5 +182,6 @@ module zcu104_pmod_ad1_top (
 
     assign led_sample_a_msb = sample_a[11];
     assign led_sample_b_msb = sample_b[11];
+    assign actuator_pwm_out = pwm_output;
 
 endmodule
