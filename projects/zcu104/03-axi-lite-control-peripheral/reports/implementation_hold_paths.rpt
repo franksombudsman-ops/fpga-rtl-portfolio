@@ -1,0 +1,1284 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2023.2 (lin64) Build 4029153 Fri Oct 13 20:13:54 MDT 2023
+| Date              : Thu Aug 27 06:49:24 2026
+| Host              : frankhasrisen running 64-bit Ubuntu 22.04.5 LTS
+| Command           : report_timing -delay_type min -max_paths 20 -sort_by group -file /home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/03-axi-lite-control-peripheral/reports/implementation_hold_paths.rpt
+| Design            : axi_lite_control_peripheral
+| Device            : xczu7ev-ffvc1156
+| Speed File        : -2  PRODUCTION 1.30 05-15-2022
+| Design State      : Routed
+| Temperature Grade : E
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (MET) :             0.023ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[1]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.076ns  (logic 0.039ns (51.531%)  route 0.037ns (48.469%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.586ns
+    Source Clock Delay      (SCD):    1.243ns
+    Clock Pessimism Removal (CPR):    0.337ns
+  Clock Net Delay (Source):      0.859ns (routing 0.411ns, distribution 0.448ns)
+  Clock Net Delay (Destination): 0.977ns (routing 0.460ns, distribution 0.517ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.859     1.243    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y306        FDRE                                         r  wdata_reg_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y306        FDRE (Prop_HFF_SLICEL_C_Q)
+                                                      0.039     1.282 r  wdata_reg_reg[1]/Q
+                         net (fo=6, routed)           0.037     1.319    p_0_in__0[1]
+    SLICE_X66Y306        FDRE                                         r  pwm_duty_reg[1]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.977     1.586    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y306        FDRE                                         r  pwm_duty_reg[1]/C
+                         clock pessimism             -0.337     1.249    
+    SLICE_X66Y306        FDRE (Hold_HFF2_SLICEL_C_D)
+                                                      0.047     1.296    pwm_duty_reg[1]
+  -------------------------------------------------------------------
+                         required time                         -1.296    
+                         arrival time                           1.319    
+  -------------------------------------------------------------------
+                         slack                                  0.023    
+
+Slack (MET) :             0.023ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[4]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[4]/D
+                            (rising edge-triggered cell FDSE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.076ns  (logic 0.039ns (51.531%)  route 0.037ns (48.469%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.582ns
+    Source Clock Delay      (SCD):    1.240ns
+    Clock Pessimism Removal (CPR):    0.336ns
+  Clock Net Delay (Source):      0.856ns (routing 0.411ns, distribution 0.445ns)
+  Clock Net Delay (Destination): 0.973ns (routing 0.460ns, distribution 0.513ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.856     1.240    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y305        FDRE                                         r  wdata_reg_reg[4]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y305        FDRE (Prop_DFF_SLICEL_C_Q)
+                                                      0.039     1.279 r  wdata_reg_reg[4]/Q
+                         net (fo=6, routed)           0.037     1.316    p_0_in__0[4]
+    SLICE_X66Y305        FDSE                                         r  pwm_duty_reg[4]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.973     1.582    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y305        FDSE                                         r  pwm_duty_reg[4]/C
+                         clock pessimism             -0.336     1.246    
+    SLICE_X66Y305        FDSE (Hold_CFF2_SLICEL_C_D)
+                                                      0.047     1.293    pwm_duty_reg[4]
+  -------------------------------------------------------------------
+                         required time                         -1.293    
+                         arrival time                           1.316    
+  -------------------------------------------------------------------
+                         slack                                  0.023    
+
+Slack (MET) :             0.034ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[1]_lopt_replica/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.101ns  (logic 0.039ns (38.451%)  route 0.062ns (61.548%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.020ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.587ns
+    Source Clock Delay      (SCD):    1.243ns
+    Clock Pessimism Removal (CPR):    0.324ns
+  Clock Net Delay (Source):      0.859ns (routing 0.411ns, distribution 0.448ns)
+  Clock Net Delay (Destination): 0.978ns (routing 0.460ns, distribution 0.518ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.859     1.243    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y306        FDRE                                         r  wdata_reg_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y306        FDRE (Prop_HFF_SLICEL_C_Q)
+                                                      0.039     1.282 r  wdata_reg_reg[1]/Q
+                         net (fo=6, routed)           0.062     1.344    p_0_in__0[1]
+    SLICE_X66Y304        FDRE                                         r  pwm_duty_reg[1]_lopt_replica/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.978     1.587    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y304        FDRE                                         r  pwm_duty_reg[1]_lopt_replica/C
+                         clock pessimism             -0.324     1.263    
+    SLICE_X66Y304        FDRE (Hold_HFF2_SLICEL_C_D)
+                                                      0.047     1.310    pwm_duty_reg[1]_lopt_replica
+  -------------------------------------------------------------------
+                         required time                         -1.310    
+                         arrival time                           1.344    
+  -------------------------------------------------------------------
+                         slack                                  0.034    
+
+Slack (MET) :             0.035ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[7]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[7]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Slow Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.172ns  (logic 0.058ns (33.640%)  route 0.114ns (66.360%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.075ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    2.484ns
+    Source Clock Delay      (SCD):    2.015ns
+    Clock Pessimism Removal (CPR):    0.394ns
+  Clock Net Delay (Source):      1.367ns (routing 0.675ns, distribution 0.692ns)
+  Clock Net Delay (Destination): 1.544ns (routing 0.743ns, distribution 0.801ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.338     0.338 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.338    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.338 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.286     0.624    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024     0.648 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         1.367     2.015    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y301        FDRE                                         r  wdata_reg_reg[7]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X67Y301        FDRE (Prop_GFF_SLICEM_C_Q)
+                                                      0.058     2.073 r  wdata_reg_reg[7]/Q
+                         net (fo=6, routed)           0.114     2.188    p_0_in__0[7]
+    SLICE_X66Y301        FDRE                                         r  threshold_high_reg[7]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.589     0.589 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.589    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.589 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.323     0.912    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     0.940 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         1.544     2.484    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y301        FDRE                                         r  threshold_high_reg[7]/C
+                         clock pessimism             -0.394     2.090    
+    SLICE_X66Y301        FDRE (Hold_BFF2_SLICEL_C_D)
+                                                      0.062     2.152    threshold_high_reg[7]
+  -------------------------------------------------------------------
+                         required time                         -2.152    
+                         arrival time                           2.188    
+  -------------------------------------------------------------------
+                         slack                                  0.035    
+
+Slack (MET) :             0.036ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[7]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[7]_lopt_replica/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Slow Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.173ns  (logic 0.058ns (33.446%)  route 0.115ns (66.554%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.075ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    2.484ns
+    Source Clock Delay      (SCD):    2.015ns
+    Clock Pessimism Removal (CPR):    0.394ns
+  Clock Net Delay (Source):      1.367ns (routing 0.675ns, distribution 0.692ns)
+  Clock Net Delay (Destination): 1.544ns (routing 0.743ns, distribution 0.801ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.338     0.338 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.338    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.338 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.286     0.624    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024     0.648 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         1.367     2.015    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y301        FDRE                                         r  wdata_reg_reg[7]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X67Y301        FDRE (Prop_GFF_SLICEM_C_Q)
+                                                      0.058     2.073 r  wdata_reg_reg[7]/Q
+                         net (fo=6, routed)           0.115     2.189    p_0_in__0[7]
+    SLICE_X66Y301        FDRE                                         r  threshold_high_reg[7]_lopt_replica/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.589     0.589 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.589    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.589 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.323     0.912    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     0.940 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         1.544     2.484    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y301        FDRE                                         r  threshold_high_reg[7]_lopt_replica/C
+                         clock pessimism             -0.394     2.090    
+    SLICE_X66Y301        FDRE (Hold_AFF2_SLICEL_C_D)
+                                                      0.062     2.152    threshold_high_reg[7]_lopt_replica
+  -------------------------------------------------------------------
+                         required time                         -2.152    
+                         arrival time                           2.189    
+  -------------------------------------------------------------------
+                         slack                                  0.036    
+
+Slack (MET) :             0.046ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[5]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_low_reg[5]_lopt_replica/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.137ns  (logic 0.038ns (27.802%)  route 0.099ns (72.198%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.045ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.587ns
+    Source Clock Delay      (SCD):    1.246ns
+    Clock Pessimism Removal (CPR):    0.297ns
+  Clock Net Delay (Source):      0.862ns (routing 0.411ns, distribution 0.451ns)
+  Clock Net Delay (Destination): 0.978ns (routing 0.460ns, distribution 0.518ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.862     1.246    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y303        FDRE                                         r  wdata_reg_reg[5]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X67Y303        FDRE (Prop_AFF_SLICEM_C_Q)
+                                                      0.038     1.284 r  wdata_reg_reg[5]/Q
+                         net (fo=6, routed)           0.099     1.383    p_0_in__0[5]
+    SLICE_X66Y301        FDRE                                         r  threshold_low_reg[5]_lopt_replica/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.978     1.587    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y301        FDRE                                         r  threshold_low_reg[5]_lopt_replica/C
+                         clock pessimism             -0.297     1.291    
+    SLICE_X66Y301        FDRE (Hold_GFF_SLICEL_C_D)
+                                                      0.046     1.337    threshold_low_reg[5]_lopt_replica
+  -------------------------------------------------------------------
+                         required time                         -1.337    
+                         arrival time                           1.383    
+  -------------------------------------------------------------------
+                         slack                                  0.046    
+
+Slack (MET) :             0.047ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[6]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[6]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.100ns  (logic 0.039ns (39.124%)  route 0.061ns (60.876%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.586ns
+    Source Clock Delay      (SCD):    1.243ns
+    Clock Pessimism Removal (CPR):    0.337ns
+  Clock Net Delay (Source):      0.859ns (routing 0.411ns, distribution 0.448ns)
+  Clock Net Delay (Destination): 0.977ns (routing 0.460ns, distribution 0.517ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.859     1.243    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y306        FDRE                                         r  wdata_reg_reg[6]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y306        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.039     1.282 r  wdata_reg_reg[6]/Q
+                         net (fo=6, routed)           0.061     1.343    p_0_in__0[6]
+    SLICE_X66Y306        FDRE                                         r  pwm_duty_reg[6]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.977     1.586    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y306        FDRE                                         r  pwm_duty_reg[6]/C
+                         clock pessimism             -0.337     1.249    
+    SLICE_X66Y306        FDRE (Hold_FFF2_SLICEL_C_D)
+                                                      0.047     1.296    pwm_duty_reg[6]
+  -------------------------------------------------------------------
+                         required time                         -1.296    
+                         arrival time                           1.343    
+  -------------------------------------------------------------------
+                         slack                                  0.047    
+
+Slack (MET) :             0.054ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[7]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[7]/D
+                            (rising edge-triggered cell FDSE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.107ns  (logic 0.039ns (36.557%)  route 0.068ns (63.443%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.591ns
+    Source Clock Delay      (SCD):    1.245ns
+    Clock Pessimism Removal (CPR):    0.340ns
+  Clock Net Delay (Source):      0.861ns (routing 0.411ns, distribution 0.450ns)
+  Clock Net Delay (Destination): 0.982ns (routing 0.460ns, distribution 0.522ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.861     1.245    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y301        FDRE                                         r  wdata_reg_reg[7]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X67Y301        FDRE (Prop_GFF_SLICEM_C_Q)
+                                                      0.039     1.284 r  wdata_reg_reg[7]/Q
+                         net (fo=6, routed)           0.068     1.352    p_0_in__0[7]
+    SLICE_X67Y301        FDSE                                         r  pwm_duty_reg[7]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.982     1.591    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y301        FDSE                                         r  pwm_duty_reg[7]/C
+                         clock pessimism             -0.340     1.251    
+    SLICE_X67Y301        FDSE (Hold_FFF2_SLICEM_C_D)
+                                                      0.047     1.298    pwm_duty_reg[7]
+  -------------------------------------------------------------------
+                         required time                         -1.298    
+                         arrival time                           1.352    
+  -------------------------------------------------------------------
+                         slack                                  0.054    
+
+Slack (MET) :             0.054ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[9]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[9]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.113ns  (logic 0.038ns (33.681%)  route 0.075ns (66.319%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.013ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.591ns
+    Source Clock Delay      (SCD):    1.246ns
+    Clock Pessimism Removal (CPR):    0.333ns
+  Clock Net Delay (Source):      0.862ns (routing 0.411ns, distribution 0.451ns)
+  Clock Net Delay (Destination): 0.982ns (routing 0.460ns, distribution 0.522ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.862     1.246    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y303        FDRE                                         r  wdata_reg_reg[9]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X67Y303        FDRE (Prop_BFF_SLICEM_C_Q)
+                                                      0.038     1.284 r  wdata_reg_reg[9]/Q
+                         net (fo=4, routed)           0.075     1.359    p_2_in[1]
+    SLICE_X67Y303        FDRE                                         r  threshold_high_reg[9]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.982     1.591    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y303        FDRE                                         r  threshold_high_reg[9]/C
+                         clock pessimism             -0.333     1.259    
+    SLICE_X67Y303        FDRE (Hold_FFF_SLICEM_C_D)
+                                                      0.046     1.305    threshold_high_reg[9]
+  -------------------------------------------------------------------
+                         required time                         -1.305    
+                         arrival time                           1.359    
+  -------------------------------------------------------------------
+                         slack                                  0.054    
+
+Slack (MET) :             0.056ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[2]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[2]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Slow Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.198ns  (logic 0.058ns (29.321%)  route 0.140ns (70.679%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.080ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    2.488ns
+    Source Clock Delay      (SCD):    2.014ns
+    Clock Pessimism Removal (CPR):    0.394ns
+  Clock Net Delay (Source):      1.366ns (routing 0.675ns, distribution 0.691ns)
+  Clock Net Delay (Destination): 1.548ns (routing 0.743ns, distribution 0.805ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.338     0.338 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.338    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.338 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.286     0.624    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024     0.648 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         1.366     2.014    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y305        FDRE                                         r  wdata_reg_reg[2]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X67Y305        FDRE (Prop_GFF_SLICEM_C_Q)
+                                                      0.058     2.072 r  wdata_reg_reg[2]/Q
+                         net (fo=6, routed)           0.140     2.212    p_0_in__0[2]
+    SLICE_X66Y306        FDRE                                         r  pwm_duty_reg[2]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.589     0.589 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.589    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.589 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.323     0.912    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     0.940 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         1.548     2.488    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y306        FDRE                                         r  pwm_duty_reg[2]/C
+                         clock pessimism             -0.394     2.094    
+    SLICE_X66Y306        FDRE (Hold_GFF2_SLICEL_C_D)
+                                                      0.062     2.156    pwm_duty_reg[2]
+  -------------------------------------------------------------------
+                         required time                         -2.156    
+                         arrival time                           2.212    
+  -------------------------------------------------------------------
+                         slack                                  0.056    
+
+Slack (MET) :             0.056ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[1]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.119ns  (logic 0.039ns (32.725%)  route 0.080ns (67.275%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.016ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.583ns
+    Source Clock Delay      (SCD):    1.243ns
+    Clock Pessimism Removal (CPR):    0.324ns
+  Clock Net Delay (Source):      0.859ns (routing 0.411ns, distribution 0.448ns)
+  Clock Net Delay (Destination): 0.974ns (routing 0.460ns, distribution 0.514ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.859     1.243    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y306        FDRE                                         r  wdata_reg_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y306        FDRE (Prop_HFF_SLICEL_C_Q)
+                                                      0.039     1.282 r  wdata_reg_reg[1]/Q
+                         net (fo=6, routed)           0.080     1.362    p_0_in__0[1]
+    SLICE_X66Y304        FDRE                                         r  threshold_high_reg[1]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.974     1.583    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y304        FDRE                                         r  threshold_high_reg[1]/C
+                         clock pessimism             -0.324     1.259    
+    SLICE_X66Y304        FDRE (Hold_DFF2_SLICEL_C_D)
+                                                      0.047     1.306    threshold_high_reg[1]
+  -------------------------------------------------------------------
+                         required time                         -1.306    
+                         arrival time                           1.362    
+  -------------------------------------------------------------------
+                         slack                                  0.056    
+
+Slack (MET) :             0.058ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[1]_lopt_replica/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.121ns  (logic 0.039ns (32.185%)  route 0.082ns (67.815%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.016ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.583ns
+    Source Clock Delay      (SCD):    1.243ns
+    Clock Pessimism Removal (CPR):    0.324ns
+  Clock Net Delay (Source):      0.859ns (routing 0.411ns, distribution 0.448ns)
+  Clock Net Delay (Destination): 0.974ns (routing 0.460ns, distribution 0.514ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.859     1.243    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y306        FDRE                                         r  wdata_reg_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y306        FDRE (Prop_HFF_SLICEL_C_Q)
+                                                      0.039     1.282 r  wdata_reg_reg[1]/Q
+                         net (fo=6, routed)           0.082     1.364    p_0_in__0[1]
+    SLICE_X66Y304        FDRE                                         r  threshold_high_reg[1]_lopt_replica/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.974     1.583    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y304        FDRE                                         r  threshold_high_reg[1]_lopt_replica/C
+                         clock pessimism             -0.324     1.259    
+    SLICE_X66Y304        FDRE (Hold_CFF2_SLICEL_C_D)
+                                                      0.047     1.306    threshold_high_reg[1]_lopt_replica
+  -------------------------------------------------------------------
+                         required time                         -1.306    
+                         arrival time                           1.364    
+  -------------------------------------------------------------------
+                         slack                                  0.058    
+
+Slack (MET) :             0.059ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[4]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[4]_lopt_replica/D
+                            (rising edge-triggered cell FDSE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.129ns  (logic 0.039ns (30.335%)  route 0.090ns (69.665%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.023ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.587ns
+    Source Clock Delay      (SCD):    1.240ns
+    Clock Pessimism Removal (CPR):    0.324ns
+  Clock Net Delay (Source):      0.856ns (routing 0.411ns, distribution 0.445ns)
+  Clock Net Delay (Destination): 0.978ns (routing 0.460ns, distribution 0.518ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.856     1.240    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y305        FDRE                                         r  wdata_reg_reg[4]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y305        FDRE (Prop_DFF_SLICEL_C_Q)
+                                                      0.039     1.279 r  wdata_reg_reg[4]/Q
+                         net (fo=6, routed)           0.090     1.369    p_0_in__0[4]
+    SLICE_X66Y302        FDSE                                         r  pwm_duty_reg[4]_lopt_replica/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.978     1.587    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y302        FDSE                                         r  pwm_duty_reg[4]_lopt_replica/C
+                         clock pessimism             -0.324     1.263    
+    SLICE_X66Y302        FDSE (Hold_FFF2_SLICEL_C_D)
+                                                      0.047     1.310    pwm_duty_reg[4]_lopt_replica
+  -------------------------------------------------------------------
+                         required time                         -1.310    
+                         arrival time                           1.369    
+  -------------------------------------------------------------------
+                         slack                                  0.059    
+
+Slack (MET) :             0.061ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[9]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_low_reg[9]_lopt_replica/D
+                            (rising edge-triggered cell FDSE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.121ns  (logic 0.038ns (31.497%)  route 0.083ns (68.503%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.013ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.591ns
+    Source Clock Delay      (SCD):    1.246ns
+    Clock Pessimism Removal (CPR):    0.333ns
+  Clock Net Delay (Source):      0.862ns (routing 0.411ns, distribution 0.451ns)
+  Clock Net Delay (Destination): 0.982ns (routing 0.460ns, distribution 0.522ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.862     1.246    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y303        FDRE                                         r  wdata_reg_reg[9]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X67Y303        FDRE (Prop_BFF_SLICEM_C_Q)
+                                                      0.038     1.284 r  wdata_reg_reg[9]/Q
+                         net (fo=4, routed)           0.083     1.367    p_2_in[1]
+    SLICE_X67Y303        FDSE                                         r  threshold_low_reg[9]_lopt_replica/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.982     1.591    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y303        FDSE                                         r  threshold_low_reg[9]_lopt_replica/C
+                         clock pessimism             -0.333     1.259    
+    SLICE_X67Y303        FDSE (Hold_EFF2_SLICEM_C_D)
+                                                      0.047     1.306    threshold_low_reg[9]_lopt_replica
+  -------------------------------------------------------------------
+                         required time                         -1.306    
+                         arrival time                           1.367    
+  -------------------------------------------------------------------
+                         slack                                  0.061    
+
+Slack (MET) :             0.061ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[5]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[5]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.130ns  (logic 0.038ns (29.292%)  route 0.092ns (70.708%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.022ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.593ns
+    Source Clock Delay      (SCD):    1.246ns
+    Clock Pessimism Removal (CPR):    0.325ns
+  Clock Net Delay (Source):      0.862ns (routing 0.411ns, distribution 0.451ns)
+  Clock Net Delay (Destination): 0.984ns (routing 0.460ns, distribution 0.524ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.862     1.246    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y303        FDRE                                         r  wdata_reg_reg[5]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X67Y303        FDRE (Prop_AFF_SLICEM_C_Q)
+                                                      0.038     1.284 r  wdata_reg_reg[5]/Q
+                         net (fo=6, routed)           0.092     1.376    p_0_in__0[5]
+    SLICE_X68Y302        FDRE                                         r  threshold_high_reg[5]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.984     1.593    s_axi_aclk_IBUF_BUFG
+    SLICE_X68Y302        FDRE                                         r  threshold_high_reg[5]/C
+                         clock pessimism             -0.325     1.268    
+    SLICE_X68Y302        FDRE (Hold_BFF2_SLICEL_C_D)
+                                                      0.047     1.315    threshold_high_reg[5]
+  -------------------------------------------------------------------
+                         required time                         -1.315    
+                         arrival time                           1.376    
+  -------------------------------------------------------------------
+                         slack                                  0.061    
+
+Slack (MET) :             0.061ns  (arrival time - required time)
+  Source:                 threshold_low_reg[7]/C
+                            (rising edge-triggered cell FDSE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            s_axi_rdata_reg[7]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.163ns  (logic 0.067ns (41.104%)  route 0.096ns (58.896%))
+  Logic Levels:           2  (LUT4=1 LUT5=1)
+  Clock Path Skew:        0.056ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.592ns
+    Source Clock Delay      (SCD):    1.240ns
+    Clock Pessimism Removal (CPR):    0.297ns
+  Clock Net Delay (Source):      0.856ns (routing 0.411ns, distribution 0.445ns)
+  Clock Net Delay (Destination): 0.983ns (routing 0.460ns, distribution 0.523ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.856     1.240    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y301        FDSE                                         r  threshold_low_reg[7]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y301        FDSE (Prop_CFF_SLICEL_C_Q)
+                                                      0.039     1.279 r  threshold_low_reg[7]/Q
+                         net (fo=1, routed)           0.024     1.303    threshold_low_OBUF[7]
+    SLICE_X66Y301        LUT4 (Prop_C6LUT_SLICEL_I3_O)
+                                                      0.014     1.317 r  s_axi_rdata[7]_i_2/O
+                         net (fo=1, routed)           0.048     1.365    s_axi_rdata[7]_i_2_n_0
+    SLICE_X67Y301        LUT5 (Prop_C6LUT_SLICEM_I0_O)
+                                                      0.014     1.379 r  s_axi_rdata[7]_i_1/O
+                         net (fo=1, routed)           0.024     1.403    s_axi_rdata[7]_i_1_n_0
+    SLICE_X67Y301        FDRE                                         r  s_axi_rdata_reg[7]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.983     1.592    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y301        FDRE                                         r  s_axi_rdata_reg[7]/C
+                         clock pessimism             -0.297     1.296    
+    SLICE_X67Y301        FDRE (Hold_CFF_SLICEM_C_D)
+                                                      0.046     1.342    s_axi_rdata_reg[7]
+  -------------------------------------------------------------------
+                         required time                         -1.342    
+                         arrival time                           1.403    
+  -------------------------------------------------------------------
+                         slack                                  0.061    
+
+Slack (MET) :             0.062ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[4]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[4]_lopt_replica/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.128ns  (logic 0.039ns (30.545%)  route 0.089ns (69.455%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.019ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.583ns
+    Source Clock Delay      (SCD):    1.240ns
+    Clock Pessimism Removal (CPR):    0.325ns
+  Clock Net Delay (Source):      0.856ns (routing 0.411ns, distribution 0.445ns)
+  Clock Net Delay (Destination): 0.974ns (routing 0.460ns, distribution 0.514ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.856     1.240    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y305        FDRE                                         r  wdata_reg_reg[4]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y305        FDRE (Prop_DFF_SLICEL_C_Q)
+                                                      0.039     1.279 r  wdata_reg_reg[4]/Q
+                         net (fo=6, routed)           0.089     1.368    p_0_in__0[4]
+    SLICE_X66Y302        FDRE                                         r  threshold_high_reg[4]_lopt_replica/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.974     1.583    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y302        FDRE                                         r  threshold_high_reg[4]_lopt_replica/C
+                         clock pessimism             -0.325     1.259    
+    SLICE_X66Y302        FDRE (Hold_AFF2_SLICEL_C_D)
+                                                      0.047     1.306    threshold_high_reg[4]_lopt_replica
+  -------------------------------------------------------------------
+                         required time                         -1.306    
+                         arrival time                           1.368    
+  -------------------------------------------------------------------
+                         slack                                  0.062    
+
+Slack (MET) :             0.065ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[9]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_low_reg[9]/D
+                            (rising edge-triggered cell FDSE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.125ns  (logic 0.038ns (30.486%)  route 0.087ns (69.514%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.013ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.591ns
+    Source Clock Delay      (SCD):    1.246ns
+    Clock Pessimism Removal (CPR):    0.333ns
+  Clock Net Delay (Source):      0.862ns (routing 0.411ns, distribution 0.451ns)
+  Clock Net Delay (Destination): 0.982ns (routing 0.460ns, distribution 0.522ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.862     1.246    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y303        FDRE                                         r  wdata_reg_reg[9]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X67Y303        FDRE (Prop_BFF_SLICEM_C_Q)
+                                                      0.038     1.284 r  wdata_reg_reg[9]/Q
+                         net (fo=4, routed)           0.087     1.371    p_2_in[1]
+    SLICE_X67Y303        FDSE                                         r  threshold_low_reg[9]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.982     1.591    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y303        FDSE                                         r  threshold_low_reg[9]/C
+                         clock pessimism             -0.333     1.259    
+    SLICE_X67Y303        FDSE (Hold_FFF2_SLICEM_C_D)
+                                                      0.047     1.306    threshold_low_reg[9]
+  -------------------------------------------------------------------
+                         required time                         -1.306    
+                         arrival time                           1.371    
+  -------------------------------------------------------------------
+                         slack                                  0.065    
+
+Slack (MET) :             0.067ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[3]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[3]_lopt_replica/D
+                            (rising edge-triggered cell FDSE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.159ns  (logic 0.039ns (24.469%)  route 0.120ns (75.531%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.046ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.587ns
+    Source Clock Delay      (SCD):    1.245ns
+    Clock Pessimism Removal (CPR):    0.297ns
+  Clock Net Delay (Source):      0.861ns (routing 0.411ns, distribution 0.450ns)
+  Clock Net Delay (Destination): 0.978ns (routing 0.460ns, distribution 0.518ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.861     1.245    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y301        FDRE                                         r  wdata_reg_reg[3]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X67Y301        FDRE (Prop_HFF_SLICEM_C_Q)
+                                                      0.039     1.284 r  wdata_reg_reg[3]/Q
+                         net (fo=6, routed)           0.120     1.404    p_0_in__0[3]
+    SLICE_X66Y301        FDSE                                         r  pwm_duty_reg[3]_lopt_replica/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.978     1.587    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y301        FDSE                                         r  pwm_duty_reg[3]_lopt_replica/C
+                         clock pessimism             -0.297     1.291    
+    SLICE_X66Y301        FDSE (Hold_HFF2_SLICEL_C_D)
+                                                      0.047     1.338    pwm_duty_reg[3]_lopt_replica
+  -------------------------------------------------------------------
+                         required time                         -1.338    
+                         arrival time                           1.404    
+  -------------------------------------------------------------------
+                         slack                                  0.067    
+
+Slack (MET) :             0.069ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[6]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[6]_lopt_replica/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.136ns  (logic 0.039ns (28.706%)  route 0.097ns (71.294%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.020ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.587ns
+    Source Clock Delay      (SCD):    1.243ns
+    Clock Pessimism Removal (CPR):    0.324ns
+  Clock Net Delay (Source):      0.859ns (routing 0.411ns, distribution 0.448ns)
+  Clock Net Delay (Destination): 0.978ns (routing 0.460ns, distribution 0.518ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.859     1.243    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y306        FDRE                                         r  wdata_reg_reg[6]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y306        FDRE (Prop_GFF_SLICEL_C_Q)
+                                                      0.039     1.282 r  wdata_reg_reg[6]/Q
+                         net (fo=6, routed)           0.097     1.379    p_0_in__0[6]
+    SLICE_X66Y302        FDRE                                         r  pwm_duty_reg[6]_lopt_replica/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.978     1.587    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y302        FDRE                                         r  pwm_duty_reg[6]_lopt_replica/C
+                         clock pessimism             -0.324     1.263    
+    SLICE_X66Y302        FDRE (Hold_EFF2_SLICEL_C_D)
+                                                      0.047     1.310    pwm_duty_reg[6]_lopt_replica
+  -------------------------------------------------------------------
+                         required time                         -1.310    
+                         arrival time                           1.379    
+  -------------------------------------------------------------------
+                         slack                                  0.069    
+
+
+
+

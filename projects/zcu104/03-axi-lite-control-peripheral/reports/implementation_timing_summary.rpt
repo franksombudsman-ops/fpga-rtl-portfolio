@@ -1,0 +1,362 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2023.2 (lin64) Build 4029153 Fri Oct 13 20:13:54 MDT 2023
+| Date              : Thu Aug 27 06:49:24 2026
+| Host              : frankhasrisen running 64-bit Ubuntu 22.04.5 LTS
+| Command           : report_timing_summary -delay_type min_max -file /home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/03-axi-lite-control-peripheral/reports/implementation_timing_summary.rpt
+| Design            : axi_lite_control_peripheral
+| Device            : xczu7ev-ffvc1156
+| Speed File        : -2  PRODUCTION 1.30 05-15-2022
+| Design State      : Routed
+| Temperature Grade : E
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Summary Report
+
+------------------------------------------------------------------------------------------------
+| Timer Settings
+| --------------
+------------------------------------------------------------------------------------------------
+
+  Enable Multi Corner Analysis               :  Yes
+  Enable Pessimism Removal                   :  Yes
+  Pessimism Removal Resolution               :  Nearest Common Node
+  Enable Input Delay Default Clock           :  No
+  Enable Preset / Clear Arcs                 :  No
+  Disable Flight Delays                      :  No
+  Ignore I/O Paths                           :  No
+  Timing Early Launch at Borrowing Latches   :  No
+  Borrow Time for Max Delay Exceptions       :  Yes
+  Merge Timing Exceptions                    :  Yes
+  Inter-SLR Compensation                     :  Conservative
+
+  Corner  Analyze    Analyze    
+  Name    Max Paths  Min Paths  
+  ------  ---------  ---------  
+  Slow    Yes        Yes        
+  Fast    Yes        Yes        
+
+
+------------------------------------------------------------------------------------------------
+| Report Methodology
+| ------------------
+------------------------------------------------------------------------------------------------
+
+No report available as report_methodology has not been run prior. Run report_methodology on the current design for the summary of methodology violations.
+
+
+
+check_timing report
+
+Table of Contents
+-----------------
+1. checking no_clock (0)
+2. checking constant_clock (0)
+3. checking pulse_width_clock (0)
+4. checking unconstrained_internal_endpoints (0)
+5. checking no_input_delay (59)
+6. checking no_output_delay (51)
+7. checking multiple_clock (0)
+8. checking generated_clocks (0)
+9. checking loops (0)
+10. checking partial_input_delay (0)
+11. checking partial_output_delay (0)
+12. checking latch_loops (0)
+
+1. checking no_clock (0)
+------------------------
+ There are 0 register/latch pins with no clock.
+
+
+2. checking constant_clock (0)
+------------------------------
+ There are 0 register/latch pins with constant_clock.
+
+
+3. checking pulse_width_clock (0)
+---------------------------------
+ There are 0 register/latch pins which need pulse_width check
+
+
+4. checking unconstrained_internal_endpoints (0)
+------------------------------------------------
+ There are 0 pins that are not constrained for maximum delay.
+
+ There are 0 pins that are not constrained for maximum delay due to constant clock.
+
+
+5. checking no_input_delay (59)
+-------------------------------
+ There are 59 input ports with no input delay specified. (HIGH)
+
+ There are 0 input ports with no input delay but user has a false path constraint.
+
+
+6. checking no_output_delay (51)
+--------------------------------
+ There are 51 ports with no output delay specified. (HIGH)
+
+ There are 0 ports with no output delay but user has a false path constraint
+
+ There are 0 ports with no output delay but with a timing clock defined on it or propagating through it
+
+
+7. checking multiple_clock (0)
+------------------------------
+ There are 0 register/latch pins with multiple clocks.
+
+
+8. checking generated_clocks (0)
+--------------------------------
+ There are 0 generated clocks that are not connected to a clock source.
+
+
+9. checking loops (0)
+---------------------
+ There are 0 combinational loops in the design.
+
+
+10. checking partial_input_delay (0)
+------------------------------------
+ There are 0 input ports with partial input delay specified.
+
+
+11. checking partial_output_delay (0)
+-------------------------------------
+ There are 0 ports with partial output delay specified.
+
+
+12. checking latch_loops (0)
+----------------------------
+ There are 0 combinational latch loops in the design through latch input
+
+
+
+------------------------------------------------------------------------------------------------
+| Design Timing Summary
+| ---------------------
+------------------------------------------------------------------------------------------------
+
+    WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
+    -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
+      8.084        0.000                      0                  179        0.023        0.000                      0                  179        4.725        0.000                       0                   102  
+
+
+All user specified timing constraints are met.
+
+
+------------------------------------------------------------------------------------------------
+| Clock Summary
+| -------------
+------------------------------------------------------------------------------------------------
+
+Clock       Waveform(ns)       Period(ns)      Frequency(MHz)
+-----       ------------       ----------      --------------
+s_axi_aclk  {0.000 5.000}      10.000          100.000         
+
+
+------------------------------------------------------------------------------------------------
+| Intra Clock Table
+| -----------------
+------------------------------------------------------------------------------------------------
+
+Clock             WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
+-----             -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
+s_axi_aclk          8.084        0.000                      0                  179        0.023        0.000                      0                  179        4.725        0.000                       0                   102  
+
+
+------------------------------------------------------------------------------------------------
+| Inter Clock Table
+| -----------------
+------------------------------------------------------------------------------------------------
+
+From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints  
+----------    --------          -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------  
+
+
+------------------------------------------------------------------------------------------------
+| Other Path Groups Table
+| -----------------------
+------------------------------------------------------------------------------------------------
+
+Path Group    From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints      WHS(ns)      THS(ns)  THS Failing Endpoints  THS Total Endpoints  
+----------    ----------    --------          -------      -------  ---------------------  -------------------      -------      -------  ---------------------  -------------------  
+
+
+------------------------------------------------------------------------------------------------
+| Timing Details
+| --------------
+------------------------------------------------------------------------------------------------
+
+
+---------------------------------------------------------------------------------------------------
+From Clock:  s_axi_aclk
+  To Clock:  s_axi_aclk
+
+Setup :            0  Failing Endpoints,  Worst Slack        8.084ns,  Total Violation        0.000ns
+Hold  :            0  Failing Endpoints,  Worst Slack        0.023ns,  Total Violation        0.000ns
+PW    :            0  Failing Endpoints,  Worst Slack        4.725ns,  Total Violation        0.000ns
+---------------------------------------------------------------------------------------------------
+
+
+Max Delay Paths
+--------------------------------------------------------------------------------------
+Slack (MET) :             8.084ns  (required time - arrival time)
+  Source:                 s_axi_rvalid_reg/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            s_axi_rdata_reg[5]/CE
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Setup (Max at Slow Process Corner)
+  Requirement:            10.000ns  (s_axi_aclk rise@10.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        1.750ns  (logic 0.177ns (10.113%)  route 1.573ns (89.887%))
+  Logic Levels:           1  (LUT2=1)
+  Clock Path Skew:        -0.070ns (DCD - SCD + CPR)
+    Destination Clock Delay (DCD):    2.025ns = ( 12.025 - 10.000 ) 
+    Source Clock Delay      (SCD):    2.488ns
+    Clock Pessimism Removal (CPR):    0.394ns
+  Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
+    Total System Jitter     (TSJ):    0.071ns
+    Total Input Jitter      (TIJ):    0.000ns
+    Discrete Jitter          (DJ):    0.000ns
+    Phase Error              (PE):    0.000ns
+  Clock Net Delay (Source):      1.548ns (routing 0.743ns, distribution 0.805ns)
+  Clock Net Delay (Destination): 1.376ns (routing 0.675ns, distribution 0.701ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.589     0.589 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.589    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.589 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.323     0.912    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.028     0.940 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         1.548     2.488    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y305        FDRE                                         r  s_axi_rvalid_reg/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y305        FDRE (Prop_HFF2_SLICEL_C_Q)
+                                                      0.080     2.568 f  s_axi_rvalid_reg/Q
+                         net (fo=4, routed)           0.261     2.829    s_axi_rvalid_OBUF
+    SLICE_X66Y305        LUT2 (Prop_F6LUT_SLICEL_I1_O)
+                                                      0.097     2.926 r  s_axi_rdata[16]_i_1/O
+                         net (fo=13, routed)          1.312     4.239    s_axi_rdata[16]_i_1_n_0
+    SLICE_X67Y302        FDRE                                         r  s_axi_rdata_reg[5]/CE
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                     10.000    10.000 r  
+    AH11                                              0.000    10.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000    10.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.338    10.338 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000    10.338    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000    10.338 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.286    10.624    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.024    10.648 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         1.376    12.025    s_axi_aclk_IBUF_BUFG
+    SLICE_X67Y302        FDRE                                         r  s_axi_rdata_reg[5]/C
+                         clock pessimism              0.394    12.419    
+                         clock uncertainty           -0.035    12.384    
+    SLICE_X67Y302        FDRE (Setup_HFF_SLICEM_C_CE)
+                                                     -0.061    12.323    s_axi_rdata_reg[5]
+  -------------------------------------------------------------------
+                         required time                         12.323    
+                         arrival time                          -4.239    
+  -------------------------------------------------------------------
+                         slack                                  8.084    
+
+
+
+
+
+Min Delay Paths
+--------------------------------------------------------------------------------------
+Slack (MET) :             0.023ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[1]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.076ns  (logic 0.039ns (51.531%)  route 0.037ns (48.469%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.006ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.586ns
+    Source Clock Delay      (SCD):    1.243ns
+    Clock Pessimism Removal (CPR):    0.337ns
+  Clock Net Delay (Source):      0.859ns (routing 0.411ns, distribution 0.448ns)
+  Clock Net Delay (Destination): 0.977ns (routing 0.460ns, distribution 0.517ns)
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.223     0.223 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.223    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.223 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.144     0.367    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.017     0.384 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.859     1.243    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y306        FDRE                                         r  wdata_reg_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+    SLICE_X66Y306        FDRE (Prop_HFF_SLICEL_C_Q)
+                                                      0.039     1.282 r  wdata_reg_reg[1]/Q
+                         net (fo=6, routed)           0.037     1.319    p_0_in__0[1]
+    SLICE_X66Y306        FDRE                                         r  pwm_duty_reg[1]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+    AH11                                              0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+    AH11                 INBUF (Prop_INBUF_HPIOB_M_PAD_O)
+                                                      0.409     0.409 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, routed)           0.000     0.409    s_axi_aclk_IBUF_inst/OUT
+    AH11                 IBUFCTRL (Prop_IBUFCTRL_HPIOB_M_I_O)
+                                                      0.000     0.409 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, routed)           0.181     0.590    s_axi_aclk_IBUF
+    BUFGCE_X1Y72         BUFGCE (Prop_BUFCE_BUFGCE_I_O)
+                                                      0.019     0.609 r  s_axi_aclk_IBUF_BUFG_inst/O
+    X2Y5 (CLOCK_ROOT)    net (fo=101, routed)         0.977     1.586    s_axi_aclk_IBUF_BUFG
+    SLICE_X66Y306        FDRE                                         r  pwm_duty_reg[1]/C
+                         clock pessimism             -0.337     1.249    
+    SLICE_X66Y306        FDRE (Hold_HFF2_SLICEL_C_D)
+                                                      0.047     1.296    pwm_duty_reg[1]
+  -------------------------------------------------------------------
+                         required time                         -1.296    
+                         arrival time                           1.319    
+  -------------------------------------------------------------------
+                         slack                                  0.023    
+
+
+
+
+
+Pulse Width Checks
+--------------------------------------------------------------------------------------
+Clock Name:         s_axi_aclk
+Waveform(ns):       { 0.000 5.000 }
+Period(ns):         10.000
+Sources:            { s_axi_aclk }
+
+Check Type        Corner  Lib Pin   Reference Pin  Required(ns)  Actual(ns)  Slack(ns)  Location       Pin
+Min Period        n/a     BUFGCE/I  n/a            1.290         10.000      8.710      BUFGCE_X1Y72   s_axi_aclk_IBUF_BUFG_inst/I
+Low Pulse Width   Slow    FDRE/C    n/a            0.275         5.000       4.725      SLICE_X67Y302  aw_pending_reg/C
+High Pulse Width  Slow    FDRE/C    n/a            0.275         5.000       4.725      SLICE_X67Y302  aw_pending_reg/C
+
+
+

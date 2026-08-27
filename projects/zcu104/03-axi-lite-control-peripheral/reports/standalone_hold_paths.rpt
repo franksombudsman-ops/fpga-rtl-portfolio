@@ -1,0 +1,1118 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version      : Vivado v.2023.2 (lin64) Build 4029153 Fri Oct 13 20:13:54 MDT 2023
+| Date              : Thu Aug 27 05:58:15 2026
+| Host              : frankhasrisen running 64-bit Ubuntu 22.04.5 LTS
+| Command           : report_timing -delay_type min -max_paths 20 -sort_by group -file projects/zcu104/03-axi-lite-control-peripheral/reports/standalone_hold_paths.rpt
+| Design            : axi_lite_control_peripheral
+| Device            : xczu7ev-ffvc1156
+| Speed File        : -2  PRODUCTION 1.30 05-15-2022
+| Design State      : Synthesized
+| Temperature Grade : E
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Timing Report
+
+Slack (VIOLATED) :        -0.057ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[10]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[10]/D
+                            (rising edge-triggered cell FDSE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.134ns  (logic 0.038ns (28.358%)  route 0.096ns (71.642%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[10]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[10]/Q
+                         net (fo=2, unplaced)         0.096     1.547    p_2_in[2]
+                         FDSE                                         r  threshold_high_reg[10]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDSE                                         r  threshold_high_reg[10]/C
+                         clock pessimism             -0.205     1.558    
+                         FDSE (Hold_FDSE_C_D)         0.046     1.604    threshold_high_reg[10]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.547    
+  -------------------------------------------------------------------
+                         slack                                 -0.057    
+
+Slack (VIOLATED) :        -0.057ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[11]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[11]/D
+                            (rising edge-triggered cell FDSE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.134ns  (logic 0.038ns (28.358%)  route 0.096ns (71.642%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[11]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[11]/Q
+                         net (fo=2, unplaced)         0.096     1.547    p_2_in[3]
+                         FDSE                                         r  threshold_high_reg[11]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDSE                                         r  threshold_high_reg[11]/C
+                         clock pessimism             -0.205     1.558    
+                         FDSE (Hold_FDSE_C_D)         0.046     1.604    threshold_high_reg[11]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.547    
+  -------------------------------------------------------------------
+                         slack                                 -0.057    
+
+Slack (VIOLATED) :        -0.057ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[8]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[8]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.134ns  (logic 0.038ns (28.358%)  route 0.096ns (71.642%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[8]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[8]/Q
+                         net (fo=2, unplaced)         0.096     1.547    p_2_in[0]
+                         FDRE                                         r  threshold_high_reg[8]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  threshold_high_reg[8]/C
+                         clock pessimism             -0.205     1.558    
+                         FDRE (Hold_FDRE_C_D)         0.046     1.604    threshold_high_reg[8]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.547    
+  -------------------------------------------------------------------
+                         slack                                 -0.057    
+
+Slack (VIOLATED) :        -0.057ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[9]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[9]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.134ns  (logic 0.038ns (28.358%)  route 0.096ns (71.642%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[9]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[9]/Q
+                         net (fo=2, unplaced)         0.096     1.547    p_2_in[1]
+                         FDRE                                         r  threshold_high_reg[9]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  threshold_high_reg[9]/C
+                         clock pessimism             -0.205     1.558    
+                         FDRE (Hold_FDRE_C_D)         0.046     1.604    threshold_high_reg[9]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.547    
+  -------------------------------------------------------------------
+                         slack                                 -0.057    
+
+Slack (VIOLATED) :        -0.057ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[10]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_low_reg[10]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.134ns  (logic 0.038ns (28.358%)  route 0.096ns (71.642%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[10]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[10]/Q
+                         net (fo=2, unplaced)         0.096     1.547    p_2_in[2]
+                         FDRE                                         r  threshold_low_reg[10]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  threshold_low_reg[10]/C
+                         clock pessimism             -0.205     1.558    
+                         FDRE (Hold_FDRE_C_D)         0.046     1.604    threshold_low_reg[10]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.547    
+  -------------------------------------------------------------------
+                         slack                                 -0.057    
+
+Slack (VIOLATED) :        -0.057ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[11]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_low_reg[11]/D
+                            (rising edge-triggered cell FDSE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.134ns  (logic 0.038ns (28.358%)  route 0.096ns (71.642%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[11]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[11]/Q
+                         net (fo=2, unplaced)         0.096     1.547    p_2_in[3]
+                         FDSE                                         r  threshold_low_reg[11]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDSE                                         r  threshold_low_reg[11]/C
+                         clock pessimism             -0.205     1.558    
+                         FDSE (Hold_FDSE_C_D)         0.046     1.604    threshold_low_reg[11]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.547    
+  -------------------------------------------------------------------
+                         slack                                 -0.057    
+
+Slack (VIOLATED) :        -0.057ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[8]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_low_reg[8]/D
+                            (rising edge-triggered cell FDSE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.134ns  (logic 0.038ns (28.358%)  route 0.096ns (71.642%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[8]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[8]/Q
+                         net (fo=2, unplaced)         0.096     1.547    p_2_in[0]
+                         FDSE                                         r  threshold_low_reg[8]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDSE                                         r  threshold_low_reg[8]/C
+                         clock pessimism             -0.205     1.558    
+                         FDSE (Hold_FDSE_C_D)         0.046     1.604    threshold_low_reg[8]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.547    
+  -------------------------------------------------------------------
+                         slack                                 -0.057    
+
+Slack (VIOLATED) :        -0.057ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[9]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_low_reg[9]/D
+                            (rising edge-triggered cell FDSE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.134ns  (logic 0.038ns (28.358%)  route 0.096ns (71.642%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[9]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[9]/Q
+                         net (fo=2, unplaced)         0.096     1.547    p_2_in[1]
+                         FDSE                                         r  threshold_low_reg[9]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDSE                                         r  threshold_low_reg[9]/C
+                         clock pessimism             -0.205     1.558    
+                         FDSE (Hold_FDSE_C_D)         0.046     1.604    threshold_low_reg[9]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.547    
+  -------------------------------------------------------------------
+                         slack                                 -0.057    
+
+Slack (VIOLATED) :        -0.055ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[1]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.136ns  (logic 0.038ns (27.941%)  route 0.098ns (72.059%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[1]/Q
+                         net (fo=3, unplaced)         0.098     1.549    p_0_in__0[1]
+                         FDRE                                         r  pwm_duty_reg[1]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  pwm_duty_reg[1]/C
+                         clock pessimism             -0.205     1.558    
+                         FDRE (Hold_FDRE_C_D)         0.046     1.604    pwm_duty_reg[1]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.549    
+  -------------------------------------------------------------------
+                         slack                                 -0.055    
+
+Slack (VIOLATED) :        -0.055ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[2]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[2]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.136ns  (logic 0.038ns (27.941%)  route 0.098ns (72.059%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[2]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[2]/Q
+                         net (fo=3, unplaced)         0.098     1.549    p_0_in__0[2]
+                         FDRE                                         r  pwm_duty_reg[2]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  pwm_duty_reg[2]/C
+                         clock pessimism             -0.205     1.558    
+                         FDRE (Hold_FDRE_C_D)         0.046     1.604    pwm_duty_reg[2]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.549    
+  -------------------------------------------------------------------
+                         slack                                 -0.055    
+
+Slack (VIOLATED) :        -0.055ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[3]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[3]/D
+                            (rising edge-triggered cell FDSE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.136ns  (logic 0.038ns (27.941%)  route 0.098ns (72.059%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[3]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[3]/Q
+                         net (fo=3, unplaced)         0.098     1.549    p_0_in__0[3]
+                         FDSE                                         r  pwm_duty_reg[3]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDSE                                         r  pwm_duty_reg[3]/C
+                         clock pessimism             -0.205     1.558    
+                         FDSE (Hold_FDSE_C_D)         0.046     1.604    pwm_duty_reg[3]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.549    
+  -------------------------------------------------------------------
+                         slack                                 -0.055    
+
+Slack (VIOLATED) :        -0.055ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[4]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[4]/D
+                            (rising edge-triggered cell FDSE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.136ns  (logic 0.038ns (27.941%)  route 0.098ns (72.059%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[4]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[4]/Q
+                         net (fo=3, unplaced)         0.098     1.549    p_0_in__0[4]
+                         FDSE                                         r  pwm_duty_reg[4]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDSE                                         r  pwm_duty_reg[4]/C
+                         clock pessimism             -0.205     1.558    
+                         FDSE (Hold_FDSE_C_D)         0.046     1.604    pwm_duty_reg[4]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.549    
+  -------------------------------------------------------------------
+                         slack                                 -0.055    
+
+Slack (VIOLATED) :        -0.055ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[5]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[5]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.136ns  (logic 0.038ns (27.941%)  route 0.098ns (72.059%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[5]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[5]/Q
+                         net (fo=3, unplaced)         0.098     1.549    p_0_in__0[5]
+                         FDRE                                         r  pwm_duty_reg[5]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  pwm_duty_reg[5]/C
+                         clock pessimism             -0.205     1.558    
+                         FDRE (Hold_FDRE_C_D)         0.046     1.604    pwm_duty_reg[5]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.549    
+  -------------------------------------------------------------------
+                         slack                                 -0.055    
+
+Slack (VIOLATED) :        -0.055ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[6]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[6]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.136ns  (logic 0.038ns (27.941%)  route 0.098ns (72.059%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[6]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[6]/Q
+                         net (fo=3, unplaced)         0.098     1.549    p_0_in__0[6]
+                         FDRE                                         r  pwm_duty_reg[6]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  pwm_duty_reg[6]/C
+                         clock pessimism             -0.205     1.558    
+                         FDRE (Hold_FDRE_C_D)         0.046     1.604    pwm_duty_reg[6]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.549    
+  -------------------------------------------------------------------
+                         slack                                 -0.055    
+
+Slack (VIOLATED) :        -0.055ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[7]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            pwm_duty_reg[7]/D
+                            (rising edge-triggered cell FDSE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.136ns  (logic 0.038ns (27.941%)  route 0.098ns (72.059%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[7]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[7]/Q
+                         net (fo=3, unplaced)         0.098     1.549    p_0_in__0[7]
+                         FDSE                                         r  pwm_duty_reg[7]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDSE                                         r  pwm_duty_reg[7]/C
+                         clock pessimism             -0.205     1.558    
+                         FDSE (Hold_FDSE_C_D)         0.046     1.604    pwm_duty_reg[7]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.549    
+  -------------------------------------------------------------------
+                         slack                                 -0.055    
+
+Slack (VIOLATED) :        -0.055ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[1]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[1]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.136ns  (logic 0.038ns (27.941%)  route 0.098ns (72.059%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[1]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[1]/Q
+                         net (fo=3, unplaced)         0.098     1.549    p_0_in__0[1]
+                         FDRE                                         r  threshold_high_reg[1]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  threshold_high_reg[1]/C
+                         clock pessimism             -0.205     1.558    
+                         FDRE (Hold_FDRE_C_D)         0.046     1.604    threshold_high_reg[1]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.549    
+  -------------------------------------------------------------------
+                         slack                                 -0.055    
+
+Slack (VIOLATED) :        -0.055ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[2]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[2]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.136ns  (logic 0.038ns (27.941%)  route 0.098ns (72.059%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[2]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[2]/Q
+                         net (fo=3, unplaced)         0.098     1.549    p_0_in__0[2]
+                         FDRE                                         r  threshold_high_reg[2]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  threshold_high_reg[2]/C
+                         clock pessimism             -0.205     1.558    
+                         FDRE (Hold_FDRE_C_D)         0.046     1.604    threshold_high_reg[2]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.549    
+  -------------------------------------------------------------------
+                         slack                                 -0.055    
+
+Slack (VIOLATED) :        -0.055ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[3]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[3]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.136ns  (logic 0.038ns (27.941%)  route 0.098ns (72.059%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[3]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[3]/Q
+                         net (fo=3, unplaced)         0.098     1.549    p_0_in__0[3]
+                         FDRE                                         r  threshold_high_reg[3]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  threshold_high_reg[3]/C
+                         clock pessimism             -0.205     1.558    
+                         FDRE (Hold_FDRE_C_D)         0.046     1.604    threshold_high_reg[3]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.549    
+  -------------------------------------------------------------------
+                         slack                                 -0.055    
+
+Slack (VIOLATED) :        -0.055ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[4]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[4]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.136ns  (logic 0.038ns (27.941%)  route 0.098ns (72.059%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[4]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[4]/Q
+                         net (fo=3, unplaced)         0.098     1.549    p_0_in__0[4]
+                         FDRE                                         r  threshold_high_reg[4]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  threshold_high_reg[4]/C
+                         clock pessimism             -0.205     1.558    
+                         FDRE (Hold_FDRE_C_D)         0.046     1.604    threshold_high_reg[4]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.549    
+  -------------------------------------------------------------------
+                         slack                                 -0.055    
+
+Slack (VIOLATED) :        -0.055ns  (arrival time - required time)
+  Source:                 wdata_reg_reg[5]/C
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            threshold_high_reg[5]/D
+                            (rising edge-triggered cell FDRE clocked by s_axi_aclk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Path Group:             s_axi_aclk
+  Path Type:              Hold (Min at Fast Process Corner)
+  Requirement:            0.000ns  (s_axi_aclk rise@0.000ns - s_axi_aclk rise@0.000ns)
+  Data Path Delay:        0.136ns  (logic 0.038ns (27.941%)  route 0.098ns (72.059%))
+  Logic Levels:           0  
+  Clock Path Skew:        0.145ns (DCD - SCD - CPR)
+    Destination Clock Delay (DCD):    1.763ns
+    Source Clock Delay      (SCD):    1.413ns
+    Clock Pessimism Removal (CPR):    0.205ns
+
+    Location             Delay type                Incr(ns)  Path(ns)    Netlist Resource(s)
+  -------------------------------------------------------------------    -------------------
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.216     0.216 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.216    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.216 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.066     0.282    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.017     0.299 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.114     1.413    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  wdata_reg_reg[5]/C
+  -------------------------------------------------------------------    -------------------
+                         FDRE (Prop_FDRE_C_Q)         0.038     1.451 r  wdata_reg_reg[5]/Q
+                         net (fo=3, unplaced)         0.098     1.549    p_0_in__0[5]
+                         FDRE                                         r  threshold_high_reg[5]/D
+  -------------------------------------------------------------------    -------------------
+
+                         (clock s_axi_aclk rise edge)
+                                                      0.000     0.000 r  
+                                                      0.000     0.000 r  s_axi_aclk (IN)
+                         net (fo=0)                   0.000     0.000    s_axi_aclk_IBUF_inst/I
+                         INBUF (Prop_INBUF_PAD_O)     0.402     0.402 r  s_axi_aclk_IBUF_inst/INBUF_INST/O
+                         net (fo=1, unplaced)         0.000     0.402    s_axi_aclk_IBUF_inst/OUT
+                         IBUFCTRL (Prop_IBUFCTRL_I_O)
+                                                      0.000     0.402 r  s_axi_aclk_IBUF_inst/IBUFCTRL_INST/O
+                         net (fo=1, unplaced)         0.083     0.485    s_axi_aclk_IBUF
+                         BUFGCE (Prop_BUFGCE_I_O)     0.019     0.504 r  s_axi_aclk_IBUF_BUFG_inst/O
+                         net (fo=69, unplaced)        1.259     1.763    s_axi_aclk_IBUF_BUFG
+                         FDRE                                         r  threshold_high_reg[5]/C
+                         clock pessimism             -0.205     1.558    
+                         FDRE (Hold_FDRE_C_D)         0.046     1.604    threshold_high_reg[5]
+  -------------------------------------------------------------------
+                         required time                         -1.604    
+                         arrival time                           1.549    
+  -------------------------------------------------------------------
+                         slack                                 -0.055    
+
+
+
+
