@@ -1,0 +1,40 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/soc_control_axi_irq_sim/xsim_script.tcl
+# xsim {soc_control_axi_irq_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+
+==============================================
+ AXI-LITE INTERRUPT INTEGRATION VERIFICATION
+==============================================
+
+PASS:                    IRQ_ENABLE reset 0x00000000
+PASS:                    IRQ_STATUS reset 0x00000000
+PASS:                   EVENT_COUNT reset 0x00000000
+PASS:               AXI enables interrupt 0x00000001
+PASS:               Event sets IRQ_STATUS 0x00000001
+PASS:                    irq_out asserted 0x00000001
+PASS:              EVENT_COUNT increments 0x00000001
+PASS:        AXI IRQ_CLEAR clears pending 0x00000000
+PASS:                     irq_out cleared 0x00000000
+PASS:                IRQ_CLEAR reads zero 0x00000000
+PASS:          Masked event still pending 0x00000001
+PASS:      Masked event keeps irq_out low 0x00000000
+PASS:                Second event counted 0x00000002
+PASS:       Re-enable exposes pending IRQ 0x00000001
+PASS:                     Final IRQ clear 0x00000000
+
+==============================================
+ ALL AXI + INTERRUPT TESTS PASSED
+==============================================
+
+$finish called at time : 670 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/04-interrupt-driven-soc-control/tb/tb_soc_control_axi_irq.sv" Line 330
+exit
+INFO: [Common 17-206] Exiting xsim at Fri Aug 28 10:49:22 2026...
