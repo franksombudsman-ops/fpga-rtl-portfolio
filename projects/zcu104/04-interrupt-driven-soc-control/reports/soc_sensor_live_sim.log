@@ -1,0 +1,41 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/soc_sensor_live_sim/xsim_script.tcl
+# xsim {soc_sensor_live_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+
+================================================
+ LIVE SENSOR -> AXI -> IRQ -> ACTUATOR TEST
+================================================
+
+PASS: ARM-style AXI configuration complete
+PASS:                    Low live SENSOR_RAW 0x00000400
+PASS:                 No IRQ below threshold 0x00000000
+
+ADC stimulus -> ABOVE HIGH threshold
+PASS:        High crossing raises IRQ_STATUS 0x00000001
+PASS:              High crossing event count 0x00000001
+PASS:         RUN status after high crossing 0x0000000b
+PASS: AXI PWM command applied to actuator 0x55
+PASS: actuator PWM is switching
+PASS: software cleared first interrupt
+
+ADC stimulus -> BELOW LOW threshold
+PASS:               Low crossing event count 0x00000002
+PASS:          OFF status after low crossing 0x00000000
+PASS: physical actuator output disabled
+
+================================================
+ ALL LIVE SENSOR SOC TESTS PASSED
+================================================
+
+$finish called at time : 181980 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/04-interrupt-driven-soc-control/tb/tb_soc_sensor_control_top.sv" Line 310
+exit
+INFO: [Common 17-206] Exiting xsim at Fri Aug 28 10:57:18 2026...
