@@ -1,0 +1,25 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/irq_controller_sim/xsim_script.tcl
+# xsim {irq_controller_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+PASS: reset state
+PASS: masked event becomes pending
+PASS: enabling exposes pending IRQ
+PASS: software clear
+PASS: enabled event asserts IRQ
+PASS: simultaneous clear and event
+PASS: final clear
+
+ALL INTERRUPT CONTROLLER TESTS PASSED
+
+$finish called at time : 100 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/04-interrupt-driven-soc-control/tb/tb_irq_controller.sv" Line 121
+exit
+INFO: [Common 17-206] Exiting xsim at Fri Aug 28 10:22:11 2026...
