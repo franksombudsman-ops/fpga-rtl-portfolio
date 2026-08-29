@@ -1,8 +1,19 @@
 # Project 04 Register Map
 
-Base address: assigned later by Vivado Address Editor
-Bus: AXI4-Lite
-Data width: 32-bit
+- **Author:** Frank Ouma
+- **Engineering:** FPGA / SoC / Digital Hardware Engineering
+- **Platform:** AMD ZCU104 / Zynq UltraScale+ MPSoC
+- **Email:** frankotieno254@gmail.com
+- **Contact:** +254725582132
+- **Copyright:** (c) 2026 Frank Ouma. All rights reserved.
+
+---
+
+- Base address: `0xA4000000`
+- High address: `0xA400FFFF`
+- Range: `64 KiB`
+- Bus: AXI4-Lite
+- Data width: 32-bit
 
 | Offset | Register | Access | Purpose |
 |--------|----------|--------|---------|

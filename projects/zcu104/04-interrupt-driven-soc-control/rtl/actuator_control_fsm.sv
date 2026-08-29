@@ -1,3 +1,13 @@
+// ============================================================================
+// Project: Project 04 - Interrupt-Driven Sensor Control SoC
+// Platform: AMD ZCU104 / Zynq UltraScale+ MPSoC
+// Author: Frank Ouma
+// Engineering: FPGA / SoC / Digital Hardware Engineering
+// Email: frankotieno254@gmail.com
+// Contact: +254725582132
+// Copyright (c) 2026 Frank Ouma. All rights reserved.
+// ============================================================================
+
 `timescale 1ns/1ps
 
 module actuator_control_fsm #(

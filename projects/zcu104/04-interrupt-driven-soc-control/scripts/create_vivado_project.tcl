@@ -1,3 +1,13 @@
+# ============================================================================
+# Project: Project 04 - Interrupt-Driven Sensor Control SoC
+# Platform: AMD ZCU104 / Zynq UltraScale+ MPSoC
+# Author: Frank Ouma
+# Engineering: FPGA / SoC / Digital Hardware Engineering
+# Email: frankotieno254@gmail.com
+# Contact: +254725582132
+# Copyright (c) 2026 Frank Ouma. All rights reserved.
+# ============================================================================
+
 set script_dir [file dirname [file normalize [info script]]]
 set proj_root  [file normalize [file join $script_dir ..]]
 

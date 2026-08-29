@@ -1,3 +1,19 @@
+# ============================================================================
+# Project: Project 04 - Interrupt-Driven Sensor Control SoC
+# Block-design architecture and integration: Frank Ouma
+# Engineering: FPGA / SoC / Digital Hardware Engineering
+# Email: frankotieno254@gmail.com
+# Contact: +254725582132
+# Copyright (c) 2026 Frank Ouma. All rights reserved.
+#
+# Provenance:
+# This Tcl representation was exported from the verified Project 04 block
+# design using AMD Vivado 2023.2 write_bd_tcl. The PS/PL architecture,
+# AXI integration, interrupt routing and project integration represented here
+# are part of this Project 04 engineering work. The generated Tcl structure
+# below remains AMD Vivado-generated output.
+# ============================================================================
+
 
 ################################################################
 # This is a generated script based on design: system
