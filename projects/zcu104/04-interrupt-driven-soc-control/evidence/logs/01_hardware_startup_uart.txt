@@ -1,0 +1,21 @@
+
+============================================
+ ZCU104 Interrupt Driven Sensor Control SoC
+============================================
+Peripheral base : 0xA4000000
+Version         : 0x00010000
+PL IRQ ID       : 121
+GIC initialized : PASS
+PL IRQ enabled  : PASS
+Engine enabled  : PASS
+
+Waiting for sensor threshold events...
+
+--- PL INTERRUPT ---
+ISR count       : 1
+IRQ status      : 0x00000001
+Event count     : 1
+Sensor raw      : 0xDE4
+Sensor filtered : 0xE6B
+Control status  : 0x00000007
+Control request : ACTIVE

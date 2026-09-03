@@ -1,0 +1,54 @@
+
+--- PL INTERRUPT ---
+ISR count       : 2
+IRQ status      : 0x00000001
+Event count     : 2
+Sensor raw      : 0x6FF
+Sensor filtered : 0x700
+Control status  : 0x00000000
+Control request : INACTIVE
+
+--- PL INTERRUPT ---
+ISR count       : 3
+IRQ status      : 0x00000001
+Event count     : 3
+Sensor raw      : 0x901
+Sensor filtered : 0x900
+Control status  : 0x00000007
+Control request : ACTIVE
+
+--- PL INTERRUPT ---
+ISR count       : 4
+IRQ status      : 0x00000001
+Event count     : 4
+Sensor raw      : 0x6FF
+Sensor filtered : 0x700
+Control status  : 0x00000000
+Control request : INACTIVE
+
+--- PL INTERRUPT ---
+ISR count       : 5
+IRQ status      : 0x00000001
+Event count     : 5
+Sensor raw      : 0x901
+Sensor filtered : 0x900
+Control status  : 0x00000007
+Control request : ACTIVE
+
+--- PL INTERRUPT ---
+ISR count       : 6
+IRQ status      : 0x00000001
+Event count     : 6
+Sensor raw      : 0x6FF
+Sensor filtered : 0x700
+Control status  : 0x00000000
+Control request : INACTIVE
+
+--- PL INTERRUPT ---
+ISR count       : 7
+IRQ status      : 0x00000001
+Event count     : 7
+Sensor raw      : 0x901
+Sensor filtered : 0x900
+Control status  : 0x00000007
+Control request : ACTIVE
