@@ -194,26 +194,90 @@ board-validation campaign proceeds.
 
 ## Hardware Validation Status
 
-The FPGA/SoC design, implementation, timing, interrupt mapping and standalone
-software build have been verified prior to board-level execution.
+Project 04 has been physically validated on the AMD ZCU104.
 
-Physical ZCU104 validation remains the next engineering milestone.
+The validated hardware execution chain was:
 
-The following results will only be recorded after direct observation on the
-target hardware:
+    Pmod AD1
+        |
+        v
+    SPI acquisition
+        |
+        v
+    moving-average filtering
+        |
+        v
+    programmable hysteresis
+        |
+        +---------------------> control FSM -> PWM -> J87 output
+        |
+        v
+    sticky interrupt pending
+        |
+        v
+    pl_ps_irq0[0]
+        |
+        v
+    Zynq UltraScale+ GIC
+        |
+        v
+    Interrupt ID 121
+        |
+        v
+    Cortex-A53 ISR
 
-- UART application startup;
-- AXI peripheral access on silicon;
-- live Pmod AD1 acquisition;
-- hysteresis threshold transitions;
-- PL interrupt assertion;
-- Cortex-A53 ISR execution;
-- interrupt and event-counter correlation;
-- write-one-to-clear interrupt release;
-- actuator PWM output;
-- physical waveform and hardware captures.
+### Hardware Startup Validation
 
-No unobserved board-level result is represented as completed.
+The standalone Cortex-A53 application successfully executed on the physical
+ZCU104 and reported:
+
+- AXI peripheral base: `0xA4000000`
+- peripheral version: `0x00010000`
+- PL interrupt ID: `121`
+- GIC initialization: PASS
+- PL interrupt enable: PASS
+- control engine enable: PASS
+
+The physical PWM output on J87 was also observed driving the external LED
+test load.
+
+### Live Interrupt and Hysteresis Validation
+
+Repeated physical potentiometer sweeps produced deterministic hysteresis
+transitions and Cortex-A53 interrupts.
+
+Observed transition sequence:
+
+| ISR Count | Event Count | Filtered ADC | Control Request |
+|---:|---:|---:|---|
+| 2 | 2 | `0x700` | INACTIVE |
+| 3 | 3 | `0x900` | ACTIVE |
+| 4 | 4 | `0x700` | INACTIVE |
+| 5 | 5 | `0x900` | ACTIVE |
+| 6 | 6 | `0x700` | INACTIVE |
+| 7 | 7 | `0x900` | ACTIVE |
+
+The ISR count remained equal to the hardware event count throughout the
+recorded sequence.
+
+Repeated threshold crossings generated one interrupt event per control-state
+transition and the system successfully re-armed for subsequent events,
+demonstrating the intended sticky-interrupt and software acknowledgement
+behavior in real hardware.
+
+### Preserved Hardware Evidence
+
+The repository includes:
+
+- hardware startup UART log;
+- repeated interrupt/hysteresis UART log;
+- recorded hardware-validation UART session;
+- terminal screenshot showing live ACTIVE/INACTIVE transitions;
+- screen recording of the Project 04 hardware-validation session.
+
+These artifacts are preserved under `evidence/`.
+
+No simulated result is represented as physical hardware evidence.
 
 ## Repository Structure
 
