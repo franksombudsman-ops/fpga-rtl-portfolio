@@ -41,3 +41,17 @@ set ad1_shift_regs [get_cells -hier -quiet -filter {NAME =~ *pmod_ad1_acquisitio
 
 set_multicycle_path -setup 5 -from [get_clocks ad1_sclk_clk] -to $ad1_shift_regs
 set_multicycle_path -hold 4 -end -from [get_clocks ad1_sclk_clk] -to $ad1_shift_regs
+
+# ------------------------------------------------------------
+# ILA debug-only timing exception
+#
+# Raw AD1 serial inputs are also observed directly by ILA.
+# These debug observation paths are not functional ADC capture
+# paths. Functional SDATA -> shift-register timing remains fully
+# constrained above.
+# ------------------------------------------------------------
+
+set ila_ad1_cells [get_cells -hier -quiet -filter {NAME =~ *ila_ad1_0*}]
+
+set_false_path  -from [get_ports {ad1_sdata_a ad1_sdata_b}]  -to $ila_ad1_cells
+
