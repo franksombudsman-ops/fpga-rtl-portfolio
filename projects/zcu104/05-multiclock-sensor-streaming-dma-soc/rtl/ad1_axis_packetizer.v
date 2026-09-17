@@ -9,6 +9,10 @@
  *
  * Project 05 - Multi-Clock Sensor Streaming & DMA SoC
  * Pmod AD1 to AXI4-Stream packetizer.
+ *
+ * A new ADC sample is accepted only while the packetizer is idle.
+ * If a sample arrives while an existing packet is still active,
+ * the sample cannot be accepted and is recorded as a dropped sample.
  */
 
 module ad1_axis_packetizer (
@@ -23,7 +27,10 @@ module ad1_axis_packetizer (
     output wire [3:0]  m_axis_tkeep,
     output wire        m_axis_tvalid,
     input  wire        m_axis_tready,
-    output wire        m_axis_tlast
+    output wire        m_axis_tlast,
+
+    output reg  [31:0] sample_drop_count,
+    output reg         overflow_sticky
 );
 
     reg [11:0] sample_a_latched;
@@ -39,6 +46,7 @@ module ad1_axis_packetizer (
 
     always @(*) begin
         case (word_index)
+
             2'd0:
                 m_axis_tdata = 32'hAD10_0001;
 
@@ -59,38 +67,76 @@ module ad1_axis_packetizer (
 
             default:
                 m_axis_tdata = 32'h0000_0000;
+
         endcase
     end
 
     always @(posedge aclk) begin
+
         if (!aresetn) begin
+
             sample_a_latched <= 12'd0;
             sample_b_latched <= 12'd0;
+
             sequence_number  <= 32'd0;
             word_index       <= 2'd0;
             active           <= 1'b0;
-        end else begin
 
+            sample_drop_count <= 32'd0;
+            overflow_sticky   <= 1'b0;
+
+        end
+        else begin
+
+            /*
+             * A sample arriving while active cannot be accepted.
+             * Count the loss and permanently record that an
+             * overflow/drop condition has occurred.
+             */
+            if (sample_valid && active) begin
+                sample_drop_count <= sample_drop_count + 32'd1;
+                overflow_sticky   <= 1'b1;
+            end
+
+            /*
+             * Idle packetizer:
+             * capture the next ADC sample and start a packet.
+             */
             if (!active) begin
+
                 if (sample_valid) begin
+
                     sample_a_latched <= sample_a;
                     sample_b_latched <= sample_b;
 
                     word_index <= 2'd0;
                     active     <= 1'b1;
+
                 end
+
             end
+
+            /*
+             * Active packet:
+             * advance only when AXI performs a real transfer.
+             */
             else if (m_axis_tvalid && m_axis_tready) begin
 
                 if (word_index == 2'd3) begin
-                    sequence_number <= sequence_number + 1'b1;
+
+                    sequence_number <= sequence_number + 32'd1;
                     word_index      <= 2'd0;
                     active          <= 1'b0;
+
                 end
                 else begin
-                    word_index <= word_index + 1'b1;
+
+                    word_index <= word_index + 2'd1;
+
                 end
+
             end
+
         end
     end
 
