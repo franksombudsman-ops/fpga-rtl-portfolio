@@ -653,30 +653,6 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
      return 1
    }
   
-  # Create instance: xlconstant_arb_s1_zero1, and set properties
-  set xlconstant_arb_s1_zero1 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_arb_s1_zero1 ]
-  set_property -dict [list \
-    CONFIG.CONST_VAL {0} \
-    CONFIG.CONST_WIDTH {1} \
-  ] $xlconstant_arb_s1_zero1
-
-
-  # Create instance: xlconstant_arb_s1_zero4, and set properties
-  set xlconstant_arb_s1_zero4 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_arb_s1_zero4 ]
-  set_property -dict [list \
-    CONFIG.CONST_VAL {0} \
-    CONFIG.CONST_WIDTH {4} \
-  ] $xlconstant_arb_s1_zero4
-
-
-  # Create instance: xlconstant_arb_s1_zero32, and set properties
-  set xlconstant_arb_s1_zero32 [ create_bd_cell -type ip -vlnv xilinx.com:ip:xlconstant:1.1 xlconstant_arb_s1_zero32 ]
-  set_property -dict [list \
-    CONFIG.CONST_VAL {0} \
-    CONFIG.CONST_WIDTH {32} \
-  ] $xlconstant_arb_s1_zero32
-
-
   # Create interface connections
   connect_bd_intf_net -intf_net ad1_axis_packetizer_0_m_axis [get_bd_intf_pins ad1_axis_packetizer_0/m_axis] [get_bd_intf_pins axis_packet_arbiter_2to1_0/s0_axis]
   connect_bd_intf_net -intf_net axi_dma_0_M_AXI_S2MM [get_bd_intf_pins axi_dma_0/M_AXI_S2MM] [get_bd_intf_pins axi_smc/S00_AXI]
@@ -684,6 +660,7 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_intf_net -intf_net axis_data_fifo_0_M_AXIS [get_bd_intf_pins axis_data_fifo_0/M_AXIS] [get_bd_intf_pins axi_dma_0/S_AXIS_S2MM]
   connect_bd_intf_net -intf_net axis_packet_arbiter_2to1_0_m_axis [get_bd_intf_pins axis_packet_arbiter_2to1_0/m_axis] [get_bd_intf_pins axis_data_fifo_0/S_AXIS]
   connect_bd_intf_net -intf_net ps8_0_axi_periph_M00_AXI [get_bd_intf_pins ps8_0_axi_periph/M00_AXI] [get_bd_intf_pins axi_dma_0/S_AXI_LITE]
+  connect_bd_intf_net -intf_net telemetry_test_source_0_m_axis [get_bd_intf_pins telemetry_test_source_0/m_axis] [get_bd_intf_pins axis_packet_arbiter_2to1_0/s1_axis]
   connect_bd_intf_net -intf_net zynq_ultra_ps_e_0_M_AXI_HPM0_FPD [get_bd_intf_pins zynq_ultra_ps_e_0/M_AXI_HPM0_FPD] [get_bd_intf_pins ps8_0_axi_periph/S00_AXI]
 
   # Create port connections
@@ -706,9 +683,6 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_net -net xlconstant_0_dout [get_bd_pins xlconstant_0/dout] [get_bd_pins proc_sys_reset_0/dcm_locked] [get_bd_pins proc_sys_reset_1/dcm_locked]
   connect_bd_net -net xlconstant_1_dout [get_bd_pins xlconstant_1/dout] [get_bd_pins telemetry_test_source_0/enable]
   connect_bd_net -net xlconstant_ad1_enable_dout [get_bd_pins xlconstant_ad1_enable/dout] [get_bd_pins pmod_ad1_acquisition_0/enable]
-  connect_bd_net -net xlconstant_arb_s1_zero1_dout [get_bd_pins xlconstant_arb_s1_zero1/dout] [get_bd_pins axis_packet_arbiter_2to1_0/s1_axis_tvalid] [get_bd_pins axis_packet_arbiter_2to1_0/s1_axis_tlast]
-  connect_bd_net -net xlconstant_arb_s1_zero32_dout [get_bd_pins xlconstant_arb_s1_zero32/dout] [get_bd_pins axis_packet_arbiter_2to1_0/s1_axis_tdata]
-  connect_bd_net -net xlconstant_arb_s1_zero4_dout [get_bd_pins xlconstant_arb_s1_zero4/dout] [get_bd_pins axis_packet_arbiter_2to1_0/s1_axis_tkeep]
   connect_bd_net -net zynq_ultra_ps_e_0_pl_clk0 [get_bd_pins zynq_ultra_ps_e_0/pl_clk0] [get_bd_pins proc_sys_reset_0/slowest_sync_clk] [get_bd_pins zynq_ultra_ps_e_0/saxihp0_fpd_aclk] [get_bd_pins zynq_ultra_ps_e_0/maxihpm0_fpd_aclk] [get_bd_pins axi_dma_0/s_axi_lite_aclk] [get_bd_pins axi_dma_0/m_axi_s2mm_aclk] [get_bd_pins ps8_0_axi_periph/ACLK] [get_bd_pins ps8_0_axi_periph/S00_ACLK] [get_bd_pins ps8_0_axi_periph/M00_ACLK] [get_bd_pins axi_smc/aclk] [get_bd_pins axis_data_fifo_0/m_axis_aclk]
   connect_bd_net -net zynq_ultra_ps_e_0_pl_clk1 [get_bd_pins zynq_ultra_ps_e_0/pl_clk1] [get_bd_pins telemetry_test_source_0/aclk] [get_bd_pins axis_data_fifo_0/s_axis_aclk] [get_bd_pins proc_sys_reset_1/slowest_sync_clk] [get_bd_pins pmod_ad1_acquisition_0/clk] [get_bd_pins ila_ad1_0/clk] [get_bd_pins ad1_axis_packetizer_0/aclk] [get_bd_pins axis_packet_arbiter_2to1_0/aclk]
   connect_bd_net -net zynq_ultra_ps_e_0_pl_resetn0 [get_bd_pins zynq_ultra_ps_e_0/pl_resetn0] [get_bd_pins proc_sys_reset_0/ext_reset_in] [get_bd_pins proc_sys_reset_1/ext_reset_in]
