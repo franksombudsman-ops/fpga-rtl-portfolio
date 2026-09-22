@@ -46,7 +46,7 @@ if { [string first $scripts_vivado_version $current_vivado_version] == -1 } {
 
 # The design that will be created by this Tcl script contains the following 
 # module references:
-# telemetry_test_source, pmod_ad1_acquisition_engine, ad1_axis_packetizer, axis_packet_arbiter_2to1
+# telemetry_test_source, pmod_ad1_acquisition_engine, ad1_axis_packetizer, axis_packet_arbiter_2to1, mpu6050_i2c_master
 
 # Please add the sources of those modules before sourcing this Tcl script.
 
@@ -173,6 +173,7 @@ telemetry_test_source\
 pmod_ad1_acquisition_engine\
 ad1_axis_packetizer\
 axis_packet_arbiter_2to1\
+mpu6050_i2c_master\
 "
 
    set list_mods_missing ""
@@ -241,6 +242,8 @@ proc create_root_design { parentCell } {
   set ad1_sclk [ create_bd_port -dir O ad1_sclk ]
   set ad1_sdata_a [ create_bd_port -dir I ad1_sdata_a ]
   set ad1_sdata_b [ create_bd_port -dir I ad1_sdata_b ]
+  set mpu6050_scl [ create_bd_port -dir IO mpu6050_scl ]
+  set mpu6050_sda [ create_bd_port -dir IO mpu6050_sda ]
 
   # Create instance: zynq_ultra_ps_e_0, and set properties
   set zynq_ultra_ps_e_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:zynq_ultra_ps_e:3.5 zynq_ultra_ps_e_0 ]
@@ -653,6 +656,35 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
      return 1
    }
   
+  # Create instance: ila_mpu6050_0, and set properties
+  set ila_mpu6050_0 [ create_bd_cell -type ip -vlnv xilinx.com:ip:ila:6.2 ila_mpu6050_0 ]
+  set_property -dict [list \
+    CONFIG.C_DATA_DEPTH {2048} \
+    CONFIG.C_ENABLE_ILA_AXI_MON {false} \
+    CONFIG.C_MONITOR_TYPE {Native} \
+    CONFIG.C_NUM_OF_PROBES {8} \
+    CONFIG.C_PROBE0_WIDTH {8} \
+    CONFIG.C_PROBE1_WIDTH {1} \
+    CONFIG.C_PROBE2_WIDTH {1} \
+    CONFIG.C_PROBE3_WIDTH {1} \
+    CONFIG.C_PROBE4_WIDTH {1} \
+    CONFIG.C_PROBE5_WIDTH {1} \
+    CONFIG.C_PROBE6_WIDTH {1} \
+    CONFIG.C_PROBE7_WIDTH {1} \
+  ] $ila_mpu6050_0
+
+
+  # Create instance: mpu6050_i2c_master_0, and set properties
+  set block_name mpu6050_i2c_master
+  set block_cell_name mpu6050_i2c_master_0
+  if { [catch {set mpu6050_i2c_master_0 [create_bd_cell -type module -reference $block_name $block_cell_name] } errmsg] } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2095 -severity "ERROR" "Unable to add referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   } elseif { $mpu6050_i2c_master_0 eq "" } {
+     catch {common::send_gid_msg -ssname BD::TCL -id 2096 -severity "ERROR" "Unable to referenced block <$block_name>. Please add the files for ${block_name}'s definition into the project."}
+     return 1
+   }
+  
   # Create interface connections
   connect_bd_intf_net -intf_net ad1_axis_packetizer_0_m_axis [get_bd_intf_pins ad1_axis_packetizer_0/m_axis] [get_bd_intf_pins axis_packet_arbiter_2to1_0/s0_axis]
   connect_bd_intf_net -intf_net axi_dma_0_M_AXI_S2MM [get_bd_intf_pins axi_dma_0/M_AXI_S2MM] [get_bd_intf_pins axi_smc/S00_AXI]
@@ -664,11 +696,21 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_intf_net -intf_net zynq_ultra_ps_e_0_M_AXI_HPM0_FPD [get_bd_intf_pins zynq_ultra_ps_e_0/M_AXI_HPM0_FPD] [get_bd_intf_pins ps8_0_axi_periph/S00_AXI]
 
   # Create port connections
+  connect_bd_net -net Net [get_bd_ports mpu6050_scl] [get_bd_pins mpu6050_i2c_master_0/mpu6050_scl]
+  connect_bd_net -net Net1 [get_bd_ports mpu6050_sda] [get_bd_pins mpu6050_i2c_master_0/mpu6050_sda]
   connect_bd_net -net ad1_axis_packetizer_0_overflow_sticky [get_bd_pins ad1_axis_packetizer_0/overflow_sticky] [get_bd_pins ila_ad1_0/probe11]
   connect_bd_net -net ad1_axis_packetizer_0_sample_drop_count [get_bd_pins ad1_axis_packetizer_0/sample_drop_count] [get_bd_pins ila_ad1_0/probe10]
   connect_bd_net -net ad1_sdata_a_1 [get_bd_ports ad1_sdata_a] [get_bd_pins pmod_ad1_acquisition_0/sdata_a] [get_bd_pins ila_ad1_0/probe8]
   connect_bd_net -net ad1_sdata_b_1 [get_bd_ports ad1_sdata_b] [get_bd_pins pmod_ad1_acquisition_0/sdata_b] [get_bd_pins ila_ad1_0/probe9]
   connect_bd_net -net axi_dma_0_s2mm_introut [get_bd_pins axi_dma_0/s2mm_introut] [get_bd_pins zynq_ultra_ps_e_0/pl_ps_irq0]
+  connect_bd_net -net mpu6050_i2c_master_0_ack_error1 [get_bd_pins mpu6050_i2c_master_0/ack_error] [get_bd_pins ila_mpu6050_0/probe3]
+  connect_bd_net -net mpu6050_i2c_master_0_busy1 [get_bd_pins mpu6050_i2c_master_0/busy] [get_bd_pins ila_mpu6050_0/probe4]
+  connect_bd_net -net mpu6050_i2c_master_0_scl_sample [get_bd_pins mpu6050_i2c_master_0/scl_sample] [get_bd_pins ila_mpu6050_0/probe6]
+  connect_bd_net -net mpu6050_i2c_master_0_sda_sample [get_bd_pins mpu6050_i2c_master_0/sda_sample] [get_bd_pins ila_mpu6050_0/probe7]
+  connect_bd_net -net mpu6050_i2c_master_0_transaction_done1 [get_bd_pins mpu6050_i2c_master_0/transaction_done] [get_bd_pins ila_mpu6050_0/probe5]
+  connect_bd_net -net mpu6050_i2c_master_0_whoami_data1 [get_bd_pins mpu6050_i2c_master_0/whoami_data] [get_bd_pins ila_mpu6050_0/probe0]
+  connect_bd_net -net mpu6050_i2c_master_0_whoami_match1 [get_bd_pins mpu6050_i2c_master_0/whoami_match] [get_bd_pins ila_mpu6050_0/probe2]
+  connect_bd_net -net mpu6050_i2c_master_0_whoami_valid1 [get_bd_pins mpu6050_i2c_master_0/whoami_valid] [get_bd_pins ila_mpu6050_0/probe1]
   connect_bd_net -net pmod_ad1_acquisition_0_busy [get_bd_pins pmod_ad1_acquisition_0/busy] [get_bd_pins ila_ad1_0/probe4]
   connect_bd_net -net pmod_ad1_acquisition_0_cs_n [get_bd_pins pmod_ad1_acquisition_0/cs_n] [get_bd_ports ad1_cs_n] [get_bd_pins ila_ad1_0/probe6]
   connect_bd_net -net pmod_ad1_acquisition_0_overrun [get_bd_pins pmod_ad1_acquisition_0/overrun] [get_bd_pins ila_ad1_0/probe5]
@@ -678,13 +720,13 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_net -net pmod_ad1_acquisition_0_sample_valid [get_bd_pins pmod_ad1_acquisition_0/sample_valid] [get_bd_pins ila_ad1_0/probe2] [get_bd_pins ad1_axis_packetizer_0/sample_valid]
   connect_bd_net -net pmod_ad1_acquisition_0_sclk [get_bd_pins pmod_ad1_acquisition_0/sclk] [get_bd_ports ad1_sclk] [get_bd_pins ila_ad1_0/probe7]
   connect_bd_net -net proc_sys_reset_0_peripheral_aresetn [get_bd_pins proc_sys_reset_0/peripheral_aresetn] [get_bd_pins axi_dma_0/axi_resetn] [get_bd_pins ps8_0_axi_periph/S00_ARESETN] [get_bd_pins ps8_0_axi_periph/M00_ARESETN] [get_bd_pins ps8_0_axi_periph/ARESETN] [get_bd_pins axi_smc/aresetn]
-  connect_bd_net -net proc_sys_reset_1_peripheral_aresetn [get_bd_pins proc_sys_reset_1/peripheral_aresetn] [get_bd_pins axis_data_fifo_0/s_axis_aresetn] [get_bd_pins telemetry_test_source_0/aresetn] [get_bd_pins ad1_axis_packetizer_0/aresetn] [get_bd_pins axis_packet_arbiter_2to1_0/aresetn]
+  connect_bd_net -net proc_sys_reset_1_peripheral_aresetn [get_bd_pins proc_sys_reset_1/peripheral_aresetn] [get_bd_pins axis_data_fifo_0/s_axis_aresetn] [get_bd_pins telemetry_test_source_0/aresetn] [get_bd_pins ad1_axis_packetizer_0/aresetn] [get_bd_pins axis_packet_arbiter_2to1_0/aresetn] [get_bd_pins mpu6050_i2c_master_0/aresetn]
   connect_bd_net -net proc_sys_reset_1_peripheral_reset [get_bd_pins proc_sys_reset_1/peripheral_reset] [get_bd_pins pmod_ad1_acquisition_0/rst]
   connect_bd_net -net xlconstant_0_dout [get_bd_pins xlconstant_0/dout] [get_bd_pins proc_sys_reset_0/dcm_locked] [get_bd_pins proc_sys_reset_1/dcm_locked]
   connect_bd_net -net xlconstant_1_dout [get_bd_pins xlconstant_1/dout] [get_bd_pins telemetry_test_source_0/enable]
   connect_bd_net -net xlconstant_ad1_enable_dout [get_bd_pins xlconstant_ad1_enable/dout] [get_bd_pins pmod_ad1_acquisition_0/enable]
   connect_bd_net -net zynq_ultra_ps_e_0_pl_clk0 [get_bd_pins zynq_ultra_ps_e_0/pl_clk0] [get_bd_pins proc_sys_reset_0/slowest_sync_clk] [get_bd_pins zynq_ultra_ps_e_0/saxihp0_fpd_aclk] [get_bd_pins zynq_ultra_ps_e_0/maxihpm0_fpd_aclk] [get_bd_pins axi_dma_0/s_axi_lite_aclk] [get_bd_pins axi_dma_0/m_axi_s2mm_aclk] [get_bd_pins ps8_0_axi_periph/ACLK] [get_bd_pins ps8_0_axi_periph/S00_ACLK] [get_bd_pins ps8_0_axi_periph/M00_ACLK] [get_bd_pins axi_smc/aclk] [get_bd_pins axis_data_fifo_0/m_axis_aclk]
-  connect_bd_net -net zynq_ultra_ps_e_0_pl_clk1 [get_bd_pins zynq_ultra_ps_e_0/pl_clk1] [get_bd_pins telemetry_test_source_0/aclk] [get_bd_pins axis_data_fifo_0/s_axis_aclk] [get_bd_pins proc_sys_reset_1/slowest_sync_clk] [get_bd_pins pmod_ad1_acquisition_0/clk] [get_bd_pins ila_ad1_0/clk] [get_bd_pins ad1_axis_packetizer_0/aclk] [get_bd_pins axis_packet_arbiter_2to1_0/aclk]
+  connect_bd_net -net zynq_ultra_ps_e_0_pl_clk1 [get_bd_pins zynq_ultra_ps_e_0/pl_clk1] [get_bd_pins telemetry_test_source_0/aclk] [get_bd_pins axis_data_fifo_0/s_axis_aclk] [get_bd_pins proc_sys_reset_1/slowest_sync_clk] [get_bd_pins pmod_ad1_acquisition_0/clk] [get_bd_pins ila_ad1_0/clk] [get_bd_pins ad1_axis_packetizer_0/aclk] [get_bd_pins axis_packet_arbiter_2to1_0/aclk] [get_bd_pins ila_mpu6050_0/clk] [get_bd_pins mpu6050_i2c_master_0/clk]
   connect_bd_net -net zynq_ultra_ps_e_0_pl_resetn0 [get_bd_pins zynq_ultra_ps_e_0/pl_resetn0] [get_bd_pins proc_sys_reset_0/ext_reset_in] [get_bd_pins proc_sys_reset_1/ext_reset_in]
 
   # Create address segments

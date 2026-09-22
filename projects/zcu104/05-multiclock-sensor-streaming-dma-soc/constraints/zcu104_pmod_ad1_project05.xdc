@@ -55,3 +55,15 @@ set ila_ad1_cells [get_cells -hier -quiet -filter {NAME =~ *ila_ad1_0*}]
 
 set_false_path  -from [get_ports {ad1_sdata_a ad1_sdata_b}]  -to $ila_ad1_cells
 
+
+# ------------------------------------------------------------
+# MPU6050 / J87 I2C interface
+# ------------------------------------------------------------
+
+# J87.1
+set_property PACKAGE_PIN J9 [get_ports mpu6050_scl]
+set_property IOSTANDARD LVCMOS33 [get_ports mpu6050_scl]
+
+# J87.3
+set_property PACKAGE_PIN K9 [get_ports mpu6050_sda]
+set_property IOSTANDARD LVCMOS33 [get_ports mpu6050_sda]
