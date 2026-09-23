@@ -42,6 +42,10 @@ module mpu6050_i2c_master #(
     output reg        busy,
     output reg        transaction_done,
 
+    output reg  [7:0] pwr_mgmt_data,
+    output reg        pwr_mgmt_valid,
+    output wire       wake_verified,
+
     output wire       scl_sample,
     output wire       sda_sample
 );
@@ -61,7 +65,19 @@ module mpu6050_i2c_master #(
      */
     localparam [7:0] MPU_ADDR_WRITE = 8'hD0;
     localparam [7:0] MPU_ADDR_READ  = 8'hD1;
+
     localparam [7:0] WHO_AM_I_REG   = 8'h75;
+    localparam [7:0] PWR_MGMT_1_REG = 8'h6B;
+    localparam [7:0] WAKE_DATA       = 8'h00;
+
+    /* Allow 10 ms after the wake write before readback. */
+    localparam integer INIT_DELAY_CYCLES =
+        CLK_FREQ_HZ / 100;
+
+    localparam [1:0]
+        OP_WAKE_WRITE = 2'd0,
+        OP_PWR_READ   = 2'd1,
+        OP_WHOAMI     = 2'd2;
 
     localparam [4:0]
         ST_IDLE          = 5'd0,
@@ -90,7 +106,8 @@ module mpu6050_i2c_master #(
     localparam [1:0]
         TX_ADDR_WRITE = 2'd0,
         TX_REGISTER   = 2'd1,
-        TX_ADDR_READ  = 2'd2;
+        TX_ADDR_READ  = 2'd2,
+        TX_WRITE_DATA = 2'd3;
 
     reg [4:0] state;
 
@@ -105,6 +122,7 @@ module mpu6050_i2c_master #(
 
     reg [2:0] bit_index;
     reg [1:0] tx_stage;
+    reg [1:0] operation;
 
     reg ack_sample;
     reg abort_transaction;
@@ -143,6 +161,15 @@ module mpu6050_i2c_master #(
     assign whoami_match =
         whoami_valid && (whoami_data == 8'h68);
 
+    assign wake_verified =
+        pwr_mgmt_valid && (pwr_mgmt_data == 8'h00);
+
+    wire [31:0] idle_wait_cycles;
+
+    assign idle_wait_cycles =
+        (operation == OP_PWR_READ) ?
+        INIT_DELAY_CYCLES : POLL_CYCLES;
+
     always @(posedge clk) begin
 
         if (!aresetn) begin
@@ -160,12 +187,16 @@ module mpu6050_i2c_master #(
 
             bit_index           <= 3'd7;
             tx_stage            <= TX_ADDR_WRITE;
+            operation           <= OP_WAKE_WRITE;
 
             ack_sample          <= 1'b0;
             abort_transaction   <= 1'b0;
 
             whoami_data         <= 8'd0;
             whoami_valid        <= 1'b0;
+
+            pwr_mgmt_data       <= 8'd0;
+            pwr_mgmt_valid      <= 1'b0;
 
             ack_error           <= 1'b0;
             busy                <= 1'b0;
@@ -190,14 +221,18 @@ module mpu6050_i2c_master #(
 
                 busy <= 1'b0;
 
-                if (poll_count >= (POLL_CYCLES - 1)) begin
+                if (poll_count >= (idle_wait_cycles - 1)) begin
 
                     poll_count <= 32'd0;
 
                     busy              <= 1'b1;
                     ack_error         <= 1'b0;
                     abort_transaction <= 1'b0;
-                    whoami_valid      <= 1'b0;
+                    if (operation == OP_WHOAMI)
+                        whoami_valid <= 1'b0;
+
+                    if (operation == OP_PWR_READ)
+                        pwr_mgmt_valid <= 1'b0;
 
                     tx_byte   <= MPU_ADDR_WRITE;
                     tx_stage  <= TX_ADDR_WRITE;
@@ -323,18 +358,36 @@ module mpu6050_i2c_master #(
 
                                     TX_ADDR_WRITE: begin
 
-                                        tx_byte  <= WHO_AM_I_REG;
-                                        tx_stage <= TX_REGISTER;
+                                        if (operation == OP_WHOAMI)
+                                            tx_byte <= WHO_AM_I_REG;
+                                        else
+                                            tx_byte <= PWR_MGMT_1_REG;
 
+                                        tx_stage <= TX_REGISTER;
                                         bit_index <= 3'd7;
                                         state <= ST_SEND_SETUP;
                                     end
 
                                     TX_REGISTER: begin
 
-                                        tx_stage <= TX_ADDR_READ;
+                                        if (operation == OP_WAKE_WRITE) begin
 
-                                        state <= ST_RESTART_A;
+                                            tx_byte   <= WAKE_DATA;
+                                            tx_stage  <= TX_WRITE_DATA;
+                                            bit_index <= 3'd7;
+                                            state     <= ST_SEND_SETUP;
+
+                                        end
+                                        else begin
+
+                                            tx_stage <= TX_ADDR_READ;
+                                            state    <= ST_RESTART_A;
+                                        end
+                                    end
+
+                                    TX_WRITE_DATA: begin
+
+                                        state <= ST_STOP_A;
                                     end
 
                                     TX_ADDR_READ: begin
@@ -479,13 +532,41 @@ module mpu6050_i2c_master #(
 
                             if (!abort_transaction) begin
 
-                                whoami_data  <= rx_byte;
-                                whoami_valid <= 1'b1;
+                                case (operation)
 
+                                    OP_WAKE_WRITE: begin
+                                        operation <= OP_PWR_READ;
+                                    end
+
+                                    OP_PWR_READ: begin
+
+                                        pwr_mgmt_data  <= rx_byte;
+                                        pwr_mgmt_valid <= 1'b1;
+
+                                        if (rx_byte == 8'h00)
+                                            operation <= OP_WHOAMI;
+                                        else
+                                            operation <= OP_WAKE_WRITE;
+                                    end
+
+                                    OP_WHOAMI: begin
+
+                                        whoami_data  <= rx_byte;
+                                        whoami_valid <= 1'b1;
+                                    end
+
+                                    default:
+                                        operation <= OP_WAKE_WRITE;
+
+                                endcase
                             end
                             else begin
 
-                                whoami_valid <= 1'b0;
+                                if (operation == OP_WHOAMI)
+                                    whoami_valid <= 1'b0;
+
+                                if (operation == OP_PWR_READ)
+                                    pwr_mgmt_valid <= 1'b0;
                             end
 
                             poll_count <= 32'd0;

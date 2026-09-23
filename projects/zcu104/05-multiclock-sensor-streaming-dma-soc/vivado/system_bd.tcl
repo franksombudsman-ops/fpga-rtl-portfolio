@@ -662,8 +662,9 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
     CONFIG.C_DATA_DEPTH {2048} \
     CONFIG.C_ENABLE_ILA_AXI_MON {false} \
     CONFIG.C_MONITOR_TYPE {Native} \
-    CONFIG.C_NUM_OF_PROBES {8} \
+    CONFIG.C_NUM_OF_PROBES {11} \
     CONFIG.C_PROBE0_WIDTH {8} \
+    CONFIG.C_PROBE10_WIDTH {1} \
     CONFIG.C_PROBE1_WIDTH {1} \
     CONFIG.C_PROBE2_WIDTH {1} \
     CONFIG.C_PROBE3_WIDTH {1} \
@@ -671,6 +672,8 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
     CONFIG.C_PROBE5_WIDTH {1} \
     CONFIG.C_PROBE6_WIDTH {1} \
     CONFIG.C_PROBE7_WIDTH {1} \
+    CONFIG.C_PROBE8_WIDTH {8} \
+    CONFIG.C_PROBE9_WIDTH {1} \
   ] $ila_mpu6050_0
 
 
@@ -705,9 +708,12 @@ Port;FD4A0000;FD4AFFFF;1|FPD;DPDMA;FD4C0000;FD4CFFFF;1|FPD;DDR_XMPU5_CFG;FD05000
   connect_bd_net -net axi_dma_0_s2mm_introut [get_bd_pins axi_dma_0/s2mm_introut] [get_bd_pins zynq_ultra_ps_e_0/pl_ps_irq0]
   connect_bd_net -net mpu6050_i2c_master_0_ack_error1 [get_bd_pins mpu6050_i2c_master_0/ack_error] [get_bd_pins ila_mpu6050_0/probe3]
   connect_bd_net -net mpu6050_i2c_master_0_busy1 [get_bd_pins mpu6050_i2c_master_0/busy] [get_bd_pins ila_mpu6050_0/probe4]
+  connect_bd_net -net mpu6050_i2c_master_0_pwr_mgmt_data [get_bd_pins mpu6050_i2c_master_0/pwr_mgmt_data] [get_bd_pins ila_mpu6050_0/probe8]
+  connect_bd_net -net mpu6050_i2c_master_0_pwr_mgmt_valid [get_bd_pins mpu6050_i2c_master_0/pwr_mgmt_valid] [get_bd_pins ila_mpu6050_0/probe9]
   connect_bd_net -net mpu6050_i2c_master_0_scl_sample [get_bd_pins mpu6050_i2c_master_0/scl_sample] [get_bd_pins ila_mpu6050_0/probe6]
   connect_bd_net -net mpu6050_i2c_master_0_sda_sample [get_bd_pins mpu6050_i2c_master_0/sda_sample] [get_bd_pins ila_mpu6050_0/probe7]
   connect_bd_net -net mpu6050_i2c_master_0_transaction_done1 [get_bd_pins mpu6050_i2c_master_0/transaction_done] [get_bd_pins ila_mpu6050_0/probe5]
+  connect_bd_net -net mpu6050_i2c_master_0_wake_verified [get_bd_pins mpu6050_i2c_master_0/wake_verified] [get_bd_pins ila_mpu6050_0/probe10]
   connect_bd_net -net mpu6050_i2c_master_0_whoami_data1 [get_bd_pins mpu6050_i2c_master_0/whoami_data] [get_bd_pins ila_mpu6050_0/probe0]
   connect_bd_net -net mpu6050_i2c_master_0_whoami_match1 [get_bd_pins mpu6050_i2c_master_0/whoami_match] [get_bd_pins ila_mpu6050_0/probe2]
   connect_bd_net -net mpu6050_i2c_master_0_whoami_valid1 [get_bd_pins mpu6050_i2c_master_0/whoami_valid] [get_bd_pins ila_mpu6050_0/probe1]
