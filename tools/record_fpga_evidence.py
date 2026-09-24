@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import dbus
 import os
 import re
@@ -9,13 +10,38 @@ import time
 import datetime
 from pathlib import Path
 
+parser = argparse.ArgumentParser(
+    description="Record and compress Vivado hardware-validation evidence."
+)
+parser.add_argument(
+    "--project",
+    required=True,
+    help="Repository-relative project path."
+)
+parser.add_argument(
+    "--name",
+    required=True,
+    help="Evidence filename stem without extension."
+)
+args = parser.parse_args()
+
 REPO = Path.home() / "fpga-rtl-portfolio"
-VIDEO_DIR = REPO / "projects/zcu104/02-real-time-sensor-actuator-engine/evidence/videos"
+PROJECT_DIR = REPO / args.project
+
+if not PROJECT_DIR.exists():
+    sys.exit(f"ERROR: Project does not exist: {PROJECT_DIR}")
+
+name = re.sub(r"[^A-Za-z0-9_.-]+", "_", args.name)
+
+VIDEO_DIR = PROJECT_DIR / "evidence/videos"
 VIDEO_DIR.mkdir(parents=True, exist_ok=True)
 
 stamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-raw = VIDEO_DIR / f"zcu104_ila_live_capture_{stamp}.webm"
-mp4 = VIDEO_DIR / f"zcu104_ila_live_capture_{stamp}.mp4"
+raw = VIDEO_DIR / f"{name}_{stamp}.webm"
+mp4 = VIDEO_DIR / f"{name}.mp4"
+
+if mp4.exists():
+    sys.exit(f"ERROR: Evidence file already exists: {mp4}")
 
 def run(cmd, capture=False):
     return subprocess.run(
