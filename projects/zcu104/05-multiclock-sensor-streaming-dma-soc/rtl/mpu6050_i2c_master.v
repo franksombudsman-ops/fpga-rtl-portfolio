@@ -46,6 +46,10 @@ module mpu6050_i2c_master #(
     output reg        pwr_mgmt_valid,
     output wire       wake_verified,
 
+    // 14-byte motion frame, first byte in bits [111:104].
+    output reg [111:0] motion_frame,
+    output reg         motion_valid,
+
     output wire       scl_sample,
     output wire       sda_sample
 );
@@ -66,6 +70,7 @@ module mpu6050_i2c_master #(
     localparam [7:0] MPU_ADDR_WRITE = 8'hD0;
     localparam [7:0] MPU_ADDR_READ  = 8'hD1;
 
+    localparam [7:0] MOTION_BASE_REG = 8'h3B;
     localparam [7:0] WHO_AM_I_REG   = 8'h75;
     localparam [7:0] PWR_MGMT_1_REG = 8'h6B;
     localparam [7:0] WAKE_DATA       = 8'h00;
@@ -77,7 +82,8 @@ module mpu6050_i2c_master #(
     localparam [1:0]
         OP_WAKE_WRITE = 2'd0,
         OP_PWR_READ   = 2'd1,
-        OP_WHOAMI     = 2'd2;
+        OP_WHOAMI     = 2'd2,
+        OP_MOTION     = 2'd3;
 
     localparam [4:0]
         ST_IDLE          = 5'd0,
@@ -101,7 +107,10 @@ module mpu6050_i2c_master #(
         ST_STOP_A        = 5'd18,
         ST_STOP_B        = 5'd19,
         ST_STOP_C        = 5'd20,
-        ST_STOP_D        = 5'd21;
+        ST_STOP_D        = 5'd21,
+        ST_RX_ACK_SETUP  = 5'd22,
+        ST_RX_ACK_HIGH   = 5'd23,
+        ST_RX_ACK_LOW    = 5'd24;
 
     localparam [1:0]
         TX_ADDR_WRITE = 2'd0,
@@ -123,6 +132,9 @@ module mpu6050_i2c_master #(
     reg [2:0] bit_index;
     reg [1:0] tx_stage;
     reg [1:0] operation;
+
+    reg [3:0] rx_index;
+    reg [111:0] motion_shift;
 
     reg ack_sample;
     reg abort_transaction;
@@ -167,7 +179,8 @@ module mpu6050_i2c_master #(
     wire [31:0] idle_wait_cycles;
 
     assign idle_wait_cycles =
-        (operation == OP_PWR_READ) ?
+        ((operation == OP_PWR_READ) ||
+         (operation == OP_MOTION)) ?
         INIT_DELAY_CYCLES : POLL_CYCLES;
 
     always @(posedge clk) begin
@@ -188,6 +201,10 @@ module mpu6050_i2c_master #(
             bit_index           <= 3'd7;
             tx_stage            <= TX_ADDR_WRITE;
             operation           <= OP_WAKE_WRITE;
+            rx_index            <= 4'd0;
+            motion_shift        <= 112'd0;
+            motion_frame        <= 112'd0;
+            motion_valid        <= 1'b0;
 
             ack_sample          <= 1'b0;
             abort_transaction   <= 1'b0;
@@ -206,6 +223,7 @@ module mpu6050_i2c_master #(
         else begin
 
             transaction_done <= 1'b0;
+            motion_valid     <= 1'b0;
 
             /*
              * ------------------------------------------------
@@ -360,6 +378,8 @@ module mpu6050_i2c_master #(
 
                                         if (operation == OP_WHOAMI)
                                             tx_byte <= WHO_AM_I_REG;
+                                        else if (operation == OP_MOTION)
+                                            tx_byte <= MOTION_BASE_REG;
                                         else
                                             tx_byte <= PWR_MGMT_1_REG;
 
@@ -394,6 +414,11 @@ module mpu6050_i2c_master #(
 
                                         rx_byte   <= 8'd0;
                                         bit_index <= 3'd7;
+
+                                        if (operation == OP_MOTION) begin
+                                            rx_index     <= 4'd0;
+                                            motion_shift <= 112'd0;
+                                        end
 
                                         state <= ST_READ_SETUP;
                                     end
@@ -461,7 +486,11 @@ module mpu6050_i2c_master #(
 
                             if (bit_index == 3'd0) begin
 
-                                state <= ST_NACK_SETUP;
+                                if ((operation == OP_MOTION) &&
+                                    (rx_index < 4'd13))
+                                    state <= ST_RX_ACK_SETUP;
+                                else
+                                    state <= ST_NACK_SETUP;
 
                             end
                             else begin
@@ -476,7 +505,42 @@ module mpu6050_i2c_master #(
                          * Master NACK after final read byte
                          * ------------------------------------------------
                          */
+                        // Store each received byte, then ACK so that
+                        // the MPU6050 sends the next register byte.
+                        ST_RX_ACK_SETUP: begin
+
+                            motion_shift[111 - (rx_index * 8) -: 8]
+                                <= rx_byte;
+
+                            scl_drive_low <= 1'b1;
+                            sda_drive_low <= 1'b1;
+                            state <= ST_RX_ACK_HIGH;
+                        end
+
+                        ST_RX_ACK_HIGH: begin
+
+                            scl_drive_low <= 1'b0;
+                            state <= ST_RX_ACK_LOW;
+                        end
+
+                        ST_RX_ACK_LOW: begin
+
+                            scl_drive_low <= 1'b1;
+                            sda_drive_low <= 1'b0;
+
+                            rx_index  <= rx_index + 1'b1;
+                            bit_index <= 3'd7;
+                            rx_byte   <= 8'd0;
+
+                            state <= ST_READ_SETUP;
+                        end
+
+                        // NACK the final byte to end the burst read.
                         ST_NACK_SETUP: begin
+
+                            if (operation == OP_MOTION)
+                                motion_shift[111 - (rx_index * 8) -: 8]
+                                    <= rx_byte;
 
                             sda_drive_low <= 1'b0;
                             scl_drive_low <= 1'b0;
@@ -553,6 +617,15 @@ module mpu6050_i2c_master #(
 
                                         whoami_data  <= rx_byte;
                                         whoami_valid <= 1'b1;
+
+                                        if (rx_byte == 8'h68)
+                                            operation <= OP_MOTION;
+                                    end
+
+                                    OP_MOTION: begin
+
+                                        motion_frame <= motion_shift;
+                                        motion_valid <= 1'b1;
                                     end
 
                                     default:
