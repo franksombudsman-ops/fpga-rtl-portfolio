@@ -1,0 +1,48 @@
+PROJECT06 FIR32 SYNTHESIZED ARCHITECTURE
+=========================================
+Part              : xczu7ev-ffvc1156-2-e
+Target clock      : 150 MHz / 6.667 ns
+DSP primitive count : 40
+BRAM primitive count: 0
+
+DSP CELLS:
+  prod_s0_reg[0]  REF=DSP48E2
+  prod_s0_reg[10]  REF=DSP48E2
+  prod_s0_reg[12]  REF=DSP48E2
+  prod_s0_reg[14]  REF=DSP48E2
+  prod_s0_reg[16]  REF=DSP48E2
+  prod_s0_reg[18]  REF=DSP48E2
+  prod_s0_reg[20]  REF=DSP48E2
+  prod_s0_reg[22]  REF=DSP48E2
+  prod_s0_reg[24]  REF=DSP48E2
+  prod_s0_reg[26]  REF=DSP48E2
+  prod_s0_reg[28]  REF=DSP48E2
+  prod_s0_reg[2]  REF=DSP48E2
+  prod_s0_reg[30]  REF=DSP48E2
+  prod_s0_reg[4]  REF=DSP48E2
+  prod_s0_reg[6]  REF=DSP48E2
+  prod_s0_reg[8]  REF=DSP48E2
+  sum_s1_reg[0]  REF=DSP48E2
+  sum_s1_reg[10]  REF=DSP48E2
+  sum_s1_reg[11]  REF=DSP48E2
+  sum_s1_reg[12]  REF=DSP48E2
+  sum_s1_reg[13]  REF=DSP48E2
+  sum_s1_reg[14]  REF=DSP48E2
+  sum_s1_reg[15]  REF=DSP48E2
+  sum_s1_reg[1]  REF=DSP48E2
+  sum_s1_reg[2]  REF=DSP48E2
+  sum_s1_reg[3]  REF=DSP48E2
+  sum_s1_reg[4]  REF=DSP48E2
+  sum_s1_reg[5]  REF=DSP48E2
+  sum_s1_reg[6]  REF=DSP48E2
+  sum_s1_reg[7]  REF=DSP48E2
+  sum_s1_reg[8]  REF=DSP48E2
+  sum_s1_reg[9]  REF=DSP48E2
+  sum_s2_reg[0]  REF=DSP48E2
+  sum_s2_reg[1]  REF=DSP48E2
+  sum_s2_reg[2]  REF=DSP48E2
+  sum_s2_reg[3]  REF=DSP48E2
+  sum_s2_reg[4]  REF=DSP48E2
+  sum_s2_reg[5]  REF=DSP48E2
+  sum_s2_reg[6]  REF=DSP48E2
+  sum_s2_reg[7]  REF=DSP48E2
