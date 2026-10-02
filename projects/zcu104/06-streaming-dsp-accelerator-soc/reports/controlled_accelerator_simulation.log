@@ -1,0 +1,55 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/controlled_accelerator_snapshot/xsim_script.tcl
+# xsim {controlled_accelerator_snapshot} -testplusarg VECTOR_ROOT=/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/06-streaming-dsp-accelerator-soc/tb/vectors -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+
+================================================
+PROJECT06 CONTROLLED ACCELERATOR VERIFICATION
+================================================
+PASS: reset state disabled + idle
+Selected programmable threshold = 289
+PASS: threshold low readback = 00000121
+PASS: threshold high readback = 00000000
+PASS: disabled accelerator rejects new samples
+PASS: disabled accelerator reports draining
+PASS: accelerator drained to IDLE
+PASS: 64/64 results verified
+PASS: campaign-A SAMPLE_COUNT = 00000040
+PASS: campaign-A RESULT_COUNT = 00000040
+PASS: campaign-A EVENT_COUNT = 00000001
+PASS: INPUT_STALL_COUNT captured disabled-valid cycles (3)
+PASS: OUTPUT_STALL_COUNT captured backpressure (13)
+PASS: threshold low readback = 00000000
+PASS: threshold high readback = 00000000
+PASS: accelerator drained to IDLE
+PASS: 64/64 results verified
+PASS: campaign-B SAMPLE_COUNT = 00000040
+PASS: campaign-B RESULT_COUNT = 00000040
+PASS: threshold-zero EVENT_COUNT = 00000000
+
+================================================
+AXI4-Lite configuration       : PASS
+Programmable threshold        : PASS
+FIR numerical equivalence     : PASS
+Energy numerical equivalence  : PASS
+Event crossing semantics      : PASS
+ENABLE gating                 : PASS
+Drain-to-IDLE                 : PASS
+STATE_CLEAR                   : PASS
+COUNTER_CLEAR                 : PASS
+Telemetry counters            : PASS
+Random output backpressure    : PASS
+CONTROLLED ACCELERATOR        : PASS
+TOTAL FAILURES                : 0
+================================================
+$finish called at time : 3750 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/06-streaming-dsp-accelerator-soc/tb/tb_dsp_accelerator_controlled.sv" Line 1075
+exit
+INFO: [Common 17-206] Exiting xsim at Fri Oct  2 01:56:12 2026...

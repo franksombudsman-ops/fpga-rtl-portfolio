@@ -1,0 +1,52 @@
+PROJECT06 CONTROLLED ACCELERATOR SYNTHESIZED ARCHITECTURE
+=========================================================
+Part       : xczu7ev-ffvc1156-2-e
+Target     : 150 MHz / 6.667 ns
+
+DSP48E2    : 41
+RAMB18E2   : 0
+RAMB36E2   : 0
+URAM288    : 0
+
+DSP CELLS:
+  u_compute_core/u_energy64/energy_acc1
+  u_compute_core/u_fir32/prod_s0_reg[0]
+  u_compute_core/u_fir32/prod_s0_reg[10]
+  u_compute_core/u_fir32/prod_s0_reg[12]
+  u_compute_core/u_fir32/prod_s0_reg[14]
+  u_compute_core/u_fir32/prod_s0_reg[16]
+  u_compute_core/u_fir32/prod_s0_reg[18]
+  u_compute_core/u_fir32/prod_s0_reg[20]
+  u_compute_core/u_fir32/prod_s0_reg[22]
+  u_compute_core/u_fir32/prod_s0_reg[24]
+  u_compute_core/u_fir32/prod_s0_reg[26]
+  u_compute_core/u_fir32/prod_s0_reg[28]
+  u_compute_core/u_fir32/prod_s0_reg[2]
+  u_compute_core/u_fir32/prod_s0_reg[30]
+  u_compute_core/u_fir32/prod_s0_reg[4]
+  u_compute_core/u_fir32/prod_s0_reg[6]
+  u_compute_core/u_fir32/prod_s0_reg[8]
+  u_compute_core/u_fir32/sum_s1_reg[0]
+  u_compute_core/u_fir32/sum_s1_reg[10]
+  u_compute_core/u_fir32/sum_s1_reg[11]
+  u_compute_core/u_fir32/sum_s1_reg[12]
+  u_compute_core/u_fir32/sum_s1_reg[13]
+  u_compute_core/u_fir32/sum_s1_reg[14]
+  u_compute_core/u_fir32/sum_s1_reg[15]
+  u_compute_core/u_fir32/sum_s1_reg[1]
+  u_compute_core/u_fir32/sum_s1_reg[2]
+  u_compute_core/u_fir32/sum_s1_reg[3]
+  u_compute_core/u_fir32/sum_s1_reg[4]
+  u_compute_core/u_fir32/sum_s1_reg[5]
+  u_compute_core/u_fir32/sum_s1_reg[6]
+  u_compute_core/u_fir32/sum_s1_reg[7]
+  u_compute_core/u_fir32/sum_s1_reg[8]
+  u_compute_core/u_fir32/sum_s1_reg[9]
+  u_compute_core/u_fir32/sum_s2_reg[0]
+  u_compute_core/u_fir32/sum_s2_reg[1]
+  u_compute_core/u_fir32/sum_s2_reg[2]
+  u_compute_core/u_fir32/sum_s2_reg[3]
+  u_compute_core/u_fir32/sum_s2_reg[4]
+  u_compute_core/u_fir32/sum_s2_reg[5]
+  u_compute_core/u_fir32/sum_s2_reg[6]
+  u_compute_core/u_fir32/sum_s2_reg[7]

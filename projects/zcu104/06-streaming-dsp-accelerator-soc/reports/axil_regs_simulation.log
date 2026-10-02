@@ -1,0 +1,64 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/axil_regs_snapshot/xsim_script.tcl
+# xsim {axil_regs_snapshot} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+
+============================================
+PROJECT06 AXI4-LITE REGISTER VERIFICATION
+============================================
+PASS: CONTROL reset = 00000000
+PASS: THRESHOLD_LO reset = 40000000
+PASS: THRESHOLD_HI reset = 00000000
+PASS: AW-before-W ENABLE = 00000001
+PASS: threshold protected while enabled = 40000000
+PASS: STATE_CLEAR rejected while enabled
+PASS: W-before-AW disable = 00000000
+PASS: STATE_CLEAR rejected while not idle
+PASS: threshold protected while not idle = 40000000
+PASS: valid STATE_CLEAR produced one pulse
+PASS: WSTRB byte-0 threshold write = 400000aa
+PASS: WSTRB byte-2 threshold write = 405500aa
+PASS: threshold high bits = 00000015
+PASS: threshold HI wrong-WSTRB ignored = 00000015
+PASS: STATUS encoding = 0000000e
+PASS: SAMPLE_COUNT = 00000002
+PASS: RESULT_COUNT = 00000001
+PASS: EVENT_COUNT = 00000003
+PASS: INPUT_STALL_COUNT = 00000004
+PASS: OUTPUT_STALL_COUNT = 00000005
+PASS: RO SAMPLE_COUNT write ignored = 00000002
+PASS: COUNTER_CLEAR pulse
+PASS: SAMPLE_COUNT cleared = 00000000
+PASS: RESULT_COUNT cleared = 00000000
+PASS: EVENT_COUNT cleared = 00000000
+PASS: INPUT_STALL_COUNT cleared = 00000000
+PASS: OUTPUT_STALL_COUNT cleared = 00000000
+PASS: precedence setup SAMPLE_COUNT = 00000001
+PASS: COUNTER_CLEAR precedence = 00000000
+PASS: unmapped register = 00000000
+
+============================================
+AW before W                 : PASS
+W before AW                 : PASS
+AW/W together               : PASS
+WSTRB handling              : PASS
+RO protection               : PASS
+Threshold protection        : PASS
+STATE_CLEAR semantics       : PASS
+Telemetry counters          : PASS
+COUNTER_CLEAR precedence    : PASS
+Register readback           : PASS
+AXI4-LITE REGISTER BANK     : PASS
+TOTAL FAILURES              : 0
+============================================
+$finish called at time : 1970 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/06-streaming-dsp-accelerator-soc/tb/tb_accelerator_axil_regs.sv" Line 1091
+exit
+INFO: [Common 17-206] Exiting xsim at Fri Oct  2 01:48:03 2026...

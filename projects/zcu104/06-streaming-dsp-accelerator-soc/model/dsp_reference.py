@@ -95,6 +95,7 @@ def generate_coefficients():
     assert len(q) == TAPS
     assert sum(q) == Q15_SCALE
     assert all(Q15_MIN <= x <= Q15_MAX for x in q)
+    assert q == q[::-1]
 
     return q
 
@@ -150,15 +151,22 @@ class MovingEnergyReference:
 
 class ThresholdEventReference:
     def __init__(self, threshold: int):
+        if not 0 <= threshold <= ENERGY_MAX:
+            raise ValueError("Threshold must fit unsigned 37-bit energy range")
+
         self.threshold = threshold
-        self.was_above = False
+        self.previous_energy = 0
 
     def process(self, energy: int) -> bool:
-        above = energy >= self.threshold
+        if not 0 <= energy <= ENERGY_MAX:
+            raise ValueError("Energy must fit unsigned 37-bit range")
 
-        event = above and not self.was_above
+        event = (
+            self.previous_energy < self.threshold
+            and energy >= self.threshold
+        )
 
-        self.was_above = above
+        self.previous_energy = energy
         return event
 
 
@@ -226,6 +234,14 @@ def self_test():
     assert all(v == 0 for v in y)
     assert all(v == 0 for v in e)
     assert not any(ev)
+
+    # Threshold-zero crossing semantics:
+    # previous_energy starts at zero, therefore previous_energy < 0
+    # is impossible and no event shall be generated.
+    threshold_zero = ThresholdEventReference(0)
+    assert threshold_zero.process(0) is False
+    assert threshold_zero.process(1) is False
+    assert threshold_zero.process(1000) is False
 
     # Impulse.
     impulse = [32767] + [0] * 95
