@@ -1,0 +1,174 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2023.2 (lin64) Build 4029153 Fri Oct 13 20:13:54 MDT 2023
+| Date         : Fri Oct  2 05:13:25 2026
+| Host         : frankhasrisen running 64-bit Ubuntu 22.04.5 LTS
+| Command      : report_drc -file /home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/06-streaming-dsp-accelerator-soc/reports/soc_implementation_drc.rpt
+| Design       : system_wrapper
+| Device       : xczu7ev-ffvc1156-2-e
+| Speed File   : -2
+| Design State : Fully Routed
+-------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Report DRC
+
+Table of Contents
+-----------------
+1. REPORT SUMMARY
+2. REPORT DETAILS
+
+1. REPORT SUMMARY
+-----------------
+            Netlist: netlist
+          Floorplan: impl_1
+      Design limits: <entire design considered>
+           Ruledeck: default
+             Max violations: <unlimited>
+             Violations found: 24
++-----------+----------+--------------------------------------+------------+
+| Rule      | Severity | Description                          | Violations |
++-----------+----------+--------------------------------------+------------+
+| DPIP-2    | Warning  | Input pipelining                     | 17         |
+| DPOP-3    | Warning  | PREG Output pipelining               | 1          |
+| DPOP-4    | Warning  | MREG Output pipelining               | 1          |
+| REQP-1934 | Warning  | RAMB18E2_nochange_collision_advisory | 2          |
+| REQP-1935 | Warning  | RAMB36E2_nochange_collision_advisory | 2          |
+| RTSTAT-10 | Warning  | No routable loads                    | 1          |
++-----------+----------+--------------------------------------+------------+
+
+2. REPORT DETAILS
+-----------------
+DPIP-2#1 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/prod_s0_reg[0] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/prod_s0_reg[0]/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#2 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[0] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[0]/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#3 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[0] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[0]/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#4 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[1] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[1]/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#5 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[1] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[1]/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#6 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[2] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[2]/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#7 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[2] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[2]/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#8 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[3] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[3]/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#9 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[3] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[3]/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#10 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[4] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[4]/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#11 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[4] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[4]/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#12 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[5] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[5]/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#13 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[5] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[5]/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#14 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[6] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[6]/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#15 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[6] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[6]/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#16 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[7] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[7]/A[29:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPIP-2#17 Warning
+Input pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[7] input system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_fir32/sum_s2_reg[7]/B[17:0] is not pipelined. Pipelining DSP48 input will improve performance.
+Related violations: <none>
+
+DPOP-3#1 Warning
+PREG Output pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_energy64/energy_acc1 output system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_energy64/energy_acc1/P[47:0] is not pipelined (PREG=0). Pipelining the DSP48 output will improve performance and often saves power so it is suggested whenever possible to fully pipeline this function.  If this DSP48 function was inferred, it is suggested to describe an additional register stage after this function.  If the DSP48 was instantiated in the design, it is suggested to set the PREG attribute to 1.
+Related violations: <none>
+
+DPOP-4#1 Warning
+MREG Output pipelining  
+DSP system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_energy64/energy_acc1 multiplier stage system_i/accelerator_0/inst/u_accelerator/u_compute_core/u_energy64/energy_acc1/P[47:0] is not pipelined (MREG=0). Pipelining the multiplier function will improve performance and will save significant power so it is suggested whenever possible to fully pipeline this function.  If this multiplier was inferred, it is suggested to describe an additional register stage after this function.  If there is no registered adder/accumulator following the multiply function, two pipeline stages are suggested to allow both the MREG and PREG registers to be used.  If the DSP48 was instantiated in the design, it is suggested to set both the MREG and PREG attributes to 1 when performing multiply functions.
+Related violations: <none>
+
+REQP-1934#1 Warning
+RAMB18E2_nochange_collision_advisory  
+Synchronous clocking is detected for BRAM (system_i/axi_dma_0/U0/I_PRMRY_DATAMOVER/GEN_MM2S_FULL.I_MM2S_FULL_WRAPPER/GEN_INCLUDE_MM2S_SF.I_RD_SF/I_DATA_FIFO/BLK_MEM.I_SYNC_FIFOGEN_FIFO/xpm_fifo_instance.xpm_fifo_sync_inst/xpm_fifo_base_inst/gen_sdpram.xpm_memory_base_inst/gen_wr_a.gen_word_narrow.mem_reg_1) in SDP mode with NO_CHANGE write-mode. This is the preferred mode for best power characteristics. However, NO_CHANGE may exhibit address collisions if the same address appears on both read and write ports resulting in unknown or corrupted read data. It is suggested to confirm via simulation that an address collision never occurs and if so it is suggested to try and avoid this situation. If address collisions cannot be avoided, the write-mode may be set to READ_FIRST which guarantees that the read data is the prior contents of the memory at the cost of additional power in the design. See the FPGA Memory Resources User Guide for additional information.
+Related violations: <none>
+
+REQP-1934#2 Warning
+RAMB18E2_nochange_collision_advisory  
+Synchronous clocking is detected for BRAM (system_i/axi_dma_0/U0/I_PRMRY_DATAMOVER/GEN_S2MM_FULL.I_S2MM_FULL_WRAPPER/GEN_ENABLE_INDET_BTT_SF.I_INDET_BTT/I_DATA_FIFO/BLK_MEM.I_SYNC_FIFOGEN_FIFO/xpm_fifo_instance.xpm_fifo_sync_inst/xpm_fifo_base_inst/gen_sdpram.xpm_memory_base_inst/gen_wr_a.gen_word_narrow.mem_reg_1) in SDP mode with NO_CHANGE write-mode. This is the preferred mode for best power characteristics. However, NO_CHANGE may exhibit address collisions if the same address appears on both read and write ports resulting in unknown or corrupted read data. It is suggested to confirm via simulation that an address collision never occurs and if so it is suggested to try and avoid this situation. If address collisions cannot be avoided, the write-mode may be set to READ_FIRST which guarantees that the read data is the prior contents of the memory at the cost of additional power in the design. See the FPGA Memory Resources User Guide for additional information.
+Related violations: <none>
+
+REQP-1935#1 Warning
+RAMB36E2_nochange_collision_advisory  
+Synchronous clocking is detected for BRAM (system_i/axi_dma_0/U0/I_PRMRY_DATAMOVER/GEN_MM2S_FULL.I_MM2S_FULL_WRAPPER/GEN_INCLUDE_MM2S_SF.I_RD_SF/I_DATA_FIFO/BLK_MEM.I_SYNC_FIFOGEN_FIFO/xpm_fifo_instance.xpm_fifo_sync_inst/xpm_fifo_base_inst/gen_sdpram.xpm_memory_base_inst/gen_wr_a.gen_word_narrow.mem_reg_0) in SDP mode with NO_CHANGE write-mode. This is the preferred mode for best power characteristics. However, NO_CHANGE may exhibit address collisions if the same address appears on both read and write ports resulting in unknown or corrupted read data. It is suggested to confirm via simulation that an address collision never occurs and if so it is suggested to try and avoid this situation. If address collisions cannot be avoided, the write-mode may be set to READ_FIRST which guarantees that the read data is the prior contents of the memory at the cost of additional power in the design. See the FPGA Memory Resources User Guide for additional information.
+Related violations: <none>
+
+REQP-1935#2 Warning
+RAMB36E2_nochange_collision_advisory  
+Synchronous clocking is detected for BRAM (system_i/axi_dma_0/U0/I_PRMRY_DATAMOVER/GEN_S2MM_FULL.I_S2MM_FULL_WRAPPER/GEN_ENABLE_INDET_BTT_SF.I_INDET_BTT/I_DATA_FIFO/BLK_MEM.I_SYNC_FIFOGEN_FIFO/xpm_fifo_instance.xpm_fifo_sync_inst/xpm_fifo_base_inst/gen_sdpram.xpm_memory_base_inst/gen_wr_a.gen_word_narrow.mem_reg_0) in SDP mode with NO_CHANGE write-mode. This is the preferred mode for best power characteristics. However, NO_CHANGE may exhibit address collisions if the same address appears on both read and write ports resulting in unknown or corrupted read data. It is suggested to confirm via simulation that an address collision never occurs and if so it is suggested to try and avoid this situation. If address collisions cannot be avoided, the write-mode may be set to READ_FIRST which guarantees that the read data is the prior contents of the memory at the cost of additional power in the design. See the FPGA Memory Resources User Guide for additional information.
+Related violations: <none>
+
+RTSTAT-10#1 Warning
+No routable loads  
+15 net(s) have no routable loads. The problem bus(es) and/or net(s) are system_i/control_sc/inst/s00_nodes/s00_w_node/inst/mi_handler_m_sc_areset_pipe,
+system_i/control_sc/inst/s00_nodes/s00_ar_node/inst/mi_handler_m_sc_areset_pipe,
+system_i/control_sc/inst/m01_nodes/m01_ar_node/inst/mi_handler_m_sc_areset_pipe,
+system_i/control_sc/inst/m00_nodes/m00_w_node/inst/mi_handler_m_sc_areset_pipe,
+system_i/control_sc/inst/m00_nodes/m00_b_node/inst/mi_handler_m_sc_areset_pipe,
+system_i/control_sc/inst/s00_nodes/s00_b_node/inst/mi_handler_m_sc_areset_pipe,
+system_i/control_sc/inst/s00_nodes/s00_aw_node/inst/mi_handler_m_sc_areset_pipe,
+system_i/control_sc/inst/m01_nodes/m01_r_node/inst/mi_handler_m_sc_areset_pipe,
+system_i/control_sc/inst/m01_nodes/m01_w_node/inst/mi_handler_m_sc_areset_pipe,
+system_i/control_sc/inst/m00_nodes/m00_aw_node/inst/mi_handler_m_sc_areset_pipe,
+system_i/control_sc/inst/m00_nodes/m00_ar_node/inst/mi_handler_m_sc_areset_pipe,
+system_i/control_sc/inst/m00_nodes/m00_r_node/inst/mi_handler_m_sc_areset_pipe,
+system_i/control_sc/inst/m01_nodes/m01_b_node/inst/mi_handler_m_sc_areset_pipe
+system_i/control_sc/inst/m01_nodes/m01_aw_node/inst/mi_handler_m_sc_areset_pipe.
+Related violations: <none>
+
+
