@@ -1,0 +1,49 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_dma_axil_regs_sim/xsim_script.tcl
+# xsim {tb_dma_axil_regs_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+ID / VERSION READBACK: PASS
+AXIL AW/W INDEPENDENCE + WSTRB: PASS
+GLOBAL CONTROL / ONE-CYCLE COMMANDS: PASS
+IRQ STATUS / ENABLE / RW1C: PASS
+GLOBAL ERROR RW1C: PASS
+TX REGISTER BANK: PASS
+RX REGISTER BANK: PASS
+READ-ONLY REGISTER PROTECTION: PASS
+UNMAPPED ACCESS DECERR: PASS
+
+================================================
+ DMA AXI-LITE REGISTER BANK: PASS
+ ID constant                    : PASS
+ VERSION constant               : PASS
+ AW-before-W                    : PASS
+ W-before-AW                    : PASS
+ simultaneous AW/W              : PASS
+ BVALID/BRESP backpressure      : PASS
+ RVALID/RDATA backpressure      : PASS
+ WSTRB byte writes              : PASS
+ SCRATCH round-trip             : PASS
+ GLOBAL_ENABLE                  : PASS
+ SOFT_RESET one-cycle pulse     : PASS
+ COUNTER_CLEAR one-cycle pulse  : PASS
+ IRQ controller integration     : PASS
+ IRQ_STATUS RW1C                : PASS
+ IRQ_ENABLE                     : PASS
+ ERROR_STATUS RW1C              : PASS
+ TX register bank               : PASS
+ RX register bank               : PASS
+ counter/status readback        : PASS
+ read-only protection           : PASS
+ unmapped DECERR                : PASS
+================================================
+$finish called at time : 4630 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/07-custom-dma-linux-driver/tb/tb_dma_axil_regs.sv" Line 1313
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Oct  5 08:01:47 2026...
