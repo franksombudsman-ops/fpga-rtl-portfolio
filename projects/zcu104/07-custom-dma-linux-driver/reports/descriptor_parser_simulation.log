@@ -1,0 +1,28 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_dma_descriptor_parser_sim/xsim_script.tcl
+# xsim {tb_dma_descriptor_parser_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+VALID DESCRIPTOR PARSE: PASS
+DESCRIPTOR VALIDATION ERRORS: PASS
+PARSER BACKPRESSURE STABILITY: PASS
+
+============================================
+ DMA DESCRIPTOR PARSER: PASS
+ field extraction             : PASS
+ ownership validation         : PASS
+ length validation            : PASS
+ address validation           : PASS
+ reserved-field validation    : PASS
+ output backpressure stability: PASS
+============================================
+$finish called at time : 285 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/07-custom-dma-linux-driver/tb/tb_dma_descriptor_parser.sv" Line 312
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Oct  5 05:21:45 2026...

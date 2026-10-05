@@ -1,0 +1,32 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_dma_ring_manager_sim/xsim_script.tcl
+# xsim {tb_dma_ring_manager_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+BASIC RING OPERATION: PASS
+MULTIPLE RING WRAPS: PASS
+64-ENTRY RING: PASS
+1024-ENTRY RING: PASS
+RING OVERRUN DETECTION: PASS
+RING CONFIGURATION VALIDATION: PASS
+
+============================================
+ DMA RING MANAGER: PASS
+ empty/non-empty state       : PASS
+ logical head progression    : PASS
+ slot-index wraparound       : PASS
+ descriptor address mapping  : PASS
+ 16/64/1024 entry rings      : PASS
+ producer-overrun detection  : PASS
+ configuration validation    : PASS
+============================================
+$finish called at time : 23241 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/07-custom-dma-linux-driver/tb/tb_dma_ring_manager.sv" Line 358
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Oct  5 05:21:49 2026...
