@@ -1,0 +1,33 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_dma_arbiters_sim/xsim_script.tcl
+# xsim {tb_dma_arbiters_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+READ ROUND-ROBIN FAIRNESS: PASS
+READ OWNERSHIP / ROUTING: PASS
+WRITE ROUND-ROBIN FAIRNESS: PASS
+WRITE OWNERSHIP / ROUTING: PASS
+
+============================================
+ DMA MEMORY ARBITERS: PASS
+ 3-client read round-robin      : PASS
+ 3-client write round-robin     : PASS
+ request stability under stall  : PASS
+ request-level ownership        : PASS
+ no transaction interleaving    : PASS
+ read-data owner routing        : PASS
+ write-data owner routing       : PASS
+ completion owner routing       : PASS
+ completion backpressure        : PASS
+ fairness pointer wraparound    : PASS
+============================================
+$finish called at time : 830 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/07-custom-dma-linux-driver/tb/tb_dma_arbiters.sv" Line 745
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Oct  5 05:57:04 2026...
