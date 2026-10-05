@@ -1,0 +1,37 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_dma_axi_read_master_sim/xsim_script.tcl
+# xsim {tb_dma_axi_read_master_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+BASIC READ TRANSACTIONS: PASS
+MULTI-BURST READ: PASS
+4-KiB SPLIT READ: PASS
+SLVERR DETECTION: PASS
+DECERR DETECTION: PASS
+EARLY RLAST DETECTION: PASS
+LATE RLAST DETECTION: PASS
+RID ERROR DETECTION: PASS
+INVALID REQUEST REJECTION: PASS
+
+=============================================
+ DMA AXI READ MASTER: PASS
+ randomized ARREADY stalls    : PASS
+ randomized RVALID gaps       : PASS
+ downstream backpressure      : PASS
+ multi-burst operation        : PASS
+ 4-KiB burst splitting        : PASS
+ RRESP checking               : PASS
+ RLAST checking               : PASS
+ RID checking                 : PASS
+ request completion accounting: PASS
+=============================================
+$finish called at time : 36870 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/07-custom-dma-linux-driver/tb/tb_dma_axi_read_master.sv" Line 611
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Oct  5 05:12:08 2026...
