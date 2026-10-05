@@ -1,0 +1,41 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_dma_rx_engine_sim/xsim_script.tcl
+# xsim {tb_dma_rx_engine_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+BASIC / SHORT RX PAYLOADS: PASS
+MULTI-CHUNK RX: PASS
+4-KiB CROSSING RX: PASS
+RX OVERFLOW / DRAIN: PASS
+RX TKEEP MISMATCH: PASS
+RX SLVERR PROPAGATION: PASS
+RX DECERR PROPAGATION: PASS
+RX WORK VALIDATION: PASS
+
+=============================================
+ DMA RX ENGINE: PASS
+ AXIS -> DDR payload movement : PASS
+ short-packet receive         : PASS
+ exact payload ordering       : PASS
+ randomized source gaps       : PASS
+ randomized DDR backpressure  : PASS
+ multi-chunk receive          : PASS
+ 4-KiB write splitting        : PASS
+ descriptor-capacity overflow : PASS
+ post-overflow packet drain   : PASS
+ TKEEP mismatch detection     : PASS
+ AXI SLVERR propagation       : PASS
+ AXI DECERR propagation       : PASS
+ invalid-work rejection       : PASS
+ retirement backpressure      : PASS
+=============================================
+$finish called at time : 60730 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/07-custom-dma-linux-driver/tb/tb_dma_rx_engine.sv" Line 1187
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Oct  5 05:50:28 2026...
