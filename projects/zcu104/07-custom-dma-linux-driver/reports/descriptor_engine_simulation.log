@@ -1,0 +1,41 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_dma_descriptor_engine_sim/xsim_script.tcl
+# xsim {tb_dma_descriptor_engine_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+BASIC DESCRIPTOR LIFECYCLE: PASS
+INTEGRATED RING WRAPAROUND: PASS
+INVALID DESCRIPTOR COMPLETION: PASS
+OWNERSHIP VIOLATION: PASS
+DESCRIPTOR READ ERROR PROPAGATION: PASS
+STATUS WRITE ERROR PROPAGATION: PASS
+OWN RELEASE WRITE ERROR PROPAGATION: PASS
+
+================================================
+ DMA DESCRIPTOR ENGINE: PASS
+ DDR descriptor fetch             : PASS
+ 64-byte descriptor assembly      : PASS
+ parser integration               : PASS
+ ring-address generation          : PASS
+ work backpressure stability      : PASS
+ payload retirement               : PASS
+ STATUS/ACTUAL writeback          : PASS
+ OWN release ordering             : PASS
+ HEAD-after-writeback invariant   : PASS
+ integrated ring wraparound       : PASS
+ invalid descriptor completion    : PASS
+ ownership violation detection    : PASS
+ AXI read failure propagation     : PASS
+ STATUS write failure propagation : PASS
+ OWN-write failure propagation    : PASS
+================================================
+$finish called at time : 12216 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/07-custom-dma-linux-driver/tb/tb_dma_descriptor_engine.sv" Line 1491
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Oct  5 05:37:08 2026...

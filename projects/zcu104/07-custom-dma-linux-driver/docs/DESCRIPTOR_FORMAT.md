@@ -147,3 +147,44 @@ Hardware shall reject rather than partially execute descriptors containing:
 
 An invalid descriptor must generate a software-visible error and must not
 silently corrupt subsequent descriptors.
+
+## Authoritative Completion Publication
+
+The descriptor OWN field alone is not sufficient evidence that software may
+reclaim a descriptor.
+
+The authoritative hardware completion boundary is HW_HEAD.
+
+For logical descriptor N, software may reclaim the descriptor only after
+HW_HEAD has advanced beyond N.
+
+Normal successful retirement is:
+
+1. hardware completes payload processing;
+2. hardware writes STATUS and ACTUAL_LENGTH;
+3. that write receives a successful AXI write response;
+4. hardware writes CONTROL with OWN cleared;
+5. that write receives a successful AXI write response;
+6. hardware advances HW_HEAD.
+
+HW_HEAD therefore publishes successful descriptor retirement.
+
+### AXI Write-Error Case
+
+A non-OKAY AXI BRESP does not provide a transactional guarantee that the
+corresponding memory write had no side effect.
+
+For example, the CONTROL word containing OWN=0 may have reached the memory
+system before an error response is returned.
+
+Therefore, after a failed descriptor writeback:
+
+- the channel enters a faulted state;
+- HW_HEAD does not advance;
+- no successful completion is published;
+- software must not reclaim the descriptor based only on its memory OWN bit;
+- descriptor memory affected by the failed transaction is considered
+  untrusted until explicit software recovery/reinitialization.
+
+This rule prevents a write-response failure from causing premature descriptor
+reuse.

@@ -317,3 +317,32 @@ The following units shall have independent self-checking testbenches:
 Integrated verification shall include randomized READY/VALID timing and an
 AXI memory model.
 
+
+## Descriptor Retirement Publication Rule
+
+HW_HEAD is the authoritative software-visible descriptor retirement boundary.
+
+Clearing a descriptor OWN bit is not, by itself, sufficient publication of
+completion.
+
+The required successful sequence is:
+
+    payload completion
+        ->
+    STATUS / ACTUAL_LENGTH write
+        ->
+    successful BRESP
+        ->
+    OWN-clear write
+        ->
+    successful BRESP
+        ->
+    HW_HEAD advance
+
+If either writeback receives a non-OKAY BRESP, HW_HEAD remains unchanged and
+the descriptor channel enters a faulted state.
+
+Because an AXI error response does not imply rollback of an already accepted
+write-data beat, software shall treat the affected descriptor memory as
+untrusted after such a failure and shall use HW_HEAD as the authoritative
+reclamation boundary.
