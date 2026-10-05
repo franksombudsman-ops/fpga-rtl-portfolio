@@ -1,0 +1,45 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_dma_core_sim/xsim_script.tcl
+# xsim {tb_dma_core_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+DUAL RING CONFIGURATION: PASS
+CONCURRENT TX/RX PAYLOAD MOVEMENT: PASS
+DUAL DESCRIPTOR COMPLETION EVENTS: PASS
+DUAL DESCRIPTOR WRITEBACK / OWN RELEASE: PASS
+DUAL HEAD ADVANCEMENT: PASS
+TRUE BIDIRECTIONAL CONCURRENCY: PASS
+SHARED MEMORY TRANSACTION ACCOUNTING: PASS
+
+====================================================
+ INTEGRATED BIDIRECTIONAL DMA CORE: PASS
+ TX descriptor DDR fetch             : PASS
+ RX descriptor DDR fetch             : PASS
+ descriptor parser/ring integration  : PASS
+ TX DDR -> AXIS payload              : PASS
+ RX AXIS -> DDR payload              : PASS
+ exact TX payload ordering           : PASS
+ exact RX payload ordering           : PASS
+ randomized AXI backpressure         : PASS
+ randomized TX sink backpressure     : PASS
+ shared read arbitration             : PASS
+ shared write arbitration            : PASS
+ simultaneous TX/RX pending work     : PASS
+ overlapping TX/RX stream traffic    : PASS
+ concurrent AXI read/write traffic   : PASS
+ descriptor STATUS writeback         : PASS
+ descriptor OWN release              : PASS
+ authoritative HEAD advancement      : PASS
+ IRQ completion metadata             : PASS
+ no TX/RX payload corruption         : PASS
+====================================================
+$finish called at time : 19295 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/07-custom-dma-linux-driver/tb/tb_dma_core.sv" Line 1473
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Oct  5 06:07:23 2026...
