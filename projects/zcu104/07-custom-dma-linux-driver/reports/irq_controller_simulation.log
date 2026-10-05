@@ -1,0 +1,36 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_dma_irq_controller_sim/xsim_script.tcl
+# xsim {tb_dma_irq_controller_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+IRQ RESET STATE: PASS
+MASKED EVENT LATCHING: PASS
+PENDING EVENT ENABLE: PASS
+SELECTIVE W1C CLEAR: PASS
+SET-DOMINANT W1C COLLISION: PASS
+IRQ ENABLE MASKING: PASS
+FULL IRQ ACKNOWLEDGEMENT: PASS
+ALL FOUR IRQ SOURCES: PASS
+
+============================================
+ DMA IRQ CONTROLLER: PASS
+ TX completion latching       : PASS
+ RX completion latching       : PASS
+ TX error latching            : PASS
+ RX error latching            : PASS
+ masked-event preservation    : PASS
+ IRQ enable masking           : PASS
+ selective W1C                : PASS
+ set-dominant clear collision : PASS
+ explicit acknowledgement     : PASS
+============================================
+$finish called at time : 340 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/07-custom-dma-linux-driver/tb/tb_dma_irq_controller.sv" Line 431
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Oct  5 07:53:56 2026...
