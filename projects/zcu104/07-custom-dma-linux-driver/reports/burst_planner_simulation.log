@@ -1,0 +1,31 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_dma_burst_planner_sim/xsim_script.tcl
+# xsim {tb_dma_burst_planner_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+DIRECTED BASIC CASES: PASS
+MAXIMUM BURST LIMITING: PASS
+DIRECTED 4-KiB SPLITS: PASS
+4-KiB BOUNDARY SWEEP: PASS
+BURST/LENGTH SWEEP: PASS
+INVALID/IDLE CASES: PASS
+
+============================================
+ DMA BURST PLANNER: PASS
+ Tests executed: 2154
+ 64-bit beat alignment      : PASS
+ AXI burst-length limiting  : PASS
+ 4-KiB boundary enforcement : PASS
+ AXI LEN encoding           : PASS
+ Invalid-input detection    : PASS
+============================================
+$finish called at time : 2164 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/07-custom-dma-linux-driver/tb/tb_dma_burst_planner.sv" Line 282
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Oct  5 04:37:09 2026...
