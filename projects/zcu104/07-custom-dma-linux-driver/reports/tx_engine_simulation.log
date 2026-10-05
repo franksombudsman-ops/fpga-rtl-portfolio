@@ -1,0 +1,38 @@
+
+****** xsim v2023.2 (64-bit)
+  **** SW Build 4029153 on Fri Oct 13 20:13:54 MDT 2023
+  **** IP Build 4028589 on Sat Oct 14 00:45:43 MDT 2023
+  **** SharedData Build 4025554 on Tue Oct 10 17:18:54 MDT 2023
+    ** Copyright 1986-2022 Xilinx, Inc. All Rights Reserved.
+    ** Copyright 2022-2023 Advanced Micro Devices, Inc. All Rights Reserved.
+
+source xsim.dir/tb_dma_tx_engine_sim/xsim_script.tcl
+# xsim {tb_dma_tx_engine_sim} -autoloadwcfg -runall
+Time resolution is 1 ps
+run -all
+BASIC TX PAYLOADS: PASS
+MULTI-BURST TX: PASS
+4-KiB CROSSING TX: PASS
+TX SLVERR PROPAGATION: PASS
+TX DECERR PROPAGATION: PASS
+TX WORK VALIDATION: PASS
+
+=============================================
+ DMA TX ENGINE: PASS
+ DDR -> AXIS payload movement : PASS
+ exact byte ordering          : PASS
+ randomized DDR stalls        : PASS
+ randomized AXIS backpressure : PASS
+ AXIS stall stability         : PASS
+ multi-burst payloads         : PASS
+ 4-KiB read splitting         : PASS
+ exact TLAST generation       : PASS
+ exact completion accounting  : PASS
+ AXI SLVERR propagation       : PASS
+ AXI DECERR propagation       : PASS
+ invalid-work rejection       : PASS
+ retirement backpressure      : PASS
+=============================================
+$finish called at time : 43940 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/07-custom-dma-linux-driver/tb/tb_dma_tx_engine.sv" Line 957
+exit
+INFO: [Common 17-206] Exiting xsim at Mon Oct  5 05:42:44 2026...
