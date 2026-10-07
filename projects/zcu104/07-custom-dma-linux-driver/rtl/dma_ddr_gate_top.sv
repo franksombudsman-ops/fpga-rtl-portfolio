@@ -53,6 +53,18 @@ module dma_ddr_gate_top (
     output logic        irq,
 
     /*
+     * Gate 3B observation-only TX AXI4-Stream probes.
+     *
+     * These outputs do not participate in control or datapath behavior.
+     * They expose the existing internal TX stream for physical ILA capture.
+     */
+    output logic [63:0] dbg_tx_data,
+    output logic [7:0]  dbg_tx_keep,
+    output logic        dbg_tx_valid,
+    output logic        dbg_tx_ready,
+    output logic        dbg_tx_last,
+
+    /*
      * AXI4-MM DDR master
      */
     output logic [3:0]  m_axi_arid,
@@ -200,6 +212,18 @@ module dma_ddr_gate_top (
     logic        unused_tx_tvalid;
     logic        unused_tx_tlast;
     logic        unused_rx_tready;
+
+    /*
+     * Observation-only Gate-3B taps.
+     *
+     * TX sink behavior remains exactly the same as Gate 3A:
+     * TREADY is permanently asserted.
+     */
+    assign dbg_tx_data  = unused_tx_tdata;
+    assign dbg_tx_keep  = unused_tx_tkeep;
+    assign dbg_tx_valid = unused_tx_tvalid;
+    assign dbg_tx_ready = 1'b1;
+    assign dbg_tx_last  = unused_tx_tlast;
 
     /*
      * Software-visible status packing for physical integration.
