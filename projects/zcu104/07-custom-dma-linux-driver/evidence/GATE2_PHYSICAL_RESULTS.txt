@@ -1,0 +1,40 @@
+PROJECT 07 — PHYSICAL GATE 2
+Custom AXI DDR Descriptor Fetch
+
+Platform: ZCU104
+Date: 2026-10-07
+
+Descriptor DDR address:
+0x10000000
+
+Descriptor state:
+64 bytes all zero
+CONTROL.OWN = 0
+
+TX ring:
+TX_RING_BASE = 0x0000000010000000
+TX_RING_SIZE = 16
+TX_TAIL      = 1
+
+Physical results:
+
+GLOBAL_STATUS = 0x00000005
+TX_CONTROL    = 0x00000001
+TX_STATUS     = 0x00000029
+TX_HEAD       = 0x00000000
+TX_TAIL       = 0x00000001
+IRQ_STATUS    = 0x00000004
+IRQ_ENABLE    = 0x00000004
+ERROR_STATUS  = 0x00000001
+ERROR_INFO    = 0x00000002
+
+TX_STATUS:
+config_valid = 1
+fault_valid  = 1
+fault_code   = 2 = FAULT_OWNERSHIP
+
+Descriptor contents remained unchanged after DMA access.
+
+Conclusion:
+Physical custom DMA descriptor fetch from DDR: PASS.
+HW_HEAD correctly remained unchanged.
