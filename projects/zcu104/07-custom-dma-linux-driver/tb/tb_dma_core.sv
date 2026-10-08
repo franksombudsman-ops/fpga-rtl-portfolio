@@ -11,7 +11,14 @@ module tb_dma_core;
     localparam logic [39:0] RX_BUF  = 40'h0000_8000;
 
     localparam integer TX_BYTES = 4096;
+
+`ifdef GATE4A_RX64
+    localparam integer RX_BYTES = 64;
+    localparam integer EXPECTED_AXI_WRITES = 5;
+`else
     localparam integer RX_BYTES = 4096;
+    localparam integer EXPECTED_AXI_WRITES = 6;
+`endif
 
     localparam logic [63:0] TX_COOKIE =
         64'h5458_0000_0000_0001;
@@ -310,9 +317,55 @@ module tb_dma_core;
 
         begin
 
+`ifdef GATE4A_RX64
+
+            case (offset)
+
+                0:
+                    rx_pattern =
+                        64'h22222222_11111111;
+
+                8:
+                    rx_pattern =
+                        64'h44444444_33333333;
+
+                16:
+                    rx_pattern =
+                        64'h66666666_55555555;
+
+                24:
+                    rx_pattern =
+                        64'h88888888_77777777;
+
+                32:
+                    rx_pattern =
+                        64'hAAAAAAAA_99999999;
+
+                40:
+                    rx_pattern =
+                        64'hCCCCCCCC_BBBBBBBB;
+
+                48:
+                    rx_pattern =
+                        64'hEEEEEEEE_DDDDDDDD;
+
+                56:
+                    rx_pattern =
+                        64'h12345678_FFFFFFFF;
+
+                default:
+                    rx_pattern =
+                        64'hDEAD_DEAD_DEAD_DEAD;
+
+            endcase
+
+`else
+
             rx_pattern =
                 64'hB200_0000_0000_0000 ^
                 (offset >> 3);
+
+`endif
 
         end
 
@@ -1296,7 +1349,7 @@ module tb_dma_core;
         if (mem_read64(
                 RX_RING + 40'h18
             ) !==
-            {32'd4096, 32'h0000_0001}) begin
+            {RX_BYTES, 32'h0000_0001}) begin
 
             $display(
                 "FAIL RX descriptor STATUS writeback got=%h",
@@ -1328,7 +1381,7 @@ module tb_dma_core;
         if (mem_read64(
                 RX_RING + 40'h08
             ) !==
-            {32'h0000_0006, 32'd4096}) begin
+            {32'h0000_0006, RX_BYTES}) begin
 
             $display(
                 "FAIL RX descriptor OWN release got=%h",
@@ -1430,13 +1483,14 @@ module tb_dma_core;
 
         end
 
-        if (aw_count != 6 ||
-            b_count != 6) begin
+        if (aw_count != EXPECTED_AXI_WRITES ||
+            b_count != EXPECTED_AXI_WRITES) begin
 
             $display(
-                "FAIL AXI write counts AW=%0d B=%0d expected=6",
+                "FAIL AXI write counts AW=%0d B=%0d expected=%0d",
                 aw_count,
-                b_count
+                b_count,
+                EXPECTED_AXI_WRITES
             );
             $fatal;
 
@@ -1449,6 +1503,10 @@ module tb_dma_core;
         $display("");
         $display("====================================================");
         $display(" INTEGRATED BIDIRECTIONAL DMA CORE: PASS");
+
+`ifdef GATE4A_RX64
+        $display(" GATE 4A 64-BYTE RX INTEGRATION: PASS");
+`endif
         $display(" TX descriptor DDR fetch             : PASS");
         $display(" RX descriptor DDR fetch             : PASS");
         $display(" descriptor parser/ring integration  : PASS");

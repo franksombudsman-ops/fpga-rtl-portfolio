@@ -198,20 +198,141 @@ module dma_ddr_gate_top (
         aresetn && !soft_reset_pulse;
 
     /*
-     * Temporary Gate-2 stream policy.
+     * Gate 4A deterministic RX physical-validation source.
      *
-     * TX sink is always ready.
-     * RX source remains inactive.
+     * This source is intentionally confined to the physical gate wrapper.
+     * It does not modify dma_core, dma_rx_engine, descriptor semantics,
+     * arbitration, or the AXI4-MM write path.
      *
-     * Gate 2 intentionally uses OWN=0 descriptors, so neither payload
-     * path should become active.
+     * One 64-byte packet is emitted after the RX channel is enabled.
+     * AXI4-Stream state advances only on TVALID && TREADY.
+     * Therefore DATA/KEEP/LAST remain stable under backpressure.
      */
 
+    /*
+     * Existing proven Gate-3B TX path.
+     * These signals remain unchanged and continue feeding
+     * the observation-only TX debug taps.
+     */
     logic [63:0] unused_tx_tdata;
     logic [7:0]  unused_tx_tkeep;
     logic        unused_tx_tvalid;
     logic        unused_tx_tlast;
-    logic        unused_rx_tready;
+
+    logic [63:0] gate4a_rx_tdata;
+    logic [7:0]  gate4a_rx_tkeep;
+    logic        gate4a_rx_tvalid;
+    logic        gate4a_rx_tready;
+    logic        gate4a_rx_tlast;
+
+    logic [2:0]  gate4a_rx_beat;
+    logic        gate4a_rx_active;
+    logic        gate4a_rx_done;
+
+    always_comb begin
+
+        case (gate4a_rx_beat)
+
+            3'd0:
+                gate4a_rx_tdata =
+                    64'h22222222_11111111;
+
+            3'd1:
+                gate4a_rx_tdata =
+                    64'h44444444_33333333;
+
+            3'd2:
+                gate4a_rx_tdata =
+                    64'h66666666_55555555;
+
+            3'd3:
+                gate4a_rx_tdata =
+                    64'h88888888_77777777;
+
+            3'd4:
+                gate4a_rx_tdata =
+                    64'hAAAAAAAA_99999999;
+
+            3'd5:
+                gate4a_rx_tdata =
+                    64'hCCCCCCCC_BBBBBBBB;
+
+            3'd6:
+                gate4a_rx_tdata =
+                    64'hEEEEEEEE_DDDDDDDD;
+
+            3'd7:
+                gate4a_rx_tdata =
+                    64'h12345678_FFFFFFFF;
+
+            default:
+                gate4a_rx_tdata =
+                    64'd0;
+
+        endcase
+
+    end
+
+    assign gate4a_rx_tkeep =
+        8'hFF;
+
+    assign gate4a_rx_tvalid =
+        gate4a_rx_active;
+
+    assign gate4a_rx_tlast =
+        gate4a_rx_active &&
+        (gate4a_rx_beat == 3'd7);
+
+    always_ff @(posedge aclk) begin
+
+        if (!core_aresetn) begin
+
+            gate4a_rx_beat   <= 3'd0;
+            gate4a_rx_active <= 1'b0;
+            gate4a_rx_done   <= 1'b0;
+
+        end
+        else begin
+
+            /*
+             * Arm exactly once when the RX channel becomes operational.
+             * The stream may assert VALID before the DMA asserts READY;
+             * AXI4-Stream permits this and the first beat remains stable.
+             */
+            if (!gate4a_rx_active &&
+                !gate4a_rx_done) begin
+
+                if (global_enable &&
+                    rx_enable &&
+                    !rx_halt) begin
+
+                    gate4a_rx_beat   <= 3'd0;
+                    gate4a_rx_active <= 1'b1;
+
+                end
+
+            end
+            else if (gate4a_rx_tvalid &&
+                     gate4a_rx_tready) begin
+
+                if (gate4a_rx_beat == 3'd7) begin
+
+                    gate4a_rx_active <= 1'b0;
+                    gate4a_rx_done   <= 1'b1;
+
+                end
+                else begin
+
+                    gate4a_rx_beat <=
+                        gate4a_rx_beat + 3'd1;
+
+                end
+
+            end
+
+        end
+
+    end
 
     /*
      * Observation-only Gate-3B taps.
@@ -453,11 +574,11 @@ module dma_ddr_gate_top (
         .m_axis_tx_tready          (1'b1),
         .m_axis_tx_tlast           (unused_tx_tlast),
 
-        .s_axis_rx_tdata           (64'd0),
-        .s_axis_rx_tkeep           (8'd0),
-        .s_axis_rx_tvalid          (1'b0),
-        .s_axis_rx_tready          (unused_rx_tready),
-        .s_axis_rx_tlast           (1'b0),
+        .s_axis_rx_tdata           (gate4a_rx_tdata),
+        .s_axis_rx_tkeep           (gate4a_rx_tkeep),
+        .s_axis_rx_tvalid          (gate4a_rx_tvalid),
+        .s_axis_rx_tready          (gate4a_rx_tready),
+        .s_axis_rx_tlast           (gate4a_rx_tlast),
 
         .m_axi_arid                (m_axi_arid),
         .m_axi_araddr              (m_axi_araddr),

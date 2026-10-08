@@ -40,6 +40,6 @@ SHARED MEMORY TRANSACTION ACCOUNTING: PASS
  IRQ completion metadata             : PASS
  no TX/RX payload corruption         : PASS
 ====================================================
-$finish called at time : 19295 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/07-custom-dma-linux-driver/tb/tb_dma_core.sv" Line 1473
+$finish called at time : 19295 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/07-custom-dma-linux-driver/tb/tb_dma_core.sv" Line 1531
 exit
-INFO: [Common 17-206] Exiting xsim at Mon Oct  5 06:07:23 2026...
+INFO: [Common 17-206] Exiting xsim at Wed Oct  7 14:38:45 2026...

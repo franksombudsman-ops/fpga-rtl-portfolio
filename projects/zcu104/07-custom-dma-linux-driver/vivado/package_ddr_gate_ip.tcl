@@ -82,26 +82,26 @@ set_property version 1.0 $core
 
 set s_axi [
     ipx::get_bus_interfaces \
-        S_AXI \
+        s_axi \
         -of_objects $core
 ]
 
 if {$s_axi eq ""} {
-    error "Packaging failed: S_AXI interface not inferred"
+    error "Packaging failed: s_axi interface not inferred"
 }
 
 set m_axi [
     ipx::get_bus_interfaces \
-        M_AXI \
+        m_axi \
         -of_objects $core
 ]
 
 if {$m_axi eq ""} {
-    error "Packaging failed: M_AXI interface not inferred"
+    error "Packaging failed: m_axi interface not inferred"
 }
 
-puts "FOUND S_AXI: $s_axi"
-puts "FOUND M_AXI: $m_axi"
+puts "FOUND s_axi: $s_axi"
+puts "FOUND m_axi: $m_axi"
 
 # ---------------------------------------------------------------
 # Explicit CSR memory map
@@ -110,26 +110,26 @@ puts "FOUND M_AXI: $m_axi"
 set mm [
     ipx::get_memory_maps \
         -quiet \
-        S_AXI \
+        s_axi \
         -of_objects $core
 ]
 
 if {$mm eq ""} {
 
     ipx::add_memory_map \
-        S_AXI \
+        s_axi \
         $core
 
     set mm [
         ipx::get_memory_maps \
-            S_AXI \
+            s_axi \
             -of_objects $core
     ]
 }
 
 set_property \
     slave_memory_map_ref \
-    S_AXI \
+    s_axi \
     $s_axi
 
 set reg_block [
@@ -163,12 +163,12 @@ set_property usage        register $reg_block
 # ---------------------------------------------------------------
 
 ipx::associate_bus_interfaces \
-    -busif S_AXI \
+    -busif s_axi \
     -clock aclk \
     $core
 
 ipx::associate_bus_interfaces \
-    -busif M_AXI \
+    -busif m_axi \
     -clock aclk \
     $core
 
@@ -185,8 +185,8 @@ puts ""
 puts "======================================================="
 puts " PROJECT 07 DDR GATE IP PACKAGE: PASS"
 puts " VLNV: coltium.com:user:dma_ddr_gate_top:1.0"
-puts " S_AXI: AXI4-Lite CSR slave"
-puts " M_AXI: custom AXI4-MM memory master"
+puts " s_axi: AXI4-Lite CSR slave"
+puts " m_axi: custom AXI4-MM memory master"
 puts " CSR range: 4096 bytes"
 puts " repo: $ip_repo_root"
 puts "======================================================="
