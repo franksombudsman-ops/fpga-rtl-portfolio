@@ -65,6 +65,16 @@ module dma_ddr_gate_top (
     output logic        dbg_tx_last,
 
     /*
+     * Gate 4B observation-only RX AXI4-Stream taps.
+     * Neutral names intentionally avoid AXI interface inference.
+     */
+    output logic [63:0] dbg_rx_data,
+    output logic [7:0]  dbg_rx_keep,
+    output logic        dbg_rx_valid,
+    output logic        dbg_rx_ready,
+    output logic        dbg_rx_last,
+
+    /*
      * AXI4-MM DDR master
      */
     output logic [3:0]  m_axi_arid,
@@ -345,6 +355,18 @@ module dma_ddr_gate_top (
     assign dbg_tx_valid = unused_tx_tvalid;
     assign dbg_tx_ready = 1'b1;
     assign dbg_tx_last  = unused_tx_tlast;
+
+    /*
+     * Gate 4B RX observation taps.
+     *
+     * These signals observe the exact AXI4-Stream interface presented
+     * to dma_core. They do not alter stream behavior.
+     */
+    assign dbg_rx_data  = gate4a_rx_tdata;
+    assign dbg_rx_keep  = gate4a_rx_tkeep;
+    assign dbg_rx_valid = gate4a_rx_tvalid;
+    assign dbg_rx_ready = gate4a_rx_tready;
+    assign dbg_rx_last  = gate4a_rx_tlast;
 
     /*
      * Software-visible status packing for physical integration.
