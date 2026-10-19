@@ -17,6 +17,10 @@ DUAL DESCRIPTOR WRITEBACK / OWN RELEASE: PASS
 DUAL HEAD ADVANCEMENT: PASS
 TRUE BIDIRECTIONAL CONCURRENCY: PASS
 SHARED MEMORY TRANSACTION ACCOUNTING: PASS
+PERFORMANCE COUNTER ACCOUNTING: PASS
+ PERF TX bytes=4096 desc=1 active=1405 axi_stall=211 axis_stall=187
+ PERF RX bytes=4096 desc=1 active=1918 axi_stall=152 axis_stall=330
+PERFORMANCE COUNTER CLEAR: PASS
 
 ====================================================
  INTEGRATED BIDIRECTIONAL DMA CORE: PASS
@@ -40,6 +44,6 @@ SHARED MEMORY TRANSACTION ACCOUNTING: PASS
  IRQ completion metadata             : PASS
  no TX/RX payload corruption         : PASS
 ====================================================
-$finish called at time : 19415 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/07-custom-dma-linux-driver/tb/tb_dma_core.sv" Line 1531
+$finish called at time : 19445 ns : File "/home/frankhasrisen/fpga-rtl-portfolio/projects/zcu104/07-custom-dma-linux-driver/tb/tb_dma_core.sv" Line 1649
 exit
-INFO: [Common 17-206] Exiting xsim at Mon Oct 19 02:27:00 2026...
+INFO: [Common 17-206] Exiting xsim at Mon Oct 19 03:55:55 2026...

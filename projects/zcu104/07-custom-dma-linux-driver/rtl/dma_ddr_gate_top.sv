@@ -192,6 +192,18 @@ module dma_ddr_gate_top (
 
     logic core_aresetn;
 
+    logic [63:0] tx_bytes;
+    logic [31:0] tx_desc_count;
+    logic [63:0] tx_active_cycles;
+    logic [63:0] tx_axi_stall;
+    logic [63:0] tx_axis_stall;
+
+    logic [63:0] rx_bytes;
+    logic [31:0] rx_desc_count;
+    logic [63:0] rx_active_cycles;
+    logic [63:0] rx_axi_stall;
+    logic [63:0] rx_axis_stall;
+
     /*
      * Software may configure rings while disabled.
      * Publishing TAIL to dma_core requires the global/channel enables.
@@ -505,11 +517,11 @@ module dma_ddr_gate_top (
         .tx_status               (tx_status),
         .tx_head                 (tx_hw_head),
 
-        .tx_bytes                (64'd0),
-        .tx_desc_count           (32'd0),
-        .tx_active_cycles        (64'd0),
-        .tx_axi_stall            (64'd0),
-        .tx_axis_stall           (64'd0),
+        .tx_bytes                (tx_bytes),
+        .tx_desc_count           (tx_desc_count),
+        .tx_active_cycles        (tx_active_cycles),
+        .tx_axi_stall            (tx_axi_stall),
+        .tx_axis_stall           (tx_axis_stall),
 
         .rx_enable               (rx_enable),
         .rx_halt                 (rx_halt),
@@ -520,11 +532,11 @@ module dma_ddr_gate_top (
         .rx_status               (rx_status),
         .rx_head                 (rx_hw_head),
 
-        .rx_bytes                (64'd0),
-        .rx_desc_count           (32'd0),
-        .rx_active_cycles        (64'd0),
-        .rx_axi_stall            (64'd0),
-        .rx_axis_stall           (64'd0),
+        .rx_bytes                (rx_bytes),
+        .rx_desc_count           (rx_desc_count),
+        .rx_active_cycles        (rx_active_cycles),
+        .rx_axi_stall            (rx_axi_stall),
+        .rx_axis_stall           (rx_axis_stall),
 
         .scratch                 (scratch),
         .scratch_write_pulse     (scratch_write_pulse)
@@ -541,6 +553,7 @@ module dma_ddr_gate_top (
     ) core (
         .clk                       (aclk),
         .aresetn                   (core_aresetn),
+        .counter_clear             (counter_clear_pulse),
 
         .tx_cfg_load               (tx_cfg_load_pulse),
         .tx_ring_base              (tx_ring_base),
@@ -566,6 +579,12 @@ module dma_ddr_gate_top (
         .tx_completion_actual_length
                                      (tx_completion_actual_length),
 
+        .tx_bytes                   (tx_bytes),
+        .tx_desc_count              (tx_desc_count),
+        .tx_active_cycles           (tx_active_cycles),
+        .tx_axi_stall               (tx_axi_stall),
+        .tx_axis_stall              (tx_axis_stall),
+
         .rx_cfg_load               (rx_cfg_load_pulse),
         .rx_ring_base              (rx_ring_base),
         .rx_ring_size              (rx_ring_size),
@@ -589,6 +608,12 @@ module dma_ddr_gate_top (
         .rx_completion_status      (rx_completion_status),
         .rx_completion_actual_length
                                      (rx_completion_actual_length),
+
+        .rx_bytes                   (rx_bytes),
+        .rx_desc_count              (rx_desc_count),
+        .rx_active_cycles           (rx_active_cycles),
+        .rx_axi_stall               (rx_axi_stall),
+        .rx_axis_stall              (rx_axis_stall),
 
         .m_axis_tx_tdata           (unused_tx_tdata),
         .m_axis_tx_tkeep           (unused_tx_tkeep),

@@ -30,6 +30,7 @@ module tb_dma_core;
     always #5 clk = ~clk;
 
     logic aresetn;
+    logic counter_clear;
 
     /*
      * ------------------------------------------------------------
@@ -80,6 +81,18 @@ module tb_dma_core;
     logic [63:0] rx_completion_cookie;
     logic [31:0] rx_completion_status;
     logic [31:0] rx_completion_actual_length;
+
+    logic [63:0] tx_bytes;
+    logic [31:0] tx_desc_count;
+    logic [63:0] tx_active_cycles;
+    logic [63:0] tx_axi_stall;
+    logic [63:0] tx_axis_stall;
+
+    logic [63:0] rx_bytes;
+    logic [31:0] rx_desc_count;
+    logic [63:0] rx_active_cycles;
+    logic [63:0] rx_axi_stall;
+    logic [63:0] rx_axis_stall;
 
     /*
      * ------------------------------------------------------------
@@ -150,6 +163,7 @@ module tb_dma_core;
     dma_core dut (
         .clk                       (clk),
         .aresetn                   (aresetn),
+        .counter_clear             (counter_clear),
 
         .tx_cfg_load               (tx_cfg_load),
         .tx_ring_base              (tx_ring_base),
@@ -175,6 +189,12 @@ module tb_dma_core;
         .tx_completion_actual_length
                                     (tx_completion_actual_length),
 
+        .tx_bytes                   (tx_bytes),
+        .tx_desc_count              (tx_desc_count),
+        .tx_active_cycles           (tx_active_cycles),
+        .tx_axi_stall               (tx_axi_stall),
+        .tx_axis_stall              (tx_axis_stall),
+
         .rx_cfg_load               (rx_cfg_load),
         .rx_ring_base              (rx_ring_base),
         .rx_ring_size              (rx_ring_size),
@@ -198,6 +218,12 @@ module tb_dma_core;
         .rx_completion_status      (rx_completion_status),
         .rx_completion_actual_length
                                     (rx_completion_actual_length),
+
+        .rx_bytes                   (rx_bytes),
+        .rx_desc_count              (rx_desc_count),
+        .rx_active_cycles           (rx_active_cycles),
+        .rx_axi_stall               (rx_axi_stall),
+        .rx_axis_stall              (rx_axis_stall),
 
         .m_axis_tx_tdata           (m_axis_tx_tdata),
         .m_axis_tx_tkeep           (m_axis_tx_tkeep),
@@ -1102,6 +1128,9 @@ module tb_dma_core;
         aresetn =
             1'b0;
 
+        counter_clear =
+            1'b0;
+
         tx_cfg_load =
             1'b0;
 
@@ -1498,6 +1527,95 @@ module tb_dma_core;
 
         $display(
             "SHARED MEMORY TRANSACTION ACCOUNTING: PASS"
+        );
+
+        if (tx_bytes != TX_BYTES ||
+            rx_bytes != RX_BYTES) begin
+
+            $display(
+                "FAIL PERF bytes TX=%0d RX=%0d expected TX=%0d RX=%0d",
+                tx_bytes,
+                rx_bytes,
+                TX_BYTES,
+                RX_BYTES
+            );
+            $fatal;
+
+        end
+
+        if (tx_desc_count != 1 ||
+            rx_desc_count != 1) begin
+
+            $display(
+                "FAIL PERF descriptor counts TX=%0d RX=%0d",
+                tx_desc_count,
+                rx_desc_count
+            );
+            $fatal;
+
+        end
+
+        if (tx_active_cycles == 0 ||
+            rx_active_cycles == 0) begin
+
+            $display(
+                "FAIL PERF active cycles TX=%0d RX=%0d",
+                tx_active_cycles,
+                rx_active_cycles
+            );
+            $fatal;
+
+        end
+
+        $display(
+            "PERFORMANCE COUNTER ACCOUNTING: PASS"
+        );
+
+        $display(
+            " PERF TX bytes=%0d desc=%0d active=%0d axi_stall=%0d axis_stall=%0d",
+            tx_bytes,
+            tx_desc_count,
+            tx_active_cycles,
+            tx_axi_stall,
+            tx_axis_stall
+        );
+
+        $display(
+            " PERF RX bytes=%0d desc=%0d active=%0d axi_stall=%0d axis_stall=%0d",
+            rx_bytes,
+            rx_desc_count,
+            rx_active_cycles,
+            rx_axi_stall,
+            rx_axis_stall
+        );
+
+        @(negedge clk);
+        counter_clear = 1'b1;
+
+        @(posedge clk);
+        @(negedge clk);
+        counter_clear = 1'b0;
+
+        repeat (2) @(posedge clk);
+
+        if (tx_bytes != 0 ||
+            tx_desc_count != 0 ||
+            tx_active_cycles != 0 ||
+            tx_axi_stall != 0 ||
+            tx_axis_stall != 0 ||
+            rx_bytes != 0 ||
+            rx_desc_count != 0 ||
+            rx_active_cycles != 0 ||
+            rx_axi_stall != 0 ||
+            rx_axis_stall != 0) begin
+
+            $display("FAIL: performance counter clear");
+            $fatal;
+
+        end
+
+        $display(
+            "PERFORMANCE COUNTER CLEAR: PASS"
         );
 
         $display("");

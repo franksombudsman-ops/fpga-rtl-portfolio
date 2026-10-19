@@ -30,6 +30,7 @@ module dma_core #(
 )(
     input  logic                       clk,
     input  logic                       aresetn,
+    input  logic                       counter_clear,
 
     /*
      * ------------------------------------------------------------
@@ -58,6 +59,12 @@ module dma_core #(
     output logic [31:0]                tx_completion_status,
     output logic [31:0]                tx_completion_actual_length,
 
+    output logic [63:0]                tx_bytes,
+    output logic [31:0]                tx_desc_count,
+    output logic [63:0]                tx_active_cycles,
+    output logic [63:0]                tx_axi_stall,
+    output logic [63:0]                tx_axis_stall,
+
     /*
      * ------------------------------------------------------------
      * RX descriptor ring control
@@ -84,6 +91,12 @@ module dma_core #(
     output logic [63:0]                rx_completion_cookie,
     output logic [31:0]                rx_completion_status,
     output logic [31:0]                rx_completion_actual_length,
+
+    output logic [63:0]                rx_bytes,
+    output logic [31:0]                rx_desc_count,
+    output logic [63:0]                rx_active_cycles,
+    output logic [63:0]                rx_axi_stall,
+    output logic [63:0]                rx_axis_stall,
 
     /*
      * ------------------------------------------------------------
@@ -367,6 +380,90 @@ module dma_core #(
     logic                  wrm_cpl_error;
     logic [3:0]            wrm_cpl_error_code;
     logic [LEN_WIDTH-1:0]  wrm_cpl_bytes;
+
+    /*
+     * ============================================================
+     * PERFORMANCE COUNTERS
+     * ============================================================
+     *
+     * bytes:
+     *   completed payload bytes reported by descriptor retirement.
+     *
+     * desc_count:
+     *   successfully retired descriptor events.
+     *
+     * active_cycles:
+     *   cycles with at least one descriptor outstanding.
+     *
+     * axi_stall:
+     *   channel-specific payload memory request/data backpressure.
+     *
+     * axis_stall:
+     *   payload stream VALID asserted while READY is deasserted.
+     */
+
+    always_ff @(posedge clk) begin
+
+        if (!aresetn || counter_clear) begin
+
+            tx_bytes         <= 64'd0;
+            tx_desc_count    <= 32'd0;
+            tx_active_cycles <= 64'd0;
+            tx_axi_stall     <= 64'd0;
+            tx_axis_stall    <= 64'd0;
+
+            rx_bytes         <= 64'd0;
+            rx_desc_count    <= 32'd0;
+            rx_active_cycles <= 64'd0;
+            rx_axi_stall     <= 64'd0;
+            rx_axis_stall    <= 64'd0;
+
+        end
+        else begin
+
+            if (tx_completion_pulse) begin
+                tx_bytes <= tx_bytes +
+                    {32'd0, tx_completion_actual_length};
+                tx_desc_count <= tx_desc_count + 32'd1;
+            end
+
+            if (rx_completion_pulse) begin
+                rx_bytes <= rx_bytes +
+                    {32'd0, rx_completion_actual_length};
+                rx_desc_count <= rx_desc_count + 32'd1;
+            end
+
+            if (tx_pending_count != 0)
+                tx_active_cycles <=
+                    tx_active_cycles + 64'd1;
+
+            if (rx_pending_count != 0)
+                rx_active_cycles <=
+                    rx_active_cycles + 64'd1;
+
+            if ((txp_rd_req_valid && !txp_rd_req_ready) ||
+                (txp_rd_data_valid && !txp_rd_data_ready))
+                tx_axi_stall <=
+                    tx_axi_stall + 64'd1;
+
+            if ((rxp_wr_req_valid && !rxp_wr_req_ready) ||
+                (rxp_wr_data_valid && !rxp_wr_data_ready))
+                rx_axi_stall <=
+                    rx_axi_stall + 64'd1;
+
+            if (m_axis_tx_tvalid &&
+                !m_axis_tx_tready)
+                tx_axis_stall <=
+                    tx_axis_stall + 64'd1;
+
+            if (s_axis_rx_tvalid &&
+                !s_axis_rx_tready)
+                rx_axis_stall <=
+                    rx_axis_stall + 64'd1;
+
+        end
+
+    end
 
     /*
      * ============================================================
