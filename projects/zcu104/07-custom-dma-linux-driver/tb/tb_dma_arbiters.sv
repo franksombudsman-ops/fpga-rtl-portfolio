@@ -654,6 +654,116 @@ module tb_dma_arbiters;
         repeat (3) @(posedge clk);
 
         /*
+         * ADVERSARIAL REQUEST-STABILITY TEST
+         *
+         * A low-priority client presents a request while the shared
+         * master is stalled. A higher-priority request then arrives.
+         *
+         * Once VALID is presented, shared request address/length must
+         * remain stable until READY accepts that request.
+         */
+
+        $display("READ LATE-ARRIVAL STABILITY TEST");
+
+        rm_req_ready = 1'b0;
+        r2_req_valid = 1'b1;
+
+        @(posedge clk);
+        #1;
+
+        if (!rm_req_valid ||
+            rm_req_addr !== 40'h3000) begin
+            $display("FAIL: initial stalled read request incorrect");
+            $fatal;
+        end
+
+        /*
+         * Client 0 arrives after client 2 has already been presented.
+         * It must NOT replace the outstanding shared request.
+         */
+        @(negedge clk);
+        r0_req_valid = 1'b1;
+
+        repeat (3) begin
+            @(posedge clk);
+            #1;
+
+            if (!rm_req_valid ||
+                rm_req_addr !== 40'h3000 ||
+                rm_req_bytes !== 32'd8) begin
+                $display(
+                    "FAIL: read request changed after late-arriving client"
+                );
+                $display(
+                    "      expected addr=0x3000 got=0x%0h",
+                    rm_req_addr
+                );
+                $fatal;
+            end
+        end
+
+        $display("READ LATE-ARRIVAL STABILITY: PASS");
+
+        /*
+         * Reset before the equivalent write-side adversarial test.
+         */
+        aresetn = 1'b0;
+        r0_req_valid = 1'b0;
+        r2_req_valid = 1'b0;
+
+        repeat (3) @(posedge clk);
+        aresetn = 1'b1;
+        repeat (3) @(posedge clk);
+
+        $display("WRITE LATE-ARRIVAL STABILITY TEST");
+
+        wm_req_ready = 1'b0;
+        w2_req_valid = 1'b1;
+
+        @(posedge clk);
+        #1;
+
+        if (!wm_req_valid ||
+            wm_req_addr !== 40'h6000) begin
+            $display("FAIL: initial stalled write request incorrect");
+            $fatal;
+        end
+
+        @(negedge clk);
+        w0_req_valid = 1'b1;
+
+        repeat (3) begin
+            @(posedge clk);
+            #1;
+
+            if (!wm_req_valid ||
+                wm_req_addr !== 40'h6000 ||
+                wm_req_bytes !== 32'd8) begin
+                $display(
+                    "FAIL: write request changed after late-arriving client"
+                );
+                $display(
+                    "      expected addr=0x6000 got=0x%0h",
+                    wm_req_addr
+                );
+                $fatal;
+            end
+        end
+
+        $display("WRITE LATE-ARRIVAL STABILITY: PASS");
+
+        /*
+         * Restore clean reset state for the existing regression.
+         */
+        aresetn = 1'b0;
+        w0_req_valid = 1'b0;
+        w2_req_valid = 1'b0;
+
+        repeat (3) @(posedge clk);
+        aresetn = 1'b1;
+        repeat (3) @(posedge clk);
+
+        /*
          * READ:
          * All three request simultaneously.
          * Reset round-robin order must be 0 -> 1 -> 2.

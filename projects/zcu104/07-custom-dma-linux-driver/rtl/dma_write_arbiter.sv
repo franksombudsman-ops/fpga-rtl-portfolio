@@ -89,6 +89,16 @@ module dma_write_arbiter #(
     logic [1:0] owner;
     logic [1:0] rr_ptr;
 
+    /*
+     * Selected request is latched before it is presented to the
+     * shared master. This guarantees VALID/address/length stability
+     * for an arbitrary READY stall.
+     */
+    logic                  req_pending;
+    logic [1:0]            req_owner;
+    logic [ADDR_WIDTH-1:0] req_addr;
+    logic [LEN_WIDTH-1:0]  req_bytes;
+
     logic       grant_valid;
     logic [1:0] grant;
 
@@ -164,27 +174,23 @@ module dma_write_arbiter #(
         m_req_addr  = '0;
         m_req_bytes = '0;
 
-        if (!active && grant_valid) begin
+        if (!active && req_pending) begin
 
             m_req_valid = 1'b1;
+            m_req_addr  = req_addr;
+            m_req_bytes = req_bytes;
 
-            case (grant)
+            case (req_owner)
 
                 2'd0: begin
-                    m_req_addr   = c0_req_addr;
-                    m_req_bytes  = c0_req_bytes;
                     c0_req_ready = m_req_ready;
                 end
 
                 2'd1: begin
-                    m_req_addr   = c1_req_addr;
-                    m_req_bytes  = c1_req_bytes;
                     c1_req_ready = m_req_ready;
                 end
 
                 default: begin
-                    m_req_addr   = c2_req_addr;
-                    m_req_bytes  = c2_req_bytes;
                     c2_req_ready = m_req_ready;
                 end
 
@@ -264,21 +270,55 @@ module dma_write_arbiter #(
 
         if (!aresetn) begin
 
-            active <= 1'b0;
-            owner  <= 2'd0;
-            rr_ptr <= 2'd0;
+            active      <= 1'b0;
+            owner       <= 2'd0;
+            rr_ptr      <= 2'd0;
+            req_pending <= 1'b0;
+            req_owner   <= 2'd0;
+            req_addr    <= '0;
+            req_bytes   <= '0;
 
         end
         else begin
 
             if (!active) begin
 
-                if (m_req_valid &&
-                    m_req_ready) begin
+                if (!req_pending) begin
 
-                    active <= 1'b1;
-                    owner  <= grant;
-                    rr_ptr <= next_client(grant);
+                    if (grant_valid) begin
+
+                        req_pending <= 1'b1;
+                        req_owner   <= grant;
+
+                        case (grant)
+
+                            2'd0: begin
+                                req_addr  <= c0_req_addr;
+                                req_bytes <= c0_req_bytes;
+                            end
+
+                            2'd1: begin
+                                req_addr  <= c1_req_addr;
+                                req_bytes <= c1_req_bytes;
+                            end
+
+                            default: begin
+                                req_addr  <= c2_req_addr;
+                                req_bytes <= c2_req_bytes;
+                            end
+
+                        endcase
+
+                    end
+
+                end
+                else if (m_req_valid &&
+                         m_req_ready) begin
+
+                    active      <= 1'b1;
+                    owner       <= req_owner;
+                    rr_ptr      <= next_client(req_owner);
+                    req_pending <= 1'b0;
 
                 end
 
