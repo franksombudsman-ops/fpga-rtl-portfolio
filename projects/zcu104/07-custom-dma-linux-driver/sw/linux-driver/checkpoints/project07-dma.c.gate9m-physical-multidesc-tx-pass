@@ -1,0 +1,504 @@
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/module.h>
+#include <linux/platform_device.h>
+#include <linux/of.h>
+#include <linux/io.h>
+#include <linux/interrupt.h>
+#include <linux/dma-mapping.h>
+#include <linux/jiffies.h>
+#include <linux/delay.h>
+#include <linux/bitops.h>
+#include <linux/wait.h>
+
+#define P07_ID                  0x000
+#define P07_VERSION             0x004
+#define P07_GLOBAL_CONTROL      0x008
+
+#define P07_IRQ_STATUS          0x010
+#define P07_IRQ_ENABLE          0x014
+#define P07_ERROR_STATUS        0x018
+
+#define P07_TX_CONTROL          0x100
+#define P07_TX_BASE_LO          0x108
+#define P07_TX_BASE_HI          0x10C
+#define P07_TX_RING_SIZE        0x110
+#define P07_TX_TAIL             0x114
+#define P07_TX_HEAD             0x118
+#define P07_TX_BYTES_LO         0x11C
+#define P07_TX_BYTES_HI         0x120
+#define P07_TX_DESC_COUNT       0x124
+
+#define P07_GLOBAL_ENABLE       BIT(0)
+#define P07_SOFT_RESET          BIT(1)
+#define P07_COUNTER_CLEAR       BIT(2)
+
+#define P07_TX_ENABLE           BIT(0)
+
+#define P07_IRQ_TX_COMPLETE     BIT(0)
+#define P07_IRQ_RX_COMPLETE     BIT(1)
+#define P07_IRQ_TX_ERROR        BIT(2)
+#define P07_IRQ_RX_ERROR        BIT(3)
+#define P07_IRQ_ALL             0x0f
+
+#define P07_EXPECTED_ID         0x43444D41
+#define P07_EXPECTED_VERSION    0x00010000
+
+#define P07_DMA_BITS            40
+#define P07_RING_ENTRIES        16
+#define P07_TEST_DESC           4
+#define P07_DESC_BYTES          64
+#define P07_PAYLOAD_BYTES       64
+#define P07_TOTAL_BYTES         (P07_TEST_DESC * P07_PAYLOAD_BYTES)
+#define P07_TIMEOUT_MS          1000
+
+struct project07_desc {
+	__le64 buffer_addr;
+	__le32 length;
+	__le32 control;
+	__le64 cookie;
+	__le32 status;
+	__le32 actual_length;
+	u8 reserved[32];
+};
+
+struct project07_dma {
+	void __iomem *regs;
+	int irq;
+
+	void *ring_cpu;
+	dma_addr_t ring_dma;
+
+	void *payload_cpu;
+	dma_addr_t payload_dma;
+
+	wait_queue_head_t irq_wq;
+	atomic_t irq_count;
+	atomic_t seen_irq;
+};
+
+static irqreturn_t project07_dma_irq(int irq, void *data)
+{
+	struct project07_dma *dma = data;
+	u32 pending;
+
+	pending = readl(dma->regs + P07_IRQ_STATUS) &
+		  P07_IRQ_ALL;
+
+	if (!pending)
+		return IRQ_NONE;
+
+	atomic_inc(&dma->irq_count);
+	atomic_or(pending, &dma->seen_irq);
+
+	writel(pending, dma->regs + P07_IRQ_STATUS);
+	(void)readl(dma->regs + P07_IRQ_STATUS);
+
+	wake_up(&dma->irq_wq);
+
+	return IRQ_HANDLED;
+}
+
+static int project07_gate9m(struct platform_device *pdev,
+			    struct project07_dma *dma)
+{
+	struct device *dev = &pdev->dev;
+	struct project07_desc *desc;
+	__le64 *payload;
+	unsigned long timeout;
+
+	u32 head;
+	u32 irq_after;
+	u32 error_status;
+	u32 seen;
+	u64 tx_bytes;
+	u32 tx_desc;
+	int irq_count;
+	int i, j;
+
+	BUILD_BUG_ON(sizeof(struct project07_desc) !=
+		     P07_DESC_BYTES);
+
+	dma->ring_cpu =
+		dmam_alloc_coherent(
+			dev,
+			P07_RING_ENTRIES * P07_DESC_BYTES,
+			&dma->ring_dma,
+			GFP_KERNEL);
+
+	dma->payload_cpu =
+		dmam_alloc_coherent(
+			dev,
+			P07_TOTAL_BYTES,
+			&dma->payload_dma,
+			GFP_KERNEL);
+
+	if (!dma->ring_cpu ||
+	    !dma->payload_cpu)
+		return -ENOMEM;
+
+	memset(dma->ring_cpu, 0,
+	       P07_RING_ENTRIES * P07_DESC_BYTES);
+
+	memset(dma->payload_cpu, 0,
+	       P07_TOTAL_BYTES);
+
+	desc = dma->ring_cpu;
+	payload = dma->payload_cpu;
+
+	/*
+	 * Four distinct 64-byte payloads.
+	 * Descriptor N points at payload block N.
+	 */
+	for (i = 0; i < P07_TEST_DESC; i++) {
+		for (j = 0; j < 8; j++)
+			payload[(i * 8) + j] =
+				cpu_to_le64(
+					0x1000000000000000ULL |
+					((u64)i << 32) |
+					(u64)j);
+
+		desc[i].buffer_addr =
+			cpu_to_le64(
+				(u64)dma->payload_dma +
+				(i * P07_PAYLOAD_BYTES));
+
+		desc[i].length =
+			cpu_to_le32(P07_PAYLOAD_BYTES);
+
+		/*
+		 * OWN | IRQ | EOP
+		 */
+		desc[i].control =
+			cpu_to_le32(0x7);
+
+		desc[i].cookie =
+			cpu_to_le64(
+				0x394D000000000000ULL |
+				(u64)i);
+
+		desc[i].status =
+			cpu_to_le32(0);
+
+		desc[i].actual_length =
+			cpu_to_le32(0);
+	}
+
+	dev_info(dev,
+		 "Project07 Gate9M ring=%pad payload=%pad descriptors=%u total_bytes=%u\n",
+		 &dma->ring_dma,
+		 &dma->payload_dma,
+		 P07_TEST_DESC,
+		 P07_TOTAL_BYTES);
+
+	/*
+	 * Known stopped/reset state.
+	 */
+	writel(0, dma->regs + P07_IRQ_ENABLE);
+	writel(0, dma->regs + P07_TX_CONTROL);
+
+	writel(P07_SOFT_RESET,
+	       dma->regs + P07_GLOBAL_CONTROL);
+
+	(void)readl(dma->regs + P07_GLOBAL_CONTROL);
+	udelay(10);
+
+	writel(P07_COUNTER_CLEAR,
+	       dma->regs + P07_GLOBAL_CONTROL);
+
+	writel(P07_IRQ_ALL,
+	       dma->regs + P07_IRQ_STATUS);
+
+	writel(0xffffffff,
+	       dma->regs + P07_ERROR_STATUS);
+
+	(void)readl(dma->regs + P07_IRQ_STATUS);
+
+	atomic_set(&dma->irq_count, 0);
+	atomic_set(&dma->seen_irq, 0);
+
+	/*
+	 * Ring configuration:
+	 * BASE first, SIZE last = configuration commit.
+	 */
+	writel(lower_32_bits(dma->ring_dma),
+	       dma->regs + P07_TX_BASE_LO);
+
+	writel(upper_32_bits(dma->ring_dma),
+	       dma->regs + P07_TX_BASE_HI);
+
+	writel(P07_RING_ENTRIES,
+	       dma->regs + P07_TX_RING_SIZE);
+
+	/*
+	 * Publish all four descriptors and payload blocks before
+	 * advertising them through SW_TAIL.
+	 */
+	dma_wmb();
+
+	writel(P07_TEST_DESC,
+	       dma->regs + P07_TX_TAIL);
+
+	writel(P07_IRQ_TX_COMPLETE |
+	       P07_IRQ_TX_ERROR,
+	       dma->regs + P07_IRQ_ENABLE);
+
+	writel(P07_GLOBAL_ENABLE,
+	       dma->regs + P07_GLOBAL_CONTROL);
+
+	writel(P07_TX_ENABLE,
+	       dma->regs + P07_TX_CONTROL);
+
+	(void)readl(dma->regs + P07_TX_CONTROL);
+
+	dev_info(dev,
+		 "Project07 Gate9M submitted descriptors 0..3 with TX_TAIL=4\n");
+
+	/*
+	 * Completion IRQ may occur once per descriptor or be naturally
+	 * coalesced by the level-sensitive latched status bit.
+	 *
+	 * TX_HEAD=4 is therefore the authoritative completion condition.
+	 */
+	timeout =
+		wait_event_timeout(
+			dma->irq_wq,
+			(readl(dma->regs + P07_TX_HEAD) ==
+			 P07_TEST_DESC) ||
+			(atomic_read(&dma->seen_irq) &
+			 P07_IRQ_TX_ERROR),
+			msecs_to_jiffies(P07_TIMEOUT_MS));
+
+	dma_rmb();
+
+	head =
+		readl(dma->regs + P07_TX_HEAD);
+
+	seen =
+		atomic_read(&dma->seen_irq);
+
+	irq_count =
+		atomic_read(&dma->irq_count);
+
+	irq_after =
+		readl(dma->regs + P07_IRQ_STATUS);
+
+	error_status =
+		readl(dma->regs + P07_ERROR_STATUS);
+
+	tx_bytes =
+		(u64)readl(dma->regs + P07_TX_BYTES_LO) |
+		((u64)readl(dma->regs + P07_TX_BYTES_HI) << 32);
+
+	tx_desc =
+		readl(dma->regs + P07_TX_DESC_COUNT);
+
+	dev_info(dev,
+		 "Project07 Gate9M result: irq_count=%d seen_irq=0x%08x irq_after=0x%08x error_status=0x%08x head=%u bytes=%llu desc=%u\n",
+		 irq_count,
+		 seen,
+		 irq_after,
+		 error_status,
+		 head,
+		 (unsigned long long)tx_bytes,
+		 tx_desc);
+
+	for (i = 0; i < P07_TEST_DESC; i++) {
+		u32 control =
+			le32_to_cpu(desc[i].control);
+
+		u32 status =
+			le32_to_cpu(desc[i].status);
+
+		u32 actual =
+			le32_to_cpu(desc[i].actual_length);
+
+		dev_info(dev,
+			 "Project07 Gate9M desc[%d]: control=0x%08x status=0x%08x actual=%u cookie=0x%016llx\n",
+			 i,
+			 control,
+			 status,
+			 actual,
+			 (unsigned long long)
+			 le64_to_cpu(desc[i].cookie));
+	}
+
+	/*
+	 * Quiet hardware after evidence collection.
+	 */
+	writel(0, dma->regs + P07_IRQ_ENABLE);
+	writel(0, dma->regs + P07_TX_CONTROL);
+	writel(0, dma->regs + P07_GLOBAL_CONTROL);
+
+	if (!timeout) {
+		dev_err(dev,
+			"Project07 Gate9M FAIL: four-descriptor TX timed out\n");
+		return -ETIMEDOUT;
+	}
+
+	if (seen & P07_IRQ_TX_ERROR) {
+		dev_err(dev,
+			"Project07 Gate9M FAIL: TX error IRQ seen=0x%08x\n",
+			seen);
+		return -EIO;
+	}
+
+	if (!(seen & P07_IRQ_TX_COMPLETE)) {
+		dev_err(dev,
+			"Project07 Gate9M FAIL: no TX completion IRQ observed\n");
+		return -EIO;
+	}
+
+	if (irq_after != 0 ||
+	    error_status != 0) {
+		dev_err(dev,
+			"Project07 Gate9M FAIL: irq_after=0x%08x error_status=0x%08x\n",
+			irq_after,
+			error_status);
+		return -EIO;
+	}
+
+	if (head != P07_TEST_DESC) {
+		dev_err(dev,
+			"Project07 Gate9M FAIL: TX_HEAD=%u expected %u\n",
+			head,
+			P07_TEST_DESC);
+		return -EIO;
+	}
+
+	if (tx_bytes != P07_TOTAL_BYTES) {
+		dev_err(dev,
+			"Project07 Gate9M FAIL: TX_BYTES=%llu expected %u\n",
+			(unsigned long long)tx_bytes,
+			P07_TOTAL_BYTES);
+		return -EIO;
+	}
+
+	if (tx_desc != P07_TEST_DESC) {
+		dev_err(dev,
+			"Project07 Gate9M FAIL: TX_DESC_COUNT=%u expected %u\n",
+			tx_desc,
+			P07_TEST_DESC);
+		return -EIO;
+	}
+
+	for (i = 0; i < P07_TEST_DESC; i++) {
+		if (le32_to_cpu(desc[i].control) != 0x6 ||
+		    le32_to_cpu(desc[i].status) != 0x1 ||
+		    le32_to_cpu(desc[i].actual_length) !=
+		    P07_PAYLOAD_BYTES) {
+			dev_err(dev,
+				"Project07 Gate9M FAIL: descriptor %d retirement mismatch\n",
+				i);
+			return -EIO;
+		}
+	}
+
+	dev_info(dev,
+		 "Project07 Gate9M PASS: four Linux TX descriptors completed and retired in ring order\n");
+
+	return 0;
+}
+
+static int project07_dma_probe(struct platform_device *pdev)
+{
+	struct project07_dma *dma;
+	u32 id;
+	u32 version;
+	int ret;
+
+	dma =
+		devm_kzalloc(&pdev->dev,
+			     sizeof(*dma),
+			     GFP_KERNEL);
+
+	if (!dma)
+		return -ENOMEM;
+
+	dma->regs =
+		devm_platform_ioremap_resource(
+			pdev, 0);
+
+	if (IS_ERR(dma->regs))
+		return PTR_ERR(dma->regs);
+
+	id = readl(dma->regs + P07_ID);
+	version = readl(dma->regs + P07_VERSION);
+
+	dev_info(&pdev->dev,
+		 "Project07 DMA probe: ID=0x%08x VERSION=0x%08x\n",
+		 id, version);
+
+	if (id != P07_EXPECTED_ID ||
+	    version != P07_EXPECTED_VERSION)
+		return -ENODEV;
+
+	ret =
+		dma_set_mask_and_coherent(
+			&pdev->dev,
+			DMA_BIT_MASK(P07_DMA_BITS));
+
+	if (ret)
+		return ret;
+
+	init_waitqueue_head(&dma->irq_wq);
+	atomic_set(&dma->irq_count, 0);
+	atomic_set(&dma->seen_irq, 0);
+
+	dma->irq =
+		platform_get_irq(pdev, 0);
+
+	if (dma->irq < 0)
+		return dma->irq;
+
+	writel(0, dma->regs + P07_IRQ_ENABLE);
+	writel(P07_IRQ_ALL,
+	       dma->regs + P07_IRQ_STATUS);
+	(void)readl(dma->regs + P07_IRQ_STATUS);
+
+	ret =
+		devm_request_irq(&pdev->dev,
+				 dma->irq,
+				 project07_dma_irq,
+				 0,
+				 "project07-dma",
+				 dma);
+
+	if (ret)
+		return ret;
+
+	platform_set_drvdata(pdev, dma);
+
+	dev_info(&pdev->dev,
+		 "Project07 IRQ registered: Linux IRQ %d\n",
+		 dma->irq);
+
+	ret = project07_gate9m(pdev, dma);
+
+	if (ret)
+		return ret;
+
+	dev_info(&pdev->dev,
+		 "Project07 custom DMA hardware identified successfully\n");
+
+	return 0;
+}
+
+static const struct of_device_id project07_dma_of_match[] = {
+	{ .compatible = "xlnx,dma-ddr-gate-top-1.2" },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, project07_dma_of_match);
+
+static struct platform_driver project07_dma_driver = {
+	.probe = project07_dma_probe,
+	.driver = {
+		.name = "project07-dma",
+		.of_match_table = project07_dma_of_match,
+	},
+};
+
+module_platform_driver(project07_dma_driver);
+
+MODULE_AUTHOR("Coltium Industries");
+MODULE_DESCRIPTION("Project 07 Custom Descriptor-Ring DMA Linux driver");
+MODULE_LICENSE("GPL");

@@ -1,0 +1,374 @@
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/module.h>
+#include <linux/platform_device.h>
+#include <linux/of.h>
+#include <linux/io.h>
+#include <linux/interrupt.h>
+#include <linux/dma-mapping.h>
+#include <linux/completion.h>
+#include <linux/jiffies.h>
+#include <linux/delay.h>
+#include <linux/bitops.h>
+
+#define PROJECT07_ID_OFFSET              0x000
+#define PROJECT07_VERSION_OFFSET         0x004
+#define PROJECT07_GLOBAL_CONTROL         0x008
+
+#define PROJECT07_IRQ_STATUS             0x010
+#define PROJECT07_IRQ_ENABLE             0x014
+#define PROJECT07_ERROR_STATUS           0x018
+
+#define PROJECT07_TX_CONTROL             0x100
+#define PROJECT07_TX_STATUS              0x104
+#define PROJECT07_TX_RING_BASE_LO        0x108
+#define PROJECT07_TX_RING_BASE_HI        0x10C
+#define PROJECT07_TX_RING_SIZE           0x110
+#define PROJECT07_TX_TAIL                0x114
+#define PROJECT07_TX_HEAD                0x118
+
+#define PROJECT07_GLOBAL_ENABLE          BIT(0)
+#define PROJECT07_GLOBAL_SOFT_RESET      BIT(1)
+
+#define PROJECT07_TX_ENABLE              BIT(0)
+
+#define PROJECT07_IRQ_TX_COMPLETE        BIT(0)
+#define PROJECT07_IRQ_RX_COMPLETE        BIT(1)
+#define PROJECT07_IRQ_TX_ERROR           BIT(2)
+#define PROJECT07_IRQ_RX_ERROR           BIT(3)
+
+#define PROJECT07_IRQ_ALL                \
+	(PROJECT07_IRQ_TX_COMPLETE |      \
+	 PROJECT07_IRQ_RX_COMPLETE |      \
+	 PROJECT07_IRQ_TX_ERROR |         \
+	 PROJECT07_IRQ_RX_ERROR)
+
+#define PROJECT07_EXPECTED_ID            0x43444D41
+#define PROJECT07_EXPECTED_VER           0x00010000
+
+#define PROJECT07_DMA_ADDR_BITS          40
+#define PROJECT07_TX_RING_ENTRIES        16
+#define PROJECT07_DESC_BYTES             64
+#define PROJECT07_IRQ_TIMEOUT_MS         1000
+
+struct project07_dma {
+	void __iomem *regs;
+	int irq;
+
+	void *tx_ring_cpu;
+	dma_addr_t tx_ring_dma;
+
+	struct completion irq_done;
+	atomic_t irq_count;
+	u32 last_irq_status;
+};
+
+static irqreturn_t project07_dma_irq(int irq, void *data)
+{
+	struct project07_dma *dma = data;
+	u32 status;
+	u32 pending;
+	int count;
+
+	status = readl(dma->regs + PROJECT07_IRQ_STATUS);
+	pending = status & PROJECT07_IRQ_ALL;
+
+	if (!pending)
+		return IRQ_NONE;
+
+	dma->last_irq_status = pending;
+	count = atomic_inc_return(&dma->irq_count);
+
+	/*
+	 * IRQ_STATUS is RW1C.
+	 */
+	writel(pending, dma->regs + PROJECT07_IRQ_STATUS);
+
+	/*
+	 * Flush the acknowledgement before returning from the
+	 * level-sensitive interrupt handler.
+	 */
+	(void)readl(dma->regs + PROJECT07_IRQ_STATUS);
+
+	if (pending & PROJECT07_IRQ_TX_ERROR)
+		complete(&dma->irq_done);
+
+	return IRQ_HANDLED;
+}
+
+static int project07_dma_irq_selftest(struct platform_device *pdev,
+				      struct project07_dma *dma)
+{
+	struct device *dev = &pdev->dev;
+	unsigned long timeout;
+	u32 irq_status;
+	u32 error_status;
+	u32 tx_status;
+	u32 tx_head;
+	int count;
+
+	/*
+	 * Allocate a legal 16-entry, 64-byte/descriptor coherent ring.
+	 * Descriptor zero remains all-zero intentionally:
+	 *
+	 *     CONTROL.OWN = 0
+	 *
+	 * The RTL must classify this as an ownership violation.
+	 */
+	dma->tx_ring_cpu =
+		dmam_alloc_coherent(dev,
+				    PROJECT07_TX_RING_ENTRIES *
+				    PROJECT07_DESC_BYTES,
+				    &dma->tx_ring_dma,
+				    GFP_KERNEL);
+
+	if (!dma->tx_ring_cpu)
+		return -ENOMEM;
+
+	memset(dma->tx_ring_cpu,
+	       0,
+	       PROJECT07_TX_RING_ENTRIES * PROJECT07_DESC_BYTES);
+
+	dev_info(dev,
+		 "Project07 Gate9I ring: cpu=%p dma=%pad entries=%u\n",
+		 dma->tx_ring_cpu,
+		 &dma->tx_ring_dma,
+		 PROJECT07_TX_RING_ENTRIES);
+
+	/*
+	 * Establish a known idle state.
+	 */
+	writel(0, dma->regs + PROJECT07_IRQ_ENABLE);
+	writel(0, dma->regs + PROJECT07_TX_CONTROL);
+
+	/*
+	 * Reset the DMA core. GLOBAL_CONTROL bit1 is a one-cycle
+	 * soft-reset pulse.
+	 */
+	writel(PROJECT07_GLOBAL_SOFT_RESET,
+	       dma->regs + PROJECT07_GLOBAL_CONTROL);
+	(void)readl(dma->regs + PROJECT07_GLOBAL_CONTROL);
+
+	udelay(10);
+
+	/*
+	 * Clear any stale interrupt causes after reset.
+	 */
+	writel(PROJECT07_IRQ_ALL,
+	       dma->regs + PROJECT07_IRQ_STATUS);
+	(void)readl(dma->regs + PROJECT07_IRQ_STATUS);
+
+	reinit_completion(&dma->irq_done);
+	atomic_set(&dma->irq_count, 0);
+	dma->last_irq_status = 0;
+
+	/*
+	 * Ring programming contract:
+	 * BASE first, SIZE last as configuration commit.
+	 */
+	writel(lower_32_bits(dma->tx_ring_dma),
+	       dma->regs + PROJECT07_TX_RING_BASE_LO);
+
+	writel(upper_32_bits(dma->tx_ring_dma),
+	       dma->regs + PROJECT07_TX_RING_BASE_HI);
+
+	writel(PROJECT07_TX_RING_ENTRIES,
+	       dma->regs + PROJECT07_TX_RING_SIZE);
+
+	writel(0, dma->regs + PROJECT07_TX_TAIL);
+
+	/*
+	 * Descriptor memory must be visible before ownership/submission.
+	 */
+	dma_wmb();
+
+	/*
+	 * Enable only the TX-error interrupt source.
+	 */
+	writel(PROJECT07_IRQ_TX_ERROR,
+	       dma->regs + PROJECT07_IRQ_ENABLE);
+
+	/*
+	 * Enable global DMA operation and TX.
+	 */
+	writel(PROJECT07_GLOBAL_ENABLE,
+	       dma->regs + PROJECT07_GLOBAL_CONTROL);
+
+	writel(PROJECT07_TX_ENABLE,
+	       dma->regs + PROJECT07_TX_CONTROL);
+
+	/*
+	 * Submit logical descriptor 0 by moving SW tail from 0 to 1.
+	 * Descriptor zero intentionally has OWN=0.
+	 */
+	writel(1, dma->regs + PROJECT07_TX_TAIL);
+	(void)readl(dma->regs + PROJECT07_TX_TAIL);
+
+	dev_info(dev,
+		 "Project07 Gate9I submitted OWN=0 descriptor; waiting for TX-error IRQ\n");
+
+	timeout =
+		wait_for_completion_timeout(&dma->irq_done,
+			msecs_to_jiffies(PROJECT07_IRQ_TIMEOUT_MS));
+
+	irq_status =
+		readl(dma->regs + PROJECT07_IRQ_STATUS);
+
+	error_status =
+		readl(dma->regs + PROJECT07_ERROR_STATUS);
+
+	tx_status =
+		readl(dma->regs + PROJECT07_TX_STATUS);
+
+	tx_head =
+		readl(dma->regs + PROJECT07_TX_HEAD);
+
+	count = atomic_read(&dma->irq_count);
+
+	dev_info(dev,
+		 "Project07 Gate9I result: count=%d last_irq=0x%08x irq_status_after_ack=0x%08x error_status=0x%08x tx_status=0x%08x tx_head=%u\n",
+		 count,
+		 dma->last_irq_status,
+		 irq_status,
+		 error_status,
+		 tx_status,
+		 tx_head);
+
+	/*
+	 * Return hardware to a quiet state after the one-shot test.
+	 */
+	writel(0, dma->regs + PROJECT07_IRQ_ENABLE);
+	writel(0, dma->regs + PROJECT07_TX_CONTROL);
+
+	writel(PROJECT07_GLOBAL_SOFT_RESET,
+	       dma->regs + PROJECT07_GLOBAL_CONTROL);
+	(void)readl(dma->regs + PROJECT07_GLOBAL_CONTROL);
+
+	if (!timeout) {
+		dev_err(dev,
+			"Project07 Gate9I FAIL: Linux IRQ timed out\n");
+		return -ETIMEDOUT;
+	}
+
+	if (count != 1) {
+		dev_err(dev,
+			"Project07 Gate9I FAIL: expected one IRQ, got %d\n",
+			count);
+		return -EIO;
+	}
+
+	if (!(dma->last_irq_status & PROJECT07_IRQ_TX_ERROR)) {
+		dev_err(dev,
+			"Project07 Gate9I FAIL: IRQ did not contain TX_ERROR, status=0x%08x\n",
+			dma->last_irq_status);
+		return -EIO;
+	}
+
+	if (tx_head != 0) {
+		dev_err(dev,
+			"Project07 Gate9I FAIL: TX_HEAD advanced on OWN=0 descriptor: %u\n",
+			tx_head);
+		return -EIO;
+	}
+
+	dev_info(dev,
+		 "Project07 Gate9I PASS: physical TX-error interrupt reached Linux and was acknowledged\n");
+
+	return 0;
+}
+
+static int project07_dma_probe(struct platform_device *pdev)
+{
+	struct project07_dma *dma;
+	u32 id;
+	u32 version;
+	int ret;
+
+	dma = devm_kzalloc(&pdev->dev, sizeof(*dma), GFP_KERNEL);
+	if (!dma)
+		return -ENOMEM;
+
+	dma->regs = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(dma->regs))
+		return PTR_ERR(dma->regs);
+
+	id = readl(dma->regs + PROJECT07_ID_OFFSET);
+	version = readl(dma->regs + PROJECT07_VERSION_OFFSET);
+
+	dev_info(&pdev->dev,
+		 "Project07 DMA probe: ID=0x%08x VERSION=0x%08x\n",
+		 id, version);
+
+	if (id != PROJECT07_EXPECTED_ID)
+		return -ENODEV;
+
+	if (version != PROJECT07_EXPECTED_VER)
+		return -ENODEV;
+
+	ret = dma_set_mask_and_coherent(&pdev->dev,
+					DMA_BIT_MASK(PROJECT07_DMA_ADDR_BITS));
+	if (ret) {
+		dev_err(&pdev->dev,
+			"failed to set %u-bit DMA mask: %d\n",
+			PROJECT07_DMA_ADDR_BITS, ret);
+		return ret;
+	}
+
+	init_completion(&dma->irq_done);
+	atomic_set(&dma->irq_count, 0);
+
+	dma->irq = platform_get_irq(pdev, 0);
+	if (dma->irq < 0)
+		return dma->irq;
+
+	/*
+	 * Keep hardware IRQ sources disabled until the handler exists.
+	 */
+	writel(0, dma->regs + PROJECT07_IRQ_ENABLE);
+	writel(PROJECT07_IRQ_ALL,
+	       dma->regs + PROJECT07_IRQ_STATUS);
+	(void)readl(dma->regs + PROJECT07_IRQ_STATUS);
+
+	ret = devm_request_irq(&pdev->dev,
+			       dma->irq,
+			       project07_dma_irq,
+			       0,
+			       "project07-dma",
+			       dma);
+	if (ret)
+		return ret;
+
+	platform_set_drvdata(pdev, dma);
+
+	dev_info(&pdev->dev,
+		 "Project07 IRQ registered: Linux IRQ %d\n",
+		 dma->irq);
+
+	ret = project07_dma_irq_selftest(pdev, dma);
+	if (ret)
+		return ret;
+
+	dev_info(&pdev->dev,
+		 "Project07 custom DMA hardware identified successfully\n");
+
+	return 0;
+}
+
+static const struct of_device_id project07_dma_of_match[] = {
+	{ .compatible = "xlnx,dma-ddr-gate-top-1.2" },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, project07_dma_of_match);
+
+static struct platform_driver project07_dma_driver = {
+	.probe = project07_dma_probe,
+	.driver = {
+		.name = "project07-dma",
+		.of_match_table = project07_dma_of_match,
+	},
+};
+
+module_platform_driver(project07_dma_driver);
+
+MODULE_AUTHOR("Coltium Industries");
+MODULE_DESCRIPTION("Project 07 Custom Descriptor-Ring DMA Linux driver");
+MODULE_LICENSE("GPL");
