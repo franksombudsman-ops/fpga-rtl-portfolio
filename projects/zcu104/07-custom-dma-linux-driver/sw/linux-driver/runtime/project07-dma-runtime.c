@@ -21,17 +21,18 @@
 /*
  * Project 07 — Runtime Linux DMA Driver
  *
- * Phase 10E:
- *   - real Linux misc character device /dev/project07-dma
- *   - controlled userspace TX write() path
- *   - persistent coherent descriptor/payload rings
- *   - asynchronous threaded IRQ reclaim
- *   - hardware-error IRQ recovery path
- *   - controlled reset/recovery ioctl
- *   - temporary validation-only runtime_recover sysfs trigger
- *   - pre-reset error/status snapshot
- *   - dropped in-flight TX accounting
- *   - canonical quiesce/reset/ring restore through hw_init
+ * Phase 10F:
+ *   - production /dev/project07-dma userspace ABI
+ *   - 64-byte TX through write()
+ *   - 64-byte RX through read()
+ *   - persistent coherent TX/RX descriptor and payload rings
+ *   - asynchronous threaded IRQ TX/RX reclaim
+ *   - GET_INFO / GET_STATS ioctls
+ *   - controlled RESET ioctl
+ *   - automatic hardware-error recovery
+ *   - TX/RX recovery-loss accounting
+ *   - runtime performance-counter reporting
+ *   - no temporary recovery sysfs trigger
  *   - no arbitrary MMIO or userspace DMA addresses
  *
  * No DMA traffic is generated during probe.
@@ -141,9 +142,73 @@
 
 #define P07_PAYLOAD_BYTES       64
 #define P07_TX_POOL_BYTES       (P07_RING_ENTRIES * P07_PAYLOAD_BYTES)
+#define P07_RX_POOL_BYTES       (P07_RING_ENTRIES * P07_PAYLOAD_BYTES)
+
+#define P07_ABI_VERSION         0x00010000
+
+#define P07_CAP_TX_WRITE        BIT(0)
+#define P07_CAP_RX_READ         BIT(1)
+#define P07_CAP_GET_INFO        BIT(2)
+#define P07_CAP_GET_STATS       BIT(3)
+#define P07_CAP_RESET           BIT(4)
+#define P07_CAP_HW_RECOVERY     BIT(5)
+
+struct project07_user_info {
+	__u32 abi_version;
+	__u32 hw_id;
+	__u32 hw_version;
+	__u32 ring_entries;
+	__u32 descriptor_bytes;
+	__u32 payload_bytes;
+	__u32 dma_bits;
+	__u32 capabilities;
+};
+
+struct project07_user_stats {
+	__u64 tx_bytes;
+	__u64 rx_bytes;
+
+	__u64 tx_active_cycles;
+	__u64 rx_active_cycles;
+
+	__u64 tx_axi_stall;
+	__u64 rx_axi_stall;
+
+	__u64 tx_axis_stall;
+	__u64 rx_axis_stall;
+
+	__u32 tx_desc;
+	__u32 rx_desc;
+
+	__u32 tx_prod;
+	__u32 tx_clean;
+	__u32 tx_head;
+
+	__u32 rx_prod;
+	__u32 rx_clean;
+	__u32 rx_head;
+
+	__u32 irq_count;
+	__u32 irq_seen;
+
+	__u32 error_status;
+	__u32 faulted;
+
+	__u32 recovery_count;
+	__u32 recovery_failures;
+
+	__u32 recovery_dropped_tx;
+	__u32 recovery_dropped_rx;
+
+	__u32 last_error_status;
+	__u32 last_error_info;
+	__u64 last_error_addr;
+};
 
 #define P07_IOCTL_MAGIC          'P'
 #define P07_IOCTL_RESET          _IO(P07_IOCTL_MAGIC, 0x01)
+#define P07_IOCTL_GET_INFO       _IOR(P07_IOCTL_MAGIC, 0x02, struct project07_user_info)
+#define P07_IOCTL_GET_STATS      _IOR(P07_IOCTL_MAGIC, 0x03, struct project07_user_stats)
 
 
 struct project07_desc {
@@ -186,7 +251,13 @@ struct project07_dma {
 	void *tx_payload_cpu;
 	dma_addr_t tx_payload_dma;
 
+	void *rx_payload_cpu;
+	dma_addr_t rx_payload_dma;
+
 	struct mutex tx_mutex;
+	struct mutex rx_mutex;
+	struct mutex rx_user_mutex;
+
 	spinlock_t state_lock;
 
 	wait_queue_head_t tx_wait;
@@ -204,6 +275,13 @@ struct project07_dma {
 	u32 recovery_dropped_tx;
 	u32 last_recovery_dropped_tx;
 
+	u32 recovery_dropped_rx;
+	u32 last_recovery_dropped_rx;
+
+	bool rx_user_pending;
+	u32 rx_user_logical;
+	u32 rx_user_generation;
+
 	u32 last_error_status;
 	u32 last_error_info;
 	u64 last_error_addr;
@@ -214,6 +292,7 @@ struct project07_dma {
 /* -------------------------------------------------------------------------- */
 
 static int project07_tx_reclaim(struct project07_dma *dma);
+static int project07_rx_reclaim(struct project07_dma *dma);
 
 static int project07_runtime_recover(
 	struct project07_dma *dma,
@@ -256,9 +335,13 @@ static irqreturn_t project07_dma_irq_thread(int irq, void *data)
 	struct project07_dma *dma = data;
 
 	u32 causes;
-	u32 tx_head;
 
-	int reclaimed = 0;
+	u32 tx_head = 0;
+	u32 rx_head = 0;
+
+	int tx_reclaimed = 0;
+	int rx_reclaimed = 0;
+
 	int ret;
 
 	causes =
@@ -266,6 +349,9 @@ static irqreturn_t project07_dma_irq_thread(int irq, void *data)
 			&dma->irq_thread_pending,
 			0);
 
+	/*
+	 * Hardware errors have priority over ordinary completion.
+	 */
 	if (causes & P07_IRQ_ERRORS) {
 
 		ret =
@@ -277,7 +363,7 @@ static irqreturn_t project07_dma_irq_thread(int irq, void *data)
 		if (ret) {
 
 			dev_err(dma->dev,
-				"Project07 Runtime10E IRQ recovery FAIL: causes=0x%08x ret=%d\n",
+				"Project07 Runtime10F IRQ recovery FAIL: causes=0x%08x ret=%d\n",
 				causes,
 				ret);
 		}
@@ -296,7 +382,7 @@ static irqreturn_t project07_dma_irq_thread(int irq, void *data)
 		mutex_lock(
 			&dma->tx_mutex);
 
-		reclaimed =
+		tx_reclaimed =
 			project07_tx_reclaim(
 				dma);
 
@@ -308,30 +394,102 @@ static irqreturn_t project07_dma_irq_thread(int irq, void *data)
 		mutex_unlock(
 			&dma->tx_mutex);
 
-		if (reclaimed < 0) {
+		if (tx_reclaimed < 0) {
 
 			dev_err(dma->dev,
-				"Project07 Runtime10E IRQ reclaim FAIL: causes=0x%08x ret=%d\n",
+				"Project07 Runtime10F TX reclaim validation FAIL: causes=0x%08x ret=%d\n",
 				causes,
-				reclaimed);
+				tx_reclaimed);
 
-		} else {
+			ret =
+				project07_runtime_recover(
+					dma,
+					"tx-reclaim-error",
+					true);
 
-			dev_info(dma->dev,
-				 "Project07 Runtime10E IRQ reclaim: causes=0x%08x reclaimed=%d tx_clean=%u tx_head=%u\n",
-				 causes,
-				 reclaimed,
-				 dma->tx.clean,
-				 tx_head);
+			if (ret) {
+
+				dev_err(dma->dev,
+					"Project07 Runtime10F TX reclaim recovery FAIL: ret=%d\n",
+					ret);
+			}
+
+			wake_up_all(
+				&dma->tx_wait);
+
+			wake_up_all(
+				&dma->rx_wait);
+
+			return IRQ_HANDLED;
 		}
+
+		dev_info(dma->dev,
+			 "Project07 Runtime10F TX IRQ reclaim: causes=0x%08x reclaimed=%d tx_clean=%u tx_head=%u\n",
+			 causes,
+			 tx_reclaimed,
+			 dma->tx.clean,
+			 tx_head);
 
 		wake_up_all(
 			&dma->tx_wait);
 	}
 
-	if (causes & P07_IRQ_RX_COMPLETE)
+	if (causes & P07_IRQ_RX_COMPLETE) {
+
+		mutex_lock(
+			&dma->rx_mutex);
+
+		rx_reclaimed =
+			project07_rx_reclaim(
+				dma);
+
+		rx_head =
+			readl(
+				dma->regs +
+				P07_RX_HEAD);
+
+		mutex_unlock(
+			&dma->rx_mutex);
+
+		if (rx_reclaimed < 0) {
+
+			dev_err(dma->dev,
+				"Project07 Runtime10F RX reclaim validation FAIL: causes=0x%08x ret=%d\n",
+				causes,
+				rx_reclaimed);
+
+			ret =
+				project07_runtime_recover(
+					dma,
+					"rx-reclaim-error",
+					true);
+
+			if (ret) {
+
+				dev_err(dma->dev,
+					"Project07 Runtime10F RX reclaim recovery FAIL: ret=%d\n",
+					ret);
+			}
+
+			wake_up_all(
+				&dma->tx_wait);
+
+			wake_up_all(
+				&dma->rx_wait);
+
+			return IRQ_HANDLED;
+		}
+
+		dev_info(dma->dev,
+			 "Project07 Runtime10F RX IRQ reclaim: causes=0x%08x reclaimed=%d rx_clean=%u rx_head=%u\n",
+			 causes,
+			 rx_reclaimed,
+			 dma->rx.clean,
+			 rx_head);
+
 		wake_up_all(
 			&dma->rx_wait);
+	}
 
 	return IRQ_HANDLED;
 }
@@ -341,11 +499,57 @@ static irqreturn_t project07_dma_irq_thread(int irq, void *data)
 /* Runtime TX reclaim                                                         */
 /* -------------------------------------------------------------------------- */
 
+static u64 project07_read_counter64(
+	struct project07_dma *dma,
+	u32 lo_reg,
+	u32 hi_reg)
+{
+	u32 hi_before;
+	u32 lo;
+	u32 hi_after;
+
+	do {
+
+		hi_before =
+			readl(
+				dma->regs +
+					hi_reg);
+
+		lo =
+			readl(
+				dma->regs +
+					lo_reg);
+
+		hi_after =
+			readl(
+				dma->regs +
+					hi_reg);
+
+	} while (hi_before != hi_after);
+
+	return
+		((u64)hi_after << 32) |
+		(u64)lo;
+}
+
+
 static u64 project07_read_tx_bytes(struct project07_dma *dma)
 {
 	return
-		(u64)readl(dma->regs + P07_TX_BYTES_LO) |
-		((u64)readl(dma->regs + P07_TX_BYTES_HI) << 32);
+		project07_read_counter64(
+			dma,
+			P07_TX_BYTES_LO,
+			P07_TX_BYTES_HI);
+}
+
+
+static u64 project07_read_rx_bytes(struct project07_dma *dma)
+{
+	return
+		project07_read_counter64(
+			dma,
+			P07_RX_BYTES_LO,
+			P07_RX_BYTES_HI);
 }
 
 static int project07_tx_reclaim(struct project07_dma *dma)
@@ -395,7 +599,7 @@ static int project07_tx_reclaim(struct project07_dma *dma)
 		    actual != P07_PAYLOAD_BYTES) {
 
 			dev_err(dma->dev,
-				"Project07 Runtime10E reclaim FAIL: logical=%u slot=%u control=0x%08x status=0x%08x actual=%u\n",
+				"Project07 Runtime10F reclaim FAIL: logical=%u slot=%u control=0x%08x status=0x%08x actual=%u\n",
 				logical,
 				slot,
 				control,
@@ -406,7 +610,7 @@ static int project07_tx_reclaim(struct project07_dma *dma)
 		}
 
 		dev_info(dma->dev,
-			 "Project07 Runtime10E reclaim: logical=%u slot=%u control=0x%08x status=0x%08x actual=%u cookie=0x%016llx\n",
+			 "Project07 Runtime10F reclaim: logical=%u slot=%u control=0x%08x status=0x%08x actual=%u cookie=0x%016llx\n",
 			 logical,
 			 slot,
 			 control,
@@ -420,6 +624,220 @@ static int project07_tx_reclaim(struct project07_dma *dma)
 	}
 
 	return reclaimed;
+}
+
+/* -------------------------------------------------------------------------- */
+/* Runtime RX reclaim / publication                                           */
+/* -------------------------------------------------------------------------- */
+
+static int project07_rx_reclaim(struct project07_dma *dma)
+{
+	u32 hw_head;
+
+	int reclaimed = 0;
+
+	hw_head =
+		readl(
+			dma->regs +
+				P07_RX_HEAD);
+
+	/*
+	 * Descriptor writeback must be observed after authoritative
+	 * RX_HEAD publication.
+	 */
+	dma_rmb();
+
+	while (dma->rx.clean != hw_head) {
+
+		struct project07_desc *desc;
+
+		u32 logical;
+		u32 slot;
+		u32 control;
+		u32 status;
+		u32 actual;
+
+		logical =
+			dma->rx.clean;
+
+		slot =
+			logical &
+			P07_RING_MASK;
+
+		desc =
+			&dma->rx.desc[slot];
+
+		control =
+			le32_to_cpu(
+				desc->control);
+
+		status =
+			le32_to_cpu(
+				desc->status);
+
+		actual =
+			le32_to_cpu(
+				desc->actual_length);
+
+		if (control != 0x6 ||
+		    status != 0x1 ||
+		    actual != P07_PAYLOAD_BYTES) {
+
+			dev_err(dma->dev,
+				"Project07 Runtime10F RX reclaim FAIL: logical=%u slot=%u control=0x%08x status=0x%08x actual=%u\n",
+				logical,
+				slot,
+				control,
+				status,
+				actual);
+
+			return -EIO;
+		}
+
+		dev_info(dma->dev,
+			 "Project07 Runtime10F RX reclaim: logical=%u slot=%u control=0x%08x status=0x%08x actual=%u cookie=0x%016llx\n",
+			 logical,
+			 slot,
+			 control,
+			 status,
+			 actual,
+			 (unsigned long long)
+			 le64_to_cpu(
+				 desc->cookie));
+
+		dma->rx.clean++;
+		reclaimed++;
+	}
+
+	return reclaimed;
+}
+
+
+static int project07_rx_submit_locked(
+	struct project07_dma *dma,
+	u32 *logical_out,
+	u32 *slot_out)
+{
+	struct project07_desc *desc;
+
+	u8 *payload;
+
+	dma_addr_t payload_dma;
+
+	u32 logical;
+	u32 slot;
+	u32 error_status;
+
+	if (READ_ONCE(
+		    dma->runtime_faulted))
+		return -EIO;
+
+	if ((u32)(dma->rx.prod - dma->rx.clean) >=
+	    P07_RING_ENTRIES)
+		return -EAGAIN;
+
+	error_status =
+		readl(
+			dma->regs +
+				P07_ERROR_STATUS);
+
+	if (error_status != 0)
+		return -EIO;
+
+	logical =
+		dma->rx.prod;
+
+	slot =
+		logical &
+		P07_RING_MASK;
+
+	desc =
+		&dma->rx.desc[slot];
+
+	payload =
+		(u8 *)dma->rx_payload_cpu +
+		(slot * P07_PAYLOAD_BYTES);
+
+	payload_dma =
+		dma->rx_payload_dma +
+		(slot * P07_PAYLOAD_BYTES);
+
+	memset(
+		payload,
+		0,
+		P07_PAYLOAD_BYTES);
+
+	memset(
+		desc,
+		0,
+		sizeof(*desc));
+
+	desc->buffer_addr =
+		cpu_to_le64(
+			(u64)payload_dma);
+
+	desc->length =
+		cpu_to_le32(
+			P07_PAYLOAD_BYTES);
+
+	/*
+	 * OWN | IRQ | EOP
+	 */
+	desc->control =
+		cpu_to_le32(
+			0x7);
+
+	desc->cookie =
+		cpu_to_le64(
+			0x3130460000000000ULL |
+			(u64)logical);
+
+	/*
+	 * Publish buffer + descriptor before logical TAIL.
+	 */
+	dma_wmb();
+
+	dma->rx.prod =
+		logical + 1;
+
+	/*
+	 * RX becomes operational only after software has prepared
+	 * a descriptor.
+	 *
+	 * On the current validation FPGA wrapper this also permits the
+	 * physically proven deterministic AXI4-Stream source to begin.
+	 */
+	writel(
+		P07_CHANNEL_ENABLE,
+		dma->regs +
+			P07_RX_CONTROL);
+
+	writel(
+		dma->rx.prod,
+		dma->regs +
+			P07_RX_TAIL);
+
+	(void)readl(
+		dma->regs +
+			P07_RX_TAIL);
+
+	dev_info(dma->dev,
+		 "Project07 Runtime10F RX posted: logical=%u slot=%u rx_prod=%u rx_clean=%u tail=%u bytes=%u payload_dma=%pad\n",
+		 logical,
+		 slot,
+		 dma->rx.prod,
+		 dma->rx.clean,
+		 dma->rx.prod,
+		 P07_PAYLOAD_BYTES,
+		 &payload_dma);
+
+	*logical_out =
+		logical;
+
+	*slot_out =
+		slot;
+
+	return 0;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -449,7 +867,7 @@ static int project07_tx_submit_user(
 	if (READ_ONCE(dma->runtime_faulted)) {
 
 		dev_err(dma->dev,
-			"Project07 Runtime10E write FAIL: runtime is faulted; recovery required\n");
+			"Project07 Runtime10F write FAIL: runtime is faulted; recovery required\n");
 
 		ret = -EIO;
 		goto out_unlock;
@@ -462,7 +880,7 @@ static int project07_tx_submit_user(
 	    P07_RING_ENTRIES) {
 
 		dev_err(dma->dev,
-			"Project07 Runtime10E write FAIL: TX ring full prod=%u clean=%u\n",
+			"Project07 Runtime10F write FAIL: TX ring full prod=%u clean=%u\n",
 			dma->tx.prod,
 			dma->tx.clean);
 
@@ -478,7 +896,7 @@ static int project07_tx_submit_user(
 	if (error_status != 0) {
 
 		dev_err(dma->dev,
-			"Project07 Runtime10E write FAIL: error_status=0x%08x\n",
+			"Project07 Runtime10F write FAIL: error_status=0x%08x\n",
 			error_status);
 
 		ret = -EIO;
@@ -559,7 +977,7 @@ static int project07_tx_submit_user(
 		P07_TX_TAIL);
 
 	dev_info(dma->dev,
-		 "Project07 Runtime10E write queued: logical=%u slot=%u tx_prod=%u tx_clean=%u tail=%u bytes=%zu payload_dma=%pad\n",
+		 "Project07 Runtime10F write queued: logical=%u slot=%u tx_prod=%u tx_clean=%u tail=%u bytes=%zu payload_dma=%pad\n",
 		 logical,
 		 slot,
 		 dma->tx.prod,
@@ -586,7 +1004,7 @@ out_unlock:
 }
 
 /* -------------------------------------------------------------------------- */
-/* Temporary Phase 10E validation controls                                    */
+/* Temporary Phase 10F validation controls                                    */
 /* -------------------------------------------------------------------------- */
 
 
@@ -634,7 +1052,7 @@ static ssize_t project07_dma_write(
 		return -ENODEV;
 
 	/*
-	 * Phase 10E deliberately exposes only the already physically
+	 * Phase 10F deliberately exposes only the already physically
 	 * qualified 64-byte transfer size.
 	 *
 	 * Variable-size TX can be generalized later without changing
@@ -661,6 +1079,366 @@ static ssize_t project07_dma_write(
 	return count;
 }
 
+static ssize_t project07_dma_read(
+	struct file *file,
+	char __user *buf,
+	size_t count,
+	loff_t *ppos)
+{
+	struct project07_dma *dma =
+		file->private_data;
+
+	u32 logical;
+	u32 slot;
+	u32 generation;
+
+	u8 *payload;
+
+	int ret;
+
+	if (!dma)
+		return -ENODEV;
+
+	if (count != P07_PAYLOAD_BYTES)
+		return -EMSGSIZE;
+
+	ret =
+		mutex_lock_interruptible(
+			&dma->rx_user_mutex);
+
+	if (ret)
+		return ret;
+
+	mutex_lock(
+		&dma->rx_mutex);
+
+	if (dma->rx_user_pending) {
+
+		logical =
+			dma->rx_user_logical;
+
+		slot =
+			logical &
+			P07_RING_MASK;
+
+		generation =
+			dma->rx_user_generation;
+
+	} else {
+
+		generation =
+			READ_ONCE(
+				dma->recovery_count);
+
+		ret =
+			project07_rx_submit_locked(
+				dma,
+				&logical,
+				&slot);
+
+		if (ret) {
+
+			mutex_unlock(
+				&dma->rx_mutex);
+
+			mutex_unlock(
+				&dma->rx_user_mutex);
+
+			return ret;
+		}
+
+		dma->rx_user_pending =
+			true;
+
+		dma->rx_user_logical =
+			logical;
+
+		dma->rx_user_generation =
+			generation;
+	}
+
+	mutex_unlock(
+		&dma->rx_mutex);
+
+	/*
+	 * One read() owns one posted RX request.
+	 *
+	 * The wait terminates on:
+	 *
+	 *   normal HW_HEAD reclaim
+	 *   recovery establishing a new DMA epoch
+	 *   unrecovered runtime fault
+	 */
+	ret =
+		wait_event_interruptible(
+			dma->rx_wait,
+			READ_ONCE(dma->rx.clean) ==
+				(logical + 1) ||
+			READ_ONCE(dma->recovery_count) !=
+				generation ||
+			READ_ONCE(dma->runtime_faulted));
+
+	if (ret) {
+
+		/*
+		 * Interrupted userspace may retry the same pending packet.
+		 */
+		mutex_unlock(
+			&dma->rx_user_mutex);
+
+		return ret;
+	}
+
+	if (READ_ONCE(dma->recovery_count) !=
+	    generation ||
+	    READ_ONCE(dma->runtime_faulted)) {
+
+		mutex_unlock(
+			&dma->rx_user_mutex);
+
+		return -EIO;
+	}
+
+	/*
+	 * Payload write must be observed after descriptor completion.
+	 */
+	dma_rmb();
+
+	payload =
+		(u8 *)dma->rx_payload_cpu +
+		(slot * P07_PAYLOAD_BYTES);
+
+	if (copy_to_user(
+		    buf,
+		    payload,
+		    P07_PAYLOAD_BYTES)) {
+
+		/*
+		 * Keep the completed packet pending so userspace may retry.
+		 */
+		mutex_unlock(
+			&dma->rx_user_mutex);
+
+		return -EFAULT;
+	}
+
+	mutex_lock(
+		&dma->rx_mutex);
+
+	dma->rx_user_pending =
+		false;
+
+	mutex_unlock(
+		&dma->rx_mutex);
+
+	dev_info(dma->dev,
+		 "Project07 Runtime10F RX delivered to userspace: logical=%u slot=%u bytes=%u\n",
+		 logical,
+		 slot,
+		 P07_PAYLOAD_BYTES);
+
+	mutex_unlock(
+		&dma->rx_user_mutex);
+
+	return P07_PAYLOAD_BYTES;
+}
+
+
+static void project07_fill_info(
+	struct project07_dma *dma,
+	struct project07_user_info *info)
+{
+	memset(
+		info,
+		0,
+		sizeof(*info));
+
+	info->abi_version =
+		P07_ABI_VERSION;
+
+	info->hw_id =
+		readl(
+			dma->regs +
+				P07_ID);
+
+	info->hw_version =
+		readl(
+			dma->regs +
+				P07_VERSION);
+
+	info->ring_entries =
+		P07_RING_ENTRIES;
+
+	info->descriptor_bytes =
+		P07_DESC_BYTES;
+
+	info->payload_bytes =
+		P07_PAYLOAD_BYTES;
+
+	info->dma_bits =
+		P07_DMA_BITS;
+
+	info->capabilities =
+		P07_CAP_TX_WRITE |
+		P07_CAP_RX_READ |
+		P07_CAP_GET_INFO |
+		P07_CAP_GET_STATS |
+		P07_CAP_RESET |
+		P07_CAP_HW_RECOVERY;
+}
+
+
+static void project07_fill_stats(
+	struct project07_dma *dma,
+	struct project07_user_stats *stats)
+{
+	unsigned long flags;
+
+	memset(
+		stats,
+		0,
+		sizeof(*stats));
+
+	/*
+	 * Same lock order as recovery:
+	 *
+	 *     TX -> RX
+	 */
+	mutex_lock(
+		&dma->tx_mutex);
+
+	mutex_lock(
+		&dma->rx_mutex);
+
+	stats->tx_bytes =
+		project07_read_tx_bytes(
+			dma);
+
+	stats->rx_bytes =
+		project07_read_rx_bytes(
+			dma);
+
+	stats->tx_active_cycles =
+		project07_read_counter64(
+			dma,
+			P07_TX_ACTIVE_LO,
+			P07_TX_ACTIVE_HI);
+
+	stats->rx_active_cycles =
+		project07_read_counter64(
+			dma,
+			P07_RX_ACTIVE_LO,
+			P07_RX_ACTIVE_HI);
+
+	stats->tx_axi_stall =
+		project07_read_counter64(
+			dma,
+			P07_TX_AXI_STALL_LO,
+			P07_TX_AXI_STALL_HI);
+
+	stats->rx_axi_stall =
+		project07_read_counter64(
+			dma,
+			P07_RX_AXI_STALL_LO,
+			P07_RX_AXI_STALL_HI);
+
+	stats->tx_axis_stall =
+		project07_read_counter64(
+			dma,
+			P07_TX_AXIS_STALL_LO,
+			P07_TX_AXIS_STALL_HI);
+
+	stats->rx_axis_stall =
+		project07_read_counter64(
+			dma,
+			P07_RX_AXIS_STALL_LO,
+			P07_RX_AXIS_STALL_HI);
+
+	stats->tx_desc =
+		readl(
+			dma->regs +
+				P07_TX_DESC_COUNT);
+
+	stats->rx_desc =
+		readl(
+			dma->regs +
+				P07_RX_DESC_COUNT);
+
+	stats->tx_prod =
+		dma->tx.prod;
+
+	stats->tx_clean =
+		dma->tx.clean;
+
+	stats->tx_head =
+		readl(
+			dma->regs +
+				P07_TX_HEAD);
+
+	stats->rx_prod =
+		dma->rx.prod;
+
+	stats->rx_clean =
+		dma->rx.clean;
+
+	stats->rx_head =
+		readl(
+			dma->regs +
+				P07_RX_HEAD);
+
+	mutex_unlock(
+		&dma->rx_mutex);
+
+	mutex_unlock(
+		&dma->tx_mutex);
+
+	stats->irq_count =
+		(u32)atomic_read(
+			&dma->irq_count);
+
+	stats->irq_seen =
+		(u32)atomic_read(
+			&dma->irq_seen);
+
+	stats->error_status =
+		readl(
+			dma->regs +
+				P07_ERROR_STATUS);
+
+	spin_lock_irqsave(
+		&dma->state_lock,
+		flags);
+
+	stats->faulted =
+		dma->runtime_faulted ?
+			1 : 0;
+
+	stats->recovery_count =
+		dma->recovery_count;
+
+	stats->recovery_failures =
+		dma->recovery_failures;
+
+	stats->recovery_dropped_tx =
+		dma->recovery_dropped_tx;
+
+	stats->recovery_dropped_rx =
+		dma->recovery_dropped_rx;
+
+	stats->last_error_status =
+		dma->last_error_status;
+
+	stats->last_error_info =
+		dma->last_error_info;
+
+	stats->last_error_addr =
+		dma->last_error_addr;
+
+	spin_unlock_irqrestore(
+		&dma->state_lock,
+		flags);
+}
+
 
 static long project07_dma_ioctl(
 	struct file *file,
@@ -670,7 +1448,11 @@ static long project07_dma_ioctl(
 	struct project07_dma *dma =
 		file->private_data;
 
-	(void)arg;
+	void __user *argp =
+		(void __user *)arg;
+
+	struct project07_user_info info;
+	struct project07_user_stats stats;
 
 	if (!dma)
 		return -ENODEV;
@@ -685,6 +1467,34 @@ static long project07_dma_ioctl(
 				"userspace-ioctl",
 				false);
 
+	case P07_IOCTL_GET_INFO:
+
+		project07_fill_info(
+			dma,
+			&info);
+
+		if (copy_to_user(
+			    argp,
+			    &info,
+			    sizeof(info)))
+			return -EFAULT;
+
+		return 0;
+
+	case P07_IOCTL_GET_STATS:
+
+		project07_fill_stats(
+			dma,
+			&stats);
+
+		if (copy_to_user(
+			    argp,
+			    &stats,
+			    sizeof(stats)))
+			return -EFAULT;
+
+		return 0;
+
 	default:
 
 		return -ENOTTY;
@@ -696,37 +1506,7 @@ static long project07_dma_ioctl(
  *
  * Final userspace recovery ABI is ioctl RESET.
  */
-static ssize_t runtime_recover_store(
-	struct device *dev,
-	struct device_attribute *attr,
-	const char *buf,
-	size_t count)
-{
-	struct project07_dma *dma =
-		dev_get_drvdata(dev);
 
-	int ret;
-
-	if (!dma)
-		return -ENODEV;
-
-	if (count < 1 ||
-	    buf[0] != '1')
-		return -EINVAL;
-
-	ret =
-		project07_runtime_recover(
-			dma,
-			"validation-sysfs",
-			false);
-
-	if (ret)
-		return ret;
-
-	return count;
-}
-
-static DEVICE_ATTR_WO(runtime_recover);
 
 static const struct file_operations project07_fops = {
 	.owner =
@@ -734,6 +1514,9 @@ static const struct file_operations project07_fops = {
 
 	.open =
 		project07_dma_open,
+
+	.read =
+		project07_dma_read,
 
 	.write =
 		project07_dma_write,
@@ -757,22 +1540,31 @@ static ssize_t runtime_status_show(
 
 	u32 tx_head;
 	u32 tx_desc;
+
 	u32 rx_head;
+	u32 rx_desc;
+
 	u32 error_status;
 
 	u32 recovery_count;
 	u32 recovery_failures;
 
 	u32 recovery_dropped_tx;
+	u32 recovery_dropped_rx;
+
 	u32 last_recovery_dropped_tx;
+	u32 last_recovery_dropped_rx;
 
 	u32 last_error_status;
 	u32 last_error_info;
+
 	u64 last_error_addr;
 
 	bool runtime_faulted;
+	bool rx_user_pending;
 
 	u64 tx_bytes;
+	u64 rx_bytes;
 
 	if (!dma)
 		return -ENODEV;
@@ -780,25 +1572,34 @@ static ssize_t runtime_status_show(
 	tx_head =
 		readl(
 			dma->regs +
-			P07_TX_HEAD);
+				P07_TX_HEAD);
 
 	tx_desc =
 		readl(
 			dma->regs +
-			P07_TX_DESC_COUNT);
+				P07_TX_DESC_COUNT);
 
 	rx_head =
 		readl(
 			dma->regs +
-			P07_RX_HEAD);
+				P07_RX_HEAD);
+
+	rx_desc =
+		readl(
+			dma->regs +
+				P07_RX_DESC_COUNT);
 
 	error_status =
 		readl(
 			dma->regs +
-			P07_ERROR_STATUS);
+				P07_ERROR_STATUS);
 
 	tx_bytes =
 		project07_read_tx_bytes(
+			dma);
+
+	rx_bytes =
+		project07_read_rx_bytes(
 			dma);
 
 	spin_lock_irqsave(
@@ -817,8 +1618,14 @@ static ssize_t runtime_status_show(
 	recovery_dropped_tx =
 		dma->recovery_dropped_tx;
 
+	recovery_dropped_rx =
+		dma->recovery_dropped_rx;
+
 	last_recovery_dropped_tx =
 		dma->last_recovery_dropped_tx;
+
+	last_recovery_dropped_rx =
+		dma->last_recovery_dropped_rx;
 
 	last_error_status =
 		dma->last_error_status;
@@ -833,14 +1640,20 @@ static ssize_t runtime_status_show(
 		&dma->state_lock,
 		flags);
 
+	rx_user_pending =
+		READ_ONCE(
+			dma->rx_user_pending);
+
 	return sysfs_emit(
 		buf,
 		"tx_prod=%u tx_clean=%u tx_head=%u tx_bytes=%llu tx_desc=%u "
-		"rx_prod=%u rx_clean=%u rx_head=%u "
+		"rx_prod=%u rx_clean=%u rx_head=%u rx_bytes=%llu rx_desc=%u "
+		"rx_pending=%u "
 		"irq_count=%d irq_seen=0x%08x "
 		"error_status=0x%08x faulted=%u "
 		"recovery_count=%u recovery_failures=%u "
-		"recovery_dropped_tx=%u last_recovery_dropped_tx=%u "
+		"recovery_dropped_tx=%u recovery_dropped_rx=%u "
+		"last_recovery_dropped_tx=%u last_recovery_dropped_rx=%u "
 		"last_error_status=0x%08x last_error_info=0x%08x "
 		"last_error_addr=0x%016llx\n",
 		dma->tx.prod,
@@ -851,17 +1664,25 @@ static ssize_t runtime_status_show(
 		dma->rx.prod,
 		dma->rx.clean,
 		rx_head,
-		atomic_read(&dma->irq_count),
-		atomic_read(&dma->irq_seen),
+		(unsigned long long)rx_bytes,
+		rx_desc,
+		rx_user_pending ? 1 : 0,
+		atomic_read(
+			&dma->irq_count),
+		atomic_read(
+			&dma->irq_seen),
 		error_status,
 		runtime_faulted ? 1 : 0,
 		recovery_count,
 		recovery_failures,
 		recovery_dropped_tx,
+		recovery_dropped_rx,
 		last_recovery_dropped_tx,
+		last_recovery_dropped_rx,
 		last_error_status,
 		last_error_info,
-		(unsigned long long)last_error_addr);
+		(unsigned long long)
+			last_error_addr);
 }
 
 static DEVICE_ATTR_RO(runtime_status);
@@ -968,6 +1789,10 @@ static int project07_hw_init(struct project07_dma *dma)
 	dma->rx.prod = 0;
 	dma->rx.clean = 0;
 
+	dma->rx_user_pending = false;
+	dma->rx_user_logical = 0;
+	dma->rx_user_generation = 0;
+
 	dma_wmb();
 
 	writel(0,
@@ -1011,7 +1836,7 @@ static int project07_hw_init(struct project07_dma *dma)
 		readl(dma->regs + P07_ERROR_STATUS);
 
 	dev_info(dma->dev,
-		 "Project07 Runtime10E state: tx_prod=%u tx_clean=%u tx_head=%u rx_prod=%u rx_clean=%u rx_head=%u error_status=0x%08x\n",
+		 "Project07 Runtime10F state: tx_prod=%u tx_clean=%u tx_head=%u rx_prod=%u rx_clean=%u rx_head=%u error_status=0x%08x\n",
 		 dma->tx.prod,
 		 dma->tx.clean,
 		 tx_head,
@@ -1025,7 +1850,7 @@ static int project07_hw_init(struct project07_dma *dma)
 	    error_status != 0) {
 
 		dev_err(dma->dev,
-			"Project07 Runtime10E FAIL: initial runtime state is not clean\n");
+			"Project07 Runtime10F FAIL: initial runtime state is not clean\n");
 
 		return -EIO;
 	}
@@ -1049,12 +1874,19 @@ static int project07_runtime_recover(
 	u32 error_addr_lo;
 	u32 error_addr_hi;
 
-	u32 before_prod;
-	u32 before_clean;
-	u32 before_head;
-	u32 dropped_tx;
+	u32 before_tx_prod;
+	u32 before_tx_clean;
+	u32 before_tx_head;
 
-	u32 after_head;
+	u32 before_rx_prod;
+	u32 before_rx_clean;
+	u32 before_rx_head;
+
+	u32 dropped_tx;
+	u32 dropped_rx;
+
+	u32 after_tx_head;
+	u32 after_rx_head;
 	u32 after_error;
 
 	u64 error_addr;
@@ -1064,61 +1896,79 @@ static int project07_runtime_recover(
 
 	int ret;
 
-	/*
-	 * Process-context recovery excludes the IRQ handlers before
-	 * taking tx_mutex.
-	 *
-	 * IRQ-thread recovery is already protected by IRQF_ONESHOT.
-	 */
 	if (!from_irq)
 		disable_irq(
 			dma->irq);
 
+	/*
+	 * Global recovery lock order:
+	 *
+	 *     tx_mutex -> rx_mutex
+	 */
 	mutex_lock(
 		&dma->tx_mutex);
 
-	/*
-	 * Snapshot diagnostics before reset.
-	 */
+	mutex_lock(
+		&dma->rx_mutex);
+
 	error_status =
 		readl(
 			dma->regs +
-			P07_ERROR_STATUS);
+				P07_ERROR_STATUS);
 
 	error_info =
 		readl(
 			dma->regs +
-			P07_ERROR_INFO);
+				P07_ERROR_INFO);
 
 	error_addr_lo =
 		readl(
 			dma->regs +
-			P07_ERROR_ADDR_LO);
+				P07_ERROR_ADDR_LO);
 
 	error_addr_hi =
 		readl(
 			dma->regs +
-			P07_ERROR_ADDR_HI);
+				P07_ERROR_ADDR_HI);
 
 	error_addr =
 		((u64)error_addr_hi << 32) |
 		(u64)error_addr_lo;
 
-	before_prod =
+	before_tx_prod =
 		dma->tx.prod;
 
-	before_clean =
+	before_tx_clean =
 		dma->tx.clean;
 
-	before_head =
+	before_tx_head =
 		readl(
 			dma->regs +
-			P07_TX_HEAD);
+				P07_TX_HEAD);
+
+	before_rx_prod =
+		dma->rx.prod;
+
+	before_rx_clean =
+		dma->rx.clean;
+
+	before_rx_head =
+		readl(
+			dma->regs +
+				P07_RX_HEAD);
 
 	dropped_tx =
 		(u32)(
-			before_prod -
-			before_clean);
+			before_tx_prod -
+			before_tx_clean);
+
+	/*
+	 * The current userspace RX ABI permits only one outstanding
+	 * read request.
+	 */
+	dropped_rx =
+		dma->rx_user_pending ?
+			1 : 0;
 
 	saved_irq_count =
 		atomic_read(
@@ -1147,42 +1997,42 @@ static int project07_runtime_recover(
 	dma->last_recovery_dropped_tx =
 		dropped_tx;
 
+	dma->last_recovery_dropped_rx =
+		dropped_rx;
+
 	dma->recovery_dropped_tx +=
 		dropped_tx;
+
+	dma->recovery_dropped_rx +=
+		dropped_rx;
 
 	spin_unlock_irqrestore(
 		&dma->state_lock,
 		flags);
 
 	dev_warn(dma->dev,
-		 "Project07 Runtime10E recovery start: reason=%s error_status=0x%08x error_info=0x%08x error_addr=0x%016llx tx_prod=%u tx_clean=%u tx_head=%u dropped_tx=%u\n",
+		 "Project07 Runtime10F recovery start: reason=%s error_status=0x%08x error_info=0x%08x error_addr=0x%016llx tx_prod=%u tx_clean=%u tx_head=%u rx_prod=%u rx_clean=%u rx_head=%u dropped_tx=%u dropped_rx=%u\n",
 		 reason,
 		 error_status,
 		 error_info,
-		 (unsigned long long)error_addr,
-		 before_prod,
-		 before_clean,
-		 before_head,
-		 dropped_tx);
+		 (unsigned long long)
+			error_addr,
+		 before_tx_prod,
+		 before_tx_clean,
+		 before_tx_head,
+		 before_rx_prod,
+		 before_rx_clean,
+		 before_rx_head,
+		 dropped_tx,
+		 dropped_rx);
 
-	/*
-	 * Canonical reset/reinitialization:
-	 *
-	 * quiesce
-	 *   -> soft reset
-	 *   -> counter/status clear
-	 *   -> restore TX/RX ring configuration
-	 *   -> reset logical software indices
-	 *   -> restore interrupt enable
-	 *   -> global enable
-	 */
 	ret =
 		project07_hw_init(
 			dma);
 
 	/*
-	 * hw_init starts a new hardware DMA epoch.
-	 * Preserve Linux runtime IRQ history across that reset.
+	 * hw_init establishes a new DMA hardware epoch.
+	 * Preserve lifetime Linux interrupt history.
 	 */
 	atomic_set(
 		&dma->irq_count,
@@ -1212,9 +2062,12 @@ static int project07_runtime_recover(
 			flags);
 
 		dev_err(dma->dev,
-			"Project07 Runtime10E recovery FAIL: reason=%s ret=%d\n",
+			"Project07 Runtime10F recovery FAIL: reason=%s ret=%d\n",
 			reason,
 			ret);
+
+		mutex_unlock(
+			&dma->rx_mutex);
 
 		mutex_unlock(
 			&dma->tx_mutex);
@@ -1232,15 +2085,20 @@ static int project07_runtime_recover(
 		return ret;
 	}
 
-	after_head =
+	after_tx_head =
 		readl(
 			dma->regs +
-			P07_TX_HEAD);
+				P07_TX_HEAD);
+
+	after_rx_head =
+		readl(
+			dma->regs +
+				P07_RX_HEAD);
 
 	after_error =
 		readl(
 			dma->regs +
-			P07_ERROR_STATUS);
+				P07_ERROR_STATUS);
 
 	spin_lock_irqsave(
 		&dma->state_lock,
@@ -1256,13 +2114,19 @@ static int project07_runtime_recover(
 		flags);
 
 	dev_info(dma->dev,
-		 "Project07 Runtime10E recovery complete: reason=%s recovery_count=%u tx_prod=%u tx_clean=%u tx_head=%u error_status=0x%08x\n",
+		 "Project07 Runtime10F recovery complete: reason=%s recovery_count=%u tx_prod=%u tx_clean=%u tx_head=%u rx_prod=%u rx_clean=%u rx_head=%u error_status=0x%08x\n",
 		 reason,
 		 dma->recovery_count,
 		 dma->tx.prod,
 		 dma->tx.clean,
-		 after_head,
+		 after_tx_head,
+		 dma->rx.prod,
+		 dma->rx.clean,
+		 after_rx_head,
 		 after_error);
+
+	mutex_unlock(
+		&dma->rx_mutex);
 
 	mutex_unlock(
 		&dma->tx_mutex);
@@ -1385,9 +2249,25 @@ static int project07_dma_probe(struct platform_device *pdev)
 	if (!dma->tx_payload_cpu)
 		return -ENOMEM;
 
-	memset(dma->tx_payload_cpu,
-	       0,
-	       P07_TX_POOL_BYTES);
+	dma->rx_payload_cpu =
+		dmam_alloc_coherent(
+			&pdev->dev,
+			P07_RX_POOL_BYTES,
+			&dma->rx_payload_dma,
+			GFP_KERNEL);
+
+	if (!dma->rx_payload_cpu)
+		return -ENOMEM;
+
+	memset(
+		dma->tx_payload_cpu,
+		0,
+		P07_TX_POOL_BYTES);
+
+	memset(
+		dma->rx_payload_cpu,
+		0,
+		P07_RX_POOL_BYTES);
 
 	/*
 	 * DMA ring base must satisfy descriptor alignment.
@@ -1401,10 +2281,11 @@ static int project07_dma_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	if (dma->tx_payload_dma & 0x7) {
+	if ((dma->tx_payload_dma & 0x7) ||
+	    (dma->rx_payload_dma & 0x7)) {
 
 		dev_err(&pdev->dev,
-			"Project07 coherent TX payload alignment failure\n");
+			"Project07 coherent payload alignment failure\n");
 
 		return -EINVAL;
 	}
@@ -1418,6 +2299,9 @@ static int project07_dma_probe(struct platform_device *pdev)
 	       ring_bytes);
 
 	mutex_init(&dma->tx_mutex);
+	mutex_init(&dma->rx_mutex);
+	mutex_init(&dma->rx_user_mutex);
+
 	spin_lock_init(&dma->state_lock);
 
 	init_waitqueue_head(&dma->tx_wait);
@@ -1434,6 +2318,13 @@ static int project07_dma_probe(struct platform_device *pdev)
 
 	dma->recovery_dropped_tx = 0;
 	dma->last_recovery_dropped_tx = 0;
+
+	dma->recovery_dropped_rx = 0;
+	dma->last_recovery_dropped_rx = 0;
+
+	dma->rx_user_pending = false;
+	dma->rx_user_logical = 0;
+	dma->rx_user_generation = 0;
 
 	dma->last_error_status = 0;
 	dma->last_error_info = 0;
@@ -1479,10 +2370,11 @@ static int project07_dma_probe(struct platform_device *pdev)
 		 dma->irq);
 
 	dev_info(&pdev->dev,
-		 "Project07 Runtime10E rings: tx_dma=%pad rx_dma=%pad tx_payload_dma=%pad entries=%u descriptor_bytes=%u\n",
+		 "Project07 Runtime10F rings: tx_dma=%pad rx_dma=%pad tx_payload_dma=%pad rx_payload_dma=%pad entries=%u descriptor_bytes=%u\n",
 		 &dma->tx.dma,
 		 &dma->rx.dma,
 		 &dma->tx_payload_dma,
+		 &dma->rx_payload_dma,
 		 P07_RING_ENTRIES,
 		 P07_DESC_BYTES);
 
@@ -1501,23 +2393,6 @@ static int project07_dma_probe(struct platform_device *pdev)
 
 	if (ret) {
 		project07_hw_quiesce(dma);
-		return ret;
-	}
-
-	ret =
-		device_create_file(
-			&pdev->dev,
-			&dev_attr_runtime_recover);
-
-	if (ret) {
-
-		device_remove_file(
-			&pdev->dev,
-			&dev_attr_runtime_status);
-
-		project07_hw_quiesce(
-			dma);
-
 		return ret;
 	}
 
@@ -1544,10 +2419,6 @@ static int project07_dma_probe(struct platform_device *pdev)
 
 		device_remove_file(
 			&pdev->dev,
-			&dev_attr_runtime_recover);
-
-		device_remove_file(
-			&pdev->dev,
 			&dev_attr_runtime_status);
 
 		project07_hw_quiesce(
@@ -1557,13 +2428,13 @@ static int project07_dma_probe(struct platform_device *pdev)
 	}
 
 	dev_info(&pdev->dev,
-		 "Project07 Runtime10E READY: /dev/project07-dma TX + controlled recovery interface registered\n");
+		 "Project07 Runtime10F READY: /dev/project07-dma TX/RX runtime interface registered\n");
 
 	dev_info(&pdev->dev,
-		 "Project07 Runtime10E ABI: write exactly 64 bytes; ioctl RESET; driver-owned DMA buffers; no userspace DMA addresses\n");
+		 "Project07 Runtime10F ABI v1: write=64-byte TX read=64-byte RX ioctls=GET_INFO,GET_STATS,RESET\n");
 
 	dev_info(&pdev->dev,
-		 "Project07 Runtime10E validation control: runtime_recover=WO temporary physical-test trigger\n");
+		 "Project07 Runtime10F policy: driver-owned coherent DMA buffers; no userspace DMA addresses; no temporary recovery sysfs trigger\n");
 
 	dev_info(&pdev->dev,
 		 "Project07 runtime DMA hardware initialized successfully\n");
@@ -1583,10 +2454,6 @@ static int project07_dma_remove(struct platform_device *pdev)
 	if (dma)
 		misc_deregister(
 			&dma->miscdev);
-
-	device_remove_file(
-		&pdev->dev,
-		&dev_attr_runtime_recover);
 
 	device_remove_file(
 		&pdev->dev,
