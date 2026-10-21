@@ -1,0 +1,210 @@
+PROJECT 07 — FINAL PHYSICAL PERFORMANCE EVIDENCE
+Date: 2026-10-21
+Platform: AMD ZCU104
+Runtime: Runtime10F
+Device: /dev/project07-dma
+Result: PASS
+
+============================================================
+FINAL ABI QUALIFICATION
+============================================================
+
+GET_INFO:
+  abi_version      = 0x00010000
+  hw_id            = 0x43444d41
+  hw_version       = 0x00010000
+  ring_entries     = 16
+  descriptor_bytes = 64
+  payload_bytes    = 64
+  dma_bits         = 40
+  capabilities     = 0x0000003f
+
+GET_INFO result:
+  PASS
+
+GET_STATS before RESET:
+  tx_bytes          = 64
+  rx_bytes          = 64
+  tx_desc           = 1
+  rx_desc           = 1
+  tx_prod/clean/head = 1/1/1
+  rx_prod/clean/head = 1/1/1
+  irq_count         = 2
+  irq_seen          = 0x00000003
+  error_status      = 0x00000000
+  faulted           = 0
+
+GET_STATS result:
+  PASS
+
+RESET ioctl:
+  PASS
+
+After RESET:
+  tx_bytes           = 0
+  rx_bytes           = 0
+  tx_desc            = 0
+  rx_desc            = 0
+  tx_prod/clean/head = 0/0/0
+  rx_prod/clean/head = 0/0/0
+  error_status       = 0x00000000
+  faulted            = 0
+  recovery_count     = 1
+  recovery_failures  = 0
+
+FINAL ABI IOCTL QUALIFICATION:
+  PASS
+
+
+============================================================
+RX PHYSICAL MEASUREMENT
+============================================================
+
+RX_PAYLOAD_CHECK=PASS
+RX_BYTES=64
+
+RX_USER_E2E_US=107.020
+
+RX_ACTIVE_CYCLES=146
+RX_AXI_STALL_CYCLES=5
+RX_AXIS_STALL_CYCLES=65
+
+RX_AXI_STALL_PERCENT=3.425
+RX_AXIS_STALL_PERCENT=44.521
+
+RX_CPU_BUSY_PERCENT=50.000
+
+Physical RX payload:
+
+  11111111 22222222 33333333 44444444
+  55555555 66666666 77777777 88888888
+  99999999 aaaaaaaa bbbbbbbb cccccccc
+  dddddddd eeeeeeee ffffffff 12345678
+
+RX physical measurement:
+  PASS
+
+Qualification limitation:
+
+The physical FPGA wrapper provides one deterministic 64-byte
+AXI4-Stream RX packet per custom-core reset.
+
+The RX result therefore represents measured single-packet latency and
+physical correctness. It is not presented as sustained RX throughput.
+
+
+============================================================
+SUSTAINED TX PHYSICAL MEASUREMENT
+============================================================
+
+TX_DESCRIPTORS=2048
+TX_TOTAL_BYTES=131072
+TX_WALL_SECONDS=0.073498020
+
+TX_USER_E2E_MIB_PER_SEC=1.700726
+TX_USER_E2E_MBIT_PER_SEC=14.266724
+
+TX_DESCRIPTOR_RATE_PER_SEC=27864.696
+TX_AVG_DESCRIPTOR_US=35.888
+
+TX_EAGAIN_RETRIES=0
+
+TX_IRQ_DELTA=2047
+TX_IRQ_RATE_PER_SEC=27851.090
+
+TX_CPU_BUSY_PERCENT=58.621
+
+
+============================================================
+TX HARDWARE COUNTERS
+============================================================
+
+TX_ACTIVE_CYCLES=290461
+TX_AXI_STALL_CYCLES=2048
+TX_AXIS_STALL_CYCLES=0
+
+TX_AXI_STALL_PERCENT=0.705
+TX_AXIS_STALL_PERCENT=0.000
+
+PL clock:
+  100 MHz
+
+Derived hardware-active time:
+  2.904610 ms
+
+Derived hardware active-window data rate:
+  approximately 43.035 MiB/s
+  approximately 361.004 Mbit/s
+
+Important:
+
+This derived active-window hardware rate is not the same metric as the
+measured userspace end-to-end throughput.
+
+The userspace result includes syscall, driver, interrupt, scheduling and
+idle/software overhead.
+
+
+============================================================
+FINAL DMA ACCOUNTING
+============================================================
+
+tx_bytes              = 131072
+tx_desc               = 2048
+
+tx_prod               = 2048
+tx_clean              = 2048
+tx_head               = 2048
+
+irq_count             = 2050
+irq_seen              = 0x00000003
+
+error_status          = 0x00000000
+faulted               = 0
+
+recovery_count        = 3
+recovery_failures     = 0
+
+recovery_dropped_tx   = 0
+recovery_dropped_rx   = 0
+
+PERF_RC=0
+
+SUSTAINED TX MEASUREMENT:
+  PASS
+
+PROJECT07 10G PERFORMANCE QUALIFICATION:
+  PASS
+
+
+============================================================
+IRQ ACCOUNTING NOTE
+============================================================
+
+2048 TX descriptors completed while the Linux handler count increased
+by 2047 during the TX measurement.
+
+This is not a lost DMA completion.
+
+IRQ_STATUS contains latched cause bits. Multiple completion events can
+therefore coalesce while the same cause is already pending.
+
+Descriptor retirement is not derived from Linux IRQ count.
+
+Authoritative completion evidence is:
+
+  TX_DESC_COUNT = 2048
+  TX_HEAD       = 2048
+  tx_clean      = 2048
+  tx_prod       = 2048
+
+All four agree exactly.
+
+No DMA error or runtime fault occurred.
+
+
+============================================================
+FINAL RESULT
+============================================================
+
+PROJECT 07 PHYSICAL PERFORMANCE QUALIFICATION: PASS
