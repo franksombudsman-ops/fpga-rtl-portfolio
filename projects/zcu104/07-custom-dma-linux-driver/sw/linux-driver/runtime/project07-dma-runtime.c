@@ -12,20 +12,20 @@
 #include <linux/wait.h>
 #include <linux/slab.h>
 #include <linux/mutex.h>
-#include <linux/jiffies.h>
 #include <linux/device.h>
 
 /*
  * Project 07 — Runtime Linux DMA Driver
  *
- * Phase 10B:
+ * Phase 10C:
  *   - persistent coherent TX/RX descriptor rings
  *   - persistent coherent TX payload pool
  *   - monotonic software producer/reclaim indices
- *   - runtime TX descriptor publication
- *   - IRQ-driven completion
- *   - HW_HEAD-authoritative reclaim
- *   - temporary controlled sysfs validation trigger
+ *   - asynchronous runtime TX descriptor publication
+ *   - hard IRQ acknowledgement only
+ *   - threaded IRQ completion processing
+ *   - HW_HEAD-authoritative descriptor reclaim
+ *   - submission does not wait for DMA completion
  *
  * No DMA traffic is generated during probe.
  */
@@ -134,7 +134,6 @@
 
 #define P07_PAYLOAD_BYTES       64
 #define P07_TX_POOL_BYTES       (P07_RING_ENTRIES * P07_PAYLOAD_BYTES)
-#define P07_TX_TIMEOUT_MS       1000
 
 struct project07_desc {
 	__le64 buffer_addr;
@@ -182,11 +181,14 @@ struct project07_dma {
 
 	atomic_t irq_count;
 	atomic_t irq_seen;
+	atomic_t irq_thread_pending;
 };
 
 /* -------------------------------------------------------------------------- */
 /* Interrupt handler                                                          */
 /* -------------------------------------------------------------------------- */
+
+static int project07_tx_reclaim(struct project07_dma *dma);
 
 static irqreturn_t project07_dma_irq(int irq, void *data)
 {
@@ -202,25 +204,88 @@ static irqreturn_t project07_dma_irq(int irq, void *data)
 
 	atomic_inc(&dma->irq_count);
 	atomic_or(pending, &dma->irq_seen);
+	atomic_or(pending, &dma->irq_thread_pending);
 
 	/*
 	 * IRQ_STATUS is RW1C.
+	 *
+	 * Acknowledge the level-sensitive hardware interrupt in
+	 * hard-IRQ context. Completion processing is deferred.
 	 */
 	writel(pending,
 	       dma->regs + P07_IRQ_STATUS);
 
-	/*
-	 * Flush write before returning from a level-sensitive ISR.
-	 */
 	(void)readl(
 		dma->regs + P07_IRQ_STATUS);
 
-	if (pending &
-	    (P07_IRQ_TX_COMPLETE |
-	     P07_IRQ_TX_ERROR))
-		wake_up_all(&dma->tx_wait);
+	return IRQ_WAKE_THREAD;
+}
 
-	if (pending &
+static irqreturn_t project07_dma_irq_thread(int irq, void *data)
+{
+	struct project07_dma *dma = data;
+
+	u32 causes;
+	u32 error_status;
+	u32 tx_head;
+
+	int reclaimed = 0;
+
+	causes =
+		(u32)atomic_xchg(
+			&dma->irq_thread_pending,
+			0);
+
+	if (causes & P07_IRQ_TX_COMPLETE) {
+
+		mutex_lock(&dma->tx_mutex);
+
+		reclaimed =
+			project07_tx_reclaim(dma);
+
+		tx_head =
+			readl(
+				dma->regs +
+				P07_TX_HEAD);
+
+		mutex_unlock(&dma->tx_mutex);
+
+		if (reclaimed < 0) {
+
+			dev_err(dma->dev,
+				"Project07 Runtime10C IRQ reclaim FAIL: causes=0x%08x ret=%d\n",
+				causes,
+				reclaimed);
+
+		} else {
+
+			dev_info(dma->dev,
+				 "Project07 Runtime10C IRQ reclaim: causes=0x%08x reclaimed=%d tx_clean=%u tx_head=%u\n",
+				 causes,
+				 reclaimed,
+				 dma->tx.clean,
+				 tx_head);
+		}
+
+		wake_up_all(&dma->tx_wait);
+	}
+
+	if (causes & P07_IRQ_TX_ERROR) {
+
+		error_status =
+			readl(
+				dma->regs +
+				P07_ERROR_STATUS);
+
+		dev_err(dma->dev,
+			"Project07 Runtime10C TX IRQ error: causes=0x%08x error_status=0x%08x\n",
+			causes,
+			error_status);
+
+		wake_up_all(&dma->tx_wait);
+	}
+
+	if (causes &
 	    (P07_IRQ_RX_COMPLETE |
 	     P07_IRQ_RX_ERROR))
 		wake_up_all(&dma->rx_wait);
@@ -287,7 +352,7 @@ static int project07_tx_reclaim(struct project07_dma *dma)
 		    actual != P07_PAYLOAD_BYTES) {
 
 			dev_err(dma->dev,
-				"Project07 Runtime10B reclaim FAIL: logical=%u slot=%u control=0x%08x status=0x%08x actual=%u\n",
+				"Project07 Runtime10C reclaim FAIL: logical=%u slot=%u control=0x%08x status=0x%08x actual=%u\n",
 				logical,
 				slot,
 				control,
@@ -298,7 +363,7 @@ static int project07_tx_reclaim(struct project07_dma *dma)
 		}
 
 		dev_info(dma->dev,
-			 "Project07 Runtime10B reclaim: logical=%u slot=%u control=0x%08x status=0x%08x actual=%u cookie=0x%016llx\n",
+			 "Project07 Runtime10C reclaim: logical=%u slot=%u control=0x%08x status=0x%08x actual=%u cookie=0x%016llx\n",
 			 logical,
 			 slot,
 			 control,
@@ -318,50 +383,48 @@ static int project07_tx_reclaim(struct project07_dma *dma)
 /* Runtime TX submission                                                      */
 /* -------------------------------------------------------------------------- */
 
-static int project07_tx_submit_test(struct project07_dma *dma)
+static int project07_tx_submit_async(struct project07_dma *dma)
 {
 	struct project07_desc *desc;
 	__le64 *payload;
 	dma_addr_t payload_dma;
 
-	unsigned long timeout;
-
 	u32 logical;
 	u32 slot;
-	u32 irq_before;
-	u32 irq_after;
-	u32 hw_head;
 	u32 error_status;
-	u32 tx_desc_count;
-	u64 tx_bytes;
 
-	int reclaimed;
 	int i;
 	int ret = 0;
 
 	mutex_lock(&dma->tx_mutex);
 
 	/*
-	 * Reclaim anything hardware may already have completed before
-	 * checking ring occupancy.
+	 * tx_clean is advanced independently by threaded IRQ reclaim.
 	 */
-	reclaimed =
-		project07_tx_reclaim(dma);
-
-	if (reclaimed < 0) {
-		ret = reclaimed;
-		goto out_unlock;
-	}
-
 	if ((u32)(dma->tx.prod - dma->tx.clean) >=
 	    P07_RING_ENTRIES) {
 
 		dev_err(dma->dev,
-			"Project07 Runtime10B submit FAIL: TX ring full prod=%u clean=%u\n",
+			"Project07 Runtime10C submit FAIL: TX ring full prod=%u clean=%u\n",
 			dma->tx.prod,
 			dma->tx.clean);
 
 		ret = -EBUSY;
+		goto out_unlock;
+	}
+
+	error_status =
+		readl(
+			dma->regs +
+			P07_ERROR_STATUS);
+
+	if (error_status != 0) {
+
+		dev_err(dma->dev,
+			"Project07 Runtime10C submit FAIL: error_status=0x%08x\n",
+			error_status);
+
+		ret = -EIO;
 		goto out_unlock;
 	}
 
@@ -376,29 +439,33 @@ static int project07_tx_submit_test(struct project07_dma *dma)
 
 	payload =
 		(__le64 *)dma->tx_payload_cpu +
-		(slot * (P07_PAYLOAD_BYTES / sizeof(__le64)));
+		(slot *
+		 (P07_PAYLOAD_BYTES /
+		  sizeof(__le64)));
 
 	payload_dma =
 		dma->tx_payload_dma +
 		(slot * P07_PAYLOAD_BYTES);
 
-	/*
-	 * Distinct deterministic payload for each logical submission.
-	 */
 	for (i = 0; i < 8; i++)
 		payload[i] =
 			cpu_to_le64(
-				0x10B0000000000000ULL |
+				0x10C0000000000000ULL |
 				((u64)logical << 16) |
 				(u64)i);
 
-	memset(desc, 0, sizeof(*desc));
+	memset(
+		desc,
+		0,
+		sizeof(*desc));
 
 	desc->buffer_addr =
-		cpu_to_le64((u64)payload_dma);
+		cpu_to_le64(
+			(u64)payload_dma);
 
 	desc->length =
-		cpu_to_le32(P07_PAYLOAD_BYTES);
+		cpu_to_le32(
+			P07_PAYLOAD_BYTES);
 
 	/*
 	 * OWN | IRQ | EOP
@@ -408,45 +475,33 @@ static int project07_tx_submit_test(struct project07_dma *dma)
 
 	desc->cookie =
 		cpu_to_le64(
-			0x3130420000000000ULL |
+			0x3130430000000000ULL |
 			(u64)logical);
 
 	/*
-	 * Clear stale latched TX causes before this submission.
-	 */
-	writel(P07_IRQ_TX_COMPLETE |
-	       P07_IRQ_TX_ERROR,
-	       dma->regs + P07_IRQ_STATUS);
-
-	(void)readl(
-		dma->regs + P07_IRQ_STATUS);
-
-	irq_before =
-		atomic_read(&dma->irq_count);
-
-	/*
-	 * Publish payload + descriptor before advertising the new tail.
+	 * Publish payload + descriptor before logical TAIL.
 	 */
 	dma_wmb();
 
 	dma->tx.prod =
 		logical + 1;
 
-	/*
-	 * Keep TX enabled as a persistent runtime channel.
-	 * With HEAD == TAIL it remains idle.
-	 */
-	writel(P07_CHANNEL_ENABLE,
-	       dma->regs + P07_TX_CONTROL);
+	writel(
+		P07_CHANNEL_ENABLE,
+		dma->regs +
+		P07_TX_CONTROL);
 
-	writel(dma->tx.prod,
-	       dma->regs + P07_TX_TAIL);
+	writel(
+		dma->tx.prod,
+		dma->regs +
+		P07_TX_TAIL);
 
 	(void)readl(
-		dma->regs + P07_TX_TAIL);
+		dma->regs +
+		P07_TX_TAIL);
 
 	dev_info(dma->dev,
-		 "Project07 Runtime10B submit: logical=%u slot=%u tx_prod=%u tx_clean=%u tail=%u payload_dma=%pad\n",
+		 "Project07 Runtime10C submit queued: logical=%u slot=%u tx_prod=%u tx_clean=%u tail=%u payload_dma=%pad\n",
 		 logical,
 		 slot,
 		 dma->tx.prod,
@@ -455,94 +510,14 @@ static int project07_tx_submit_test(struct project07_dma *dma)
 		 &payload_dma);
 
 	/*
-	 * Completion is IRQ-driven.
+	 * Do not wait here.
 	 *
-	 * Reclaim itself remains HW_HEAD-authoritative.
+	 * Hardware completion is handled asynchronously:
+	 *
+	 * hard IRQ
+	 *   -> threaded IRQ
+	 *   -> HW_HEAD-authoritative reclaim
 	 */
-	timeout =
-		wait_event_timeout(
-			dma->tx_wait,
-			atomic_read(&dma->irq_count) != irq_before,
-			msecs_to_jiffies(P07_TX_TIMEOUT_MS));
-
-	if (!timeout) {
-
-		hw_head =
-			readl(dma->regs + P07_TX_HEAD);
-
-		dev_err(dma->dev,
-			"Project07 Runtime10B submit FAIL: TX completion timeout prod=%u clean=%u head=%u\n",
-			dma->tx.prod,
-			dma->tx.clean,
-			hw_head);
-
-		ret = -ETIMEDOUT;
-		goto out_unlock;
-	}
-
-	irq_after =
-		atomic_read(&dma->irq_count);
-
-	error_status =
-		readl(dma->regs + P07_ERROR_STATUS);
-
-	if ((atomic_read(&dma->irq_seen) &
-	     P07_IRQ_TX_ERROR) ||
-	    error_status != 0) {
-
-		dev_err(dma->dev,
-			"Project07 Runtime10B submit FAIL: TX error irq_seen=0x%08x error_status=0x%08x\n",
-			atomic_read(&dma->irq_seen),
-			error_status);
-
-		ret = -EIO;
-		goto out_unlock;
-	}
-
-	reclaimed =
-		project07_tx_reclaim(dma);
-
-	if (reclaimed < 0) {
-		ret = reclaimed;
-		goto out_unlock;
-	}
-
-	hw_head =
-		readl(dma->regs + P07_TX_HEAD);
-
-	tx_desc_count =
-		readl(dma->regs + P07_TX_DESC_COUNT);
-
-	tx_bytes =
-		project07_read_tx_bytes(dma);
-
-	dev_info(dma->dev,
-		 "Project07 Runtime10B state: irq_before=%u irq_after=%u tx_prod=%u tx_clean=%u tx_head=%u bytes=%llu desc=%u error_status=0x%08x\n",
-		 irq_before,
-		 irq_after,
-		 dma->tx.prod,
-		 dma->tx.clean,
-		 hw_head,
-		 (unsigned long long)tx_bytes,
-		 tx_desc_count,
-		 error_status);
-
-	if (dma->tx.clean != dma->tx.prod ||
-	    hw_head != dma->tx.prod ||
-	    tx_desc_count != dma->tx.prod ||
-	    tx_bytes !=
-		((u64)dma->tx.prod *
-		 P07_PAYLOAD_BYTES)) {
-
-		dev_err(dma->dev,
-			"Project07 Runtime10B submit FAIL: runtime TX accounting mismatch\n");
-
-		ret = -EIO;
-		goto out_unlock;
-	}
-
-	dev_info(dma->dev,
-		 "Project07 Runtime10B PASS: persistent TX descriptor submitted and reclaimed through HW_HEAD\n");
 
 out_unlock:
 	mutex_unlock(&dma->tx_mutex);
@@ -551,7 +526,7 @@ out_unlock:
 }
 
 /* -------------------------------------------------------------------------- */
-/* Temporary Phase 10B validation controls                                    */
+/* Temporary Phase 10C validation controls                                    */
 /* -------------------------------------------------------------------------- */
 
 static ssize_t runtime_tx_test_store(
@@ -579,7 +554,7 @@ static ssize_t runtime_tx_test_store(
 		return -EINVAL;
 
 	ret =
-		project07_tx_submit_test(dma);
+		project07_tx_submit_async(dma);
 
 	if (ret)
 		return ret;
@@ -759,6 +734,7 @@ static int project07_hw_init(struct project07_dma *dma)
 	 */
 	atomic_set(&dma->irq_count, 0);
 	atomic_set(&dma->irq_seen, 0);
+	atomic_set(&dma->irq_thread_pending, 0);
 
 	writel(P07_IRQ_ALL,
 	       dma->regs + P07_IRQ_ENABLE);
@@ -783,7 +759,7 @@ static int project07_hw_init(struct project07_dma *dma)
 		readl(dma->regs + P07_ERROR_STATUS);
 
 	dev_info(dma->dev,
-		 "Project07 Runtime10B state: tx_prod=%u tx_clean=%u tx_head=%u rx_prod=%u rx_clean=%u rx_head=%u error_status=0x%08x\n",
+		 "Project07 Runtime10C state: tx_prod=%u tx_clean=%u tx_head=%u rx_prod=%u rx_clean=%u rx_head=%u error_status=0x%08x\n",
 		 dma->tx.prod,
 		 dma->tx.clean,
 		 tx_head,
@@ -797,7 +773,7 @@ static int project07_hw_init(struct project07_dma *dma)
 	    error_status != 0) {
 
 		dev_err(dma->dev,
-			"Project07 Runtime10B FAIL: initial runtime state is not clean\n");
+			"Project07 Runtime10C FAIL: initial runtime state is not clean\n");
 
 		return -EIO;
 	}
@@ -949,6 +925,7 @@ static int project07_dma_probe(struct platform_device *pdev)
 
 	atomic_set(&dma->irq_count, 0);
 	atomic_set(&dma->irq_seen, 0);
+	atomic_set(&dma->irq_thread_pending, 0);
 
 	dma->irq =
 		platform_get_irq(pdev, 0);
@@ -970,11 +947,12 @@ static int project07_dma_probe(struct platform_device *pdev)
 		dma->regs + P07_IRQ_STATUS);
 
 	ret =
-		devm_request_irq(
+		devm_request_threaded_irq(
 			&pdev->dev,
 			dma->irq,
 			project07_dma_irq,
-			0,
+			project07_dma_irq_thread,
+			IRQF_ONESHOT,
 			"project07-dma",
 			dma);
 
@@ -989,7 +967,7 @@ static int project07_dma_probe(struct platform_device *pdev)
 		 dma->irq);
 
 	dev_info(&pdev->dev,
-		 "Project07 Runtime10B rings: tx_dma=%pad rx_dma=%pad tx_payload_dma=%pad entries=%u descriptor_bytes=%u\n",
+		 "Project07 Runtime10C rings: tx_dma=%pad rx_dma=%pad tx_payload_dma=%pad entries=%u descriptor_bytes=%u\n",
 		 &dma->tx.dma,
 		 &dma->rx.dma,
 		 &dma->tx_payload_dma,
@@ -1029,10 +1007,10 @@ static int project07_dma_probe(struct platform_device *pdev)
 	}
 
 	dev_info(&pdev->dev,
-		 "Project07 Runtime10B READY: persistent rings configured; runtime TX submission ready\n");
+		 "Project07 Runtime10C READY: asynchronous TX submission and threaded HW_HEAD reclaim ready\n");
 
 	dev_info(&pdev->dev,
-		 "Project07 Runtime10B control: runtime_status=RO runtime_tx_test=WO\n");
+		 "Project07 Runtime10C control: runtime_status=RO runtime_tx_test=WO asynchronous-submit\n");
 
 	dev_info(&pdev->dev,
 		 "Project07 runtime DMA hardware initialized successfully\n");
