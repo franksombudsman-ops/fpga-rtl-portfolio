@@ -1,0 +1,39 @@
+Frank Ouma
+Project 08 - Programmable Network Processor
+08F - Packet Editor / Checksum Engine Qualification
+
+Platform: AMD ZCU104 / Zynq UltraScale+ MPSoC
+Engineering: FPGA / SoC / Digital Hardware Engineering
+Date: 2026-10-28
+
+RESULT: PASS
+
+TEST UDP_FULL_REWRITE: PASS
+TEST VLAN_UDP_REWRITE: PASS
+TEST TCP_FULL_REWRITE: PASS
+TEST BYTE_EXACT_BYPASS: PASS
+TEST UNSUPPORTED_SAFE_BYPASS: PASS
+ IPv4 source rewrite       : PASS
+ IPv4 destination rewrite  : PASS
+ UDP source-port rewrite   : PASS
+ UDP destination rewrite   : PASS
+ TCP source-port rewrite   : PASS
+ TCP destination rewrite   : PASS
+ VLAN IPv4 editing         : PASS
+ IPv4 checksum regenerate  : PASS
+ UDP checksum regenerate   : PASS
+ TCP checksum regenerate   : PASS
+ Byte-exact bypass         : PASS
+ Unsupported safe bypass   : PASS
+ Output backpressure       : PASS
+ Tests                     : 5
+ Output stall cycles       : 10
+
+Packet fields were physically represented as network-order bytes.
+Checksums were regenerated after address/port modification.
+Unsupported edits were rejected without corrupting packet contents.
+
+Simulation engine: AMD XSIM / Vivado 2023.2
+
+Copyright (c) 2026 Frank Ouma.
+All rights reserved.
