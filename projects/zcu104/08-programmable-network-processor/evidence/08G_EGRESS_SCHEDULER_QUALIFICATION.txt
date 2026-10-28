@@ -1,0 +1,38 @@
+Frank Ouma
+Project 08 - Programmable Network Processor
+08G - Four-Queue Egress Scheduler / QoS Qualification
+
+Platform: AMD ZCU104 / Zynq UltraScale+ MPSoC
+Engineering: FPGA / SoC / Digital Hardware Engineering
+Date: 2026-10-28
+
+RESULT: PASS
+
+WEIGHTED ROUND-ROBIN ORDER: PASS
+OUTPUT BACKPRESSURE: PASS
+RATE CONTROL GAP: PASS cycles=15
+QUEUE-FULL BACKPRESSURE: PASS
+ Hardware queues            : 4
+ Packet-aware scheduling    : PASS
+ No packet interleaving     : PASS
+ Weighted round-robin       : PASS
+ Runtime queue weights      : PASS
+ Per-queue rate control     : PASS
+ Queue-full backpressure    : PASS
+ Output backpressure        : PASS
+ Byte-perfect scheduling    : PASS
+ Queue telemetry            : PASS
+ Packets enqueued           : 13
+ Packets transmitted        : 13
+ Output stall cycles        : 57
+ Rate-gap measured          : 15 cycles
+
+Scheduling occurs only at packet boundaries.
+Queue ownership remains fixed from first beat through TLAST.
+Weighted arbitration operates in packet units.
+Rate control uses programmable post-packet queue holdoff.
+
+Simulation engine: AMD XSIM / Vivado 2023.2
+
+Copyright (c) 2026 Frank Ouma.
+All rights reserved.
