@@ -1,0 +1,31 @@
+Frank Ouma
+Project 08 - Programmable Network Processor
+08B - AXI-Stream Verification Infrastructure
+
+Platform: AMD ZCU104 / Zynq UltraScale+ MPSoC
+Engineering: FPGA / SoC / Digital Hardware Engineering
+Date: 2026-10-28
+
+RESULT: PASS
+
+Datapath width       : 64 bits
+Clock                : 125 MHz
+TX packets           : 138
+RX packets           : 138
+TX bytes             : 63142
+RX bytes             : 63142
+Backpressure stalls  : 2511 cycles
+
+TKEEP/TLAST          : PASS
+Stall stability      : PASS
+Byte scoreboard      : PASS
+Packet boundaries    : PASS
+
+Verification included exact packet-boundary cases, variable packet
+lengths, deterministic randomized backpressure, byte-accurate
+scoreboarding and AXI-Stream stall-stability checking.
+
+Simulation engine: AMD XSIM / Vivado 2023.2
+
+Copyright (c) 2026 Frank Ouma.
+All rights reserved.
