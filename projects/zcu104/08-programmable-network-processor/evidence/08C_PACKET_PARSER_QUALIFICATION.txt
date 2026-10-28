@@ -1,0 +1,34 @@
+Frank Ouma
+Project 08 - Programmable Network Processor
+08C - Streaming Packet Parser Qualification
+
+Platform: AMD ZCU104 / Zynq UltraScale+ MPSoC
+Engineering: FPGA / SoC / Digital Hardware Engineering
+Date: 2026-10-28
+
+RESULT: PASS
+
+TEST IPv4_UDP: PASS
+TEST VLAN_IPV4_OPTIONS_UDP: PASS
+TEST IPv4_TCP: PASS
+TEST NON_IPV4: PASS
+TEST TRUNCATED_ETH: PASS
+TEST INVALID_IP_VERSION: PASS
+TEST TRUNCATED_UDP: PASS
+ Ethernet II             : PASS
+ VLAN                    : PASS
+ IPv4                    : PASS
+ IPv4 options / IHL      : PASS
+ UDP                     : PASS
+ TCP recognition         : PASS
+ Non-IPv4 handling       : PASS
+ Truncation detection    : PASS
+ AXIS pass-through       : PASS
+ Backpressure exercised  : PASS
+ Packets tested          : 7
+ Backpressure stalls     : 12 cycles
+
+Simulation engine: AMD XSIM / Vivado 2023.2
+
+Copyright (c) 2026 Frank Ouma.
+All rights reserved.
