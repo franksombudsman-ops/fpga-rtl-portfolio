@@ -1,0 +1,45 @@
+Frank Ouma
+Project 08 - Programmable Network Processor
+08D - Programmable Match / Action Engine Qualification
+
+Platform: AMD ZCU104 / Zynq UltraScale+ MPSoC
+Engineering: FPGA / SoC / Digital Hardware Engineering
+Date: 2026-10-28
+
+RESULT: PASS
+
+TEST                PRIORITY_DROP : PASS  match=1 rule=0 action=1 queue=0 hash=71dcd4e5
+TEST             UDP_5000_FORWARD : PASS  match=1 rule=1 action=0 queue=0 hash=a84b3cfe
+TEST                  HASH_REPEAT : PASS  match=1 rule=1 action=0 queue=0 hash=a84b3cfe
+TEST            UDP_8000_REDIRECT : PASS  match=1 rule=2 action=2 queue=2 hash=ab7f3d74
+5-TUPLE HASH STABILITY/SENSITIVITY: PASS
+TEST                SUBNET_MODIFY : PASS  match=1 rule=3 action=3 queue=1 hash=9ff9d4b6
+TEST                VLAN100_COUNT : PASS  match=1 rule=4 action=4 queue=0 hash=12ee3f0b
+TEST               TCP443_FORWARD : PASS  match=1 rule=5 action=0 queue=3 hash=3a4f7b74
+TEST                 DEFAULT_DROP : PASS  match=0 rule=0 action=1 queue=0 hash=872a26d3
+TEST               MALFORMED_DROP : PASS  match=0 rule=0 action=1 queue=0 hash=a84b3cfe
+TEST          RUNTIME_RULE_UPDATE : PASS  match=1 rule=1 action=1 queue=0 hash=a84b3cfe
+ Rule entries             : 32
+ 5-tuple hash             : PASS
+ Exact matching           : PASS
+ Masked subnet matching   : PASS
+ VLAN matching            : PASS
+ Rule priority            : PASS
+ FORWARD action           : PASS
+ DROP action              : PASS
+ REDIRECT action          : PASS
+ MODIFY action            : PASS
+ COUNT action             : PASS
+ Default-drop policy      : PASS
+ Malformed override       : PASS
+ Runtime rule update      : PASS
+ Decision tests           : 10
+
+Runtime policy changes were verified without reset or RTL rebuild.
+Lowest-index matching rule is authoritative.
+Malformed packets force DROP before programmable policy.
+
+Simulation engine: AMD XSIM / Vivado 2023.2
+
+Copyright (c) 2026 Frank Ouma.
+All rights reserved.
