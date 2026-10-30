@@ -1,0 +1,43 @@
+Frank Ouma
+Project 08 - Programmable Network Processor
+08H - Integrated Packet Processor Core Qualification
+
+Platform: AMD ZCU104 / Zynq UltraScale+ MPSoC
+Engineering: FPGA / SoC / Digital Hardware Engineering
+Date: 2026-10-28
+
+RESULT: PASS
+
+PRIORITY DROP END-TO-END: PASS
+FORWARD END-TO-END: PASS
+REDIRECT END-TO-END: PASS
+MODIFY + CHECKSUM END-TO-END: PASS
+LIVE RULE UPDATE END-TO-END: PASS
+ Parser integration          : PASS
+ Match/action integration    : PASS
+ Decision synchronization    : PASS
+ Priority DROP               : PASS
+ FORWARD datapath            : PASS
+ REDIRECT queue routing      : PASS
+ MODIFY packet rewrite       : PASS
+ IPv4 checksum               : PASS
+ UDP checksum                : PASS
+ QoS scheduler integration   : PASS
+ Runtime rule update         : PASS
+ Output backpressure         : PASS
+ Packets accepted            : 5
+ Packets forwarded           : 3
+ Packets dropped             : 2
+ Scheduler packets           : 3
+ Output stall cycles         : 6
+
+The qualification traversed the integrated parser, classifier,
+packet buffer, action path, editor and four-queue scheduler.
+
+A runtime rule was changed from FORWARD to DROP without reset
+or RTL rebuild, and the subsequent packet was suppressed.
+
+Simulation engine: AMD XSIM / Vivado 2023.2
+
+Copyright (c) 2026 Frank Ouma.
+All rights reserved.
