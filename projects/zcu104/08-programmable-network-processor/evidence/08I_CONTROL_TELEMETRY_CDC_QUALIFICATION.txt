@@ -1,0 +1,39 @@
+Frank Ouma
+Project 08 - Programmable Network Processor
+08I - Control / Telemetry CDC Qualification
+
+Platform: AMD ZCU104 / Zynq UltraScale+ MPSoC
+Engineering: FPGA / SoC / Digital Hardware Engineering
+Date: 2026-10-30
+
+RESULT: PASS
+
+COMMAND DELIVERY / ORDER / INTEGRITY: PASS
+ATOMIC TELEMETRY SNAPSHOTS: PASS
+ Control clock             : 100 MHz
+ Packet clock              : 125 MHz
+ Clock relationship        : asynchronous
+ Commands launched         : 64
+ Commands received         : 64
+ Lost commands             : 0
+ Duplicate commands        : 0
+ Command ordering          : PASS
+ Command payload integrity : PASS
+ Snapshot requests         : 17
+ Snapshots received        : 17
+ Atomic telemetry          : PASS
+ Request/ACK handshake     : PASS
+ ASYNC_REG synchronizers   : PRESENT
+
+64 control-plane command transactions crossed from the
+100 MHz control domain into the 125 MHz packet domain.
+
+No commands were lost, duplicated, reordered or corrupted.
+
+Telemetry was returned as atomic multi-counter snapshots
+rather than independently synchronized counter bits.
+
+Simulation engine: AMD XSIM / Vivado 2023.2
+
+Copyright (c) 2026 Frank Ouma.
+All rights reserved.
