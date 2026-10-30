@@ -59,6 +59,7 @@ module p08_packet_editor #(
 
     typedef enum logic [3:0] {
         ST_CAPTURE,
+        ST_BYPASS,
         ST_PARSE_ETH,
         ST_PARSE_IP,
         ST_APPLY,
@@ -182,11 +183,36 @@ module p08_packet_editor #(
      */
     always_comb begin
 
-        s_axis_tready =
-            aresetn &&
-            (state == ST_CAPTURE) &&
-            (byte_count <
-             MAX_PACKET_BYTES);
+        if (!aresetn) begin
+
+            s_axis_tready =
+                1'b0;
+
+        end
+        else if (
+            (state == ST_CAPTURE &&
+             !edit_enable) ||
+            state == ST_BYPASS
+        ) begin
+
+            /*
+             * Fast path:
+             *
+             * FORWARD / REDIRECT / COUNT packets never enter
+             * store-and-forward editing memory.
+             */
+            s_axis_tready =
+                m_axis_tready;
+
+        end
+        else begin
+
+            s_axis_tready =
+                (state == ST_CAPTURE) &&
+                (byte_count <
+                 MAX_PACKET_BYTES);
+
+        end
 
     end
 
@@ -202,7 +228,32 @@ module p08_packet_editor #(
         m_axis_tvalid = 1'b0;
         m_axis_tlast  = 1'b0;
 
-        if (state == ST_OUTPUT) begin
+        if (
+            (state == ST_CAPTURE &&
+             !edit_enable) ||
+            state == ST_BYPASS
+        ) begin
+
+            /*
+             * Zero-store fast path.
+             *
+             * Packet data, KEEP and TLAST propagate directly
+             * through the editor when no rewrite is requested.
+             */
+            m_axis_tdata =
+                s_axis_tdata;
+
+            m_axis_tkeep =
+                s_axis_tkeep;
+
+            m_axis_tvalid =
+                s_axis_tvalid;
+
+            m_axis_tlast =
+                s_axis_tlast;
+
+        end
+        else if (state == ST_OUTPUT) begin
 
             m_axis_tvalid =
                 1'b1;
@@ -392,6 +443,60 @@ module p08_packet_editor #(
 
             edit_done <=
                 1'b0;
+
+            /*
+             * ====================================================
+             * STREAMING FAST PATH
+             * ====================================================
+             *
+             * edit_enable=0 packets never enter packet_mem and
+             * never execute checksum states.
+             *
+             * One accepted input beat therefore corresponds to
+             * one accepted output beat in the same cycle.
+             */
+            if (
+                (state == ST_CAPTURE &&
+                 !edit_enable) ||
+                state == ST_BYPASS
+            ) begin
+
+                if (s_axis_tvalid &&
+                    s_axis_tready) begin
+
+                    if (state == ST_CAPTURE)
+                        edit_error <=
+                            1'b0;
+
+                    if (s_axis_tlast) begin
+
+                        edit_done <=
+                            1'b1;
+
+                        state <=
+                            ST_CAPTURE;
+
+                        byte_count <=
+                            16'd0;
+
+                        packet_length <=
+                            16'd0;
+
+                        output_offset <=
+                            16'd0;
+
+                    end
+                    else begin
+
+                        state <=
+                            ST_BYPASS;
+
+                    end
+
+                end
+
+            end
+            else begin
 
             case (state)
 
@@ -1223,6 +1328,8 @@ module p08_packet_editor #(
                         ST_CAPTURE;
 
             endcase
+
+            end
 
         end
 

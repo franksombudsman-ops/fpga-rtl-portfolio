@@ -1,0 +1,71 @@
+Frank Ouma
+Project 08 - Programmable Network Processor
+08K - Streaming Fast-Path Performance Qualification
+
+Platform: AMD ZCU104 / Zynq UltraScale+ MPSoC
+Engineering: FPGA / SoC / Digital Hardware Engineering
+Packet datapath model: 64-bit AXI4-Stream @ 125 MHz
+Date: 2026-10-30
+
+RESULT: PASS
+
+FUNCTIONAL REGRESSION
+08F packet editor                 : PASS
+08H integrated packet processor   : PASS
+08K sustained traffic             : PASS
+
+FAST-PATH CORRECTION
+The first bypass beat now carries its live hardware queue
+sideband directly to the egress scheduler.
+
+Subsequent packet beats use the registered queue value.
+MODIFY replay continues to use the registered queue value.
+
+This preserves queue identity when data and queue metadata
+cross the zero-store editor bypass in the same clock cycle.
+
+TRAFFIC QUALIFICATION
+Integrated packets injected       : 1664
+Packets forwarded                 : 1408
+Packets dropped                   : 256
+Unique flow stimulus              : >1600
+Variable-length traffic           : PASS
+Forward / redirect / drop         : PASS
+Live runtime policy update        : PASS
+Byte-perfect scoreboard           : PASS
+
+BASELINE — 08J
+Performance packets               : 1024
+Frame size                        : 256 bytes
+Performance cycles                : 66629
+Sustained simulated rate          : 3934.382 Mbit/s
+Raw AXIS utilization              : 49.179 %
+
+FAST PATH — 08K
+Performance cycles                : 34883
+Sustained simulated rate          : 7514.949 Mbit/s
+Raw AXIS utilization              : 93.936 %
+Ingress stall cycles              : 4683
+Egress stall cycles               : 3638
+
+THROUGHPUT IMPROVEMENT
+Rate improvement                  : 91.007 %
+Performance-cycle reduction       : 47.646 %
+
+ARCHITECTURAL RESULT
+FORWARD, REDIRECT and COUNT packets use the streaming
+editor bypass.
+
+MODIFY packets continue through full store-and-forward
+editing and IPv4/L4 checksum regeneration.
+
+The reported throughput is an XSIM architectural
+measurement, not physical Ethernet throughput.
+
+The theoretical raw capacity of the 64-bit / 125-MHz
+AXI4-Stream datapath is 8 Gbit/s.
+
+Simulation engine: AMD XSIM / Vivado 2023.2
+
+Copyright (c) 2026 Frank Ouma.
+All rights reserved.

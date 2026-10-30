@@ -472,6 +472,7 @@ module p08_packet_processor_core (
     logic editor_input_active;
 
     logic [1:0] editor_queue_reg;
+    logic [1:0] scheduler_packet_queue;
 
     logic [4:0] editor_profile_index;
 
@@ -502,6 +503,30 @@ module p08_packet_processor_core (
         action_tvalid &&
         action_tready &&
         !editor_input_active;
+
+    /*
+     * Fast-path queue sideband alignment.
+     *
+     * On the first beat of a non-MODIFY packet, the packet data
+     * can now pass combinationally through the editor. The queue
+     * register is updated on that same clock edge, so its old
+     * value cannot be used for the first scheduler beat.
+     *
+     * Use the live action-buffer queue for that first bypass beat.
+     * Once the first beat transfers, editor_queue_reg is valid for
+     * the remainder of the packet.
+     *
+     * MODIFY packets are store-and-forward and therefore use the
+     * registered queue during their later replay.
+     */
+    assign scheduler_packet_queue =
+        (
+            !editor_input_active &&
+            action_tvalid &&
+            (action_packet_action != ACTION_MODIFY)
+        )
+        ? action_packet_queue
+        : editor_queue_reg;
 
     assign profile_pop =
         editor_first_transfer;
@@ -729,7 +754,7 @@ module p08_packet_processor_core (
         .s_axis_tready       (editor_output_ready),
         .s_axis_tlast        (editor_tlast),
 
-        .s_packet_queue      (editor_queue_reg),
+        .s_packet_queue      (scheduler_packet_queue),
 
         .cfg_we              (cfg_qos_we),
         .cfg_queue           (cfg_qos_queue),
