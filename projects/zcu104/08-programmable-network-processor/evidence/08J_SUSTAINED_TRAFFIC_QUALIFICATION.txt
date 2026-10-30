@@ -1,0 +1,53 @@
+Frank Ouma
+Project 08 - Programmable Network Processor
+08J - Sustained Traffic / Performance Qualification
+
+Platform: AMD ZCU104 / Zynq UltraScale+ MPSoC
+Engineering: FPGA / SoC / Digital Hardware Engineering
+Packet datapath clock model: 125 MHz
+Date: 2026-10-30
+
+RESULT: PASS
+
+SATURATED FORWARD ACCOUNTING: PASS
+PERF_PACKETS=1024
+PERF_FRAME_BYTES=256
+PERF_BYTES=262144
+PERF_CYCLES=66629
+PERF_THROUGHPUT_Mbps=3934.382
+PERF_RAW_BUS_UTILIZATION_PCT=49.179
+VARIABLE-LENGTH TRAFFIC: PASS
+MIXED FORWARD/REDIRECT/DROP: PASS
+RANDOMIZED BACKPRESSURE: PASS
+LIVE POLICY UPDATE UNDER QUALIFIED CORE: PASS
+ Integrated packets injected : 1664
+ Packets forwarded           : 1408
+ Packets dropped             : 256
+ Output packets              : 1408
+ Unique flow stimulus        : >1600
+ Variable packet lengths     : PASS
+ Priority policy             : PASS
+ Redirect traffic            : PASS
+ Live policy update          : PASS
+ Byte-perfect scoreboard     : PASS
+ Ingress backpressure        : PASS
+ Egress backpressure         : PASS
+ Ingress stall cycles        : 43796
+ Egress stall cycles         : 3628
+ Performance packets         : 1024
+ Performance frame bytes     : 256
+ Performance cycles          : 66629
+ Sustained simulated rate    : 3934.382 Mbit/s
+ Raw AXIS utilization        : 49.179 %
+
+The reported sustained rate is an XSIM architectural
+performance measurement of the integrated AXI-stream core.
+It is not a physical Ethernet throughput measurement.
+
+The 8 Gbit/s value remains the raw capacity of a 64-bit
+datapath clocked at 125 MHz, not an assumed achieved rate.
+
+Simulation engine: AMD XSIM / Vivado 2023.2
+
+Copyright (c) 2026 Frank Ouma.
+All rights reserved.
